@@ -4,9 +4,16 @@ import (
 	"fmt"
 )
 
+//TODO: add 
+
 type BoardState struct {
 	tiles [64]Tile
 	turnTeam uint8 //0 null, 1 team white, 2 team black
+}
+
+type Tile struct {
+	Team uint8 //0 empty space, 1 team white, 2 team black
+	King bool
 }
 
 func (bs BoardState) GetBoardPos(x int, y int) (Tile, bool) {
@@ -23,6 +30,17 @@ func (bs BoardState) MaxTakeBoards() []BoardState {
 }
 
 func (bs BoardState) AllMoveBoards() []BoardState {
+	for y := 0; y<8; y++ {
+		for x := 0; x<8; x++ {
+			tile := bs.GetBoardPos(x,y)
+			if tile.Team != bs.turnTeam { continue }
+			if tile.King {
+
+			} else {
+
+			}
+		}
+	}
 	return []BoardState {}
 }
 
@@ -63,11 +81,7 @@ func (bs BoardState) BoardValue(depth int) float64 {
 	return 0.0
 }
 
-type Tile struct {
-	HasPiece bool
-	Team uint8
-	IsKing bool
-}
+
 
 func main() {
 	fmt.Println("time to find out")
