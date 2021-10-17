@@ -159,11 +159,53 @@ func (bs BoardState) AllMoveBoards(turnTeam Team) []BoardState {
 
 func (bs BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = black wins
 	//If either player is out of pieces they lose
+	wKings := 0
+	wPieces := 0
+
+	bKings := 0
+	bPieces := 0
+
+	for _, piece := range BoardState {
+		if piece.Team == White {
+			if piece.King {
+				wKings += 1
+			}
+			wPieces += 1
+		} else if piece.Team == Black {
+			if piece.King {
+				bKings += 1
+			}
+			bPieces += 1
+		}
+	}
+
+	//If a player has no moves they lose lol
+	if wPieces == 0 {
+		return Black
+	} 
+
+	if bPieces == 0 {
+		return White
+	}
+
+	//If one player has a king and the other has one piece they lose
+	if wPieces == 1 {
+		if bKings > 0 {
+			return Black
+		}
+	}
+
+	if bPieces == 1 {
+		if wKings > 0 {
+			return White
+		}
+	}
+
+	return Empty //No winner
 	//If a player has no playable moves they lose (checked in another part of the code)
-	//If one player has a king and the other doesnt they lose
-	return Empty
 }
 
+//Draw check would optimize returning 0 instead of worthless move searches
 func (bs BoardState) PlayersDrawed() bool {
 	//Check if players are in a stalemate / draw
 	return false
@@ -223,3 +265,6 @@ func (bs BoardState) BoardValue(depth int, turnTeam Team) float64 {
 func main() {
 	fmt.Println("time to find out")
 }
+
+//TODO: add unit tests
+//TODO: try adding start move and end move table
