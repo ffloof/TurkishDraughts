@@ -34,6 +34,31 @@ func (bs BoardState) SetBoardTile(x int, y int, t Tile) {
 	}
 }
 
+func (bs BoardState) Print(){
+	for y:=0;y<8;y++ {
+		lineStr := ""
+		for x:=0;x<8;x++ {
+			team := bs[(y*8)+ x].Team
+			king := bs[(y*8)+ x].King
+			if team == Empty {
+				lineStr += "-"
+			} else if team == White {
+				if King {
+					lineStr += "W"
+				} else {
+					lineStr += "w"
+				}
+			} else if team == Black {
+				if King {
+					lineStr += "B"
+				} else {
+					lineStr += "b"
+				}
+			}
+		}
+		fmt.Println(lineStr)
+	}
+}
 
 //Get board where maximum amount of pieces were taken
 func (bs BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
@@ -132,7 +157,7 @@ func (bs BoardState) AllMoveBoards(turnTeam Team) []BoardState {
 	return allBoards
 }
 
-func (bs BoardState) PlayerHasWon() Team { //0 = draw 1 = white wins 2 = black wins
+func (bs BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = black wins
 	//If either player is out of pieces they lose
 	//If a player has no playable moves they lose (checked in another part of the code)
 	//If one player has a king and the other doesnt they lose
@@ -144,9 +169,27 @@ func (bs BoardState) PlayersDrawed() bool {
 	return false
 }
 
-func (bs BoardState) RawBoardValue() float64 {
-	return 0.0
+func (bs BoardState) RawBoardValue() float64 { //Game is always from whites perspective
+	value := 0.0
+	for _, piece := range BoardState {
+		if piece.Team == White {
+			if piece.King {
+				value += 5.0
+			} else {
+				value += 1.0
+			}
+		} else if piece.Team == Black {
+			if piece.King {
+				value -= 5.0
+			} else {
+				value -= 1.0
+			}
+		}
+	}
+	return value
 }
+
+
 
 //TODO: make sure to inverse board team
 func (bs BoardState) BoardValue(depth int, turnTeam Team) float64 {
