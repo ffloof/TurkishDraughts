@@ -30,7 +30,7 @@ func (bs BoardState) SetBoardTile(x int, y int, t Tile) {
 	if -1 < y && y < 8 && -1 < x && y < 8 {
 		bs[(y*8)+ x] = t
 	} else {
-		fmt.Println("tripping season")
+		fmt.Println("tripping season") //TODO: either error handling or call a panic
 	}
 }
 
@@ -107,10 +107,10 @@ func (bs BoardState) AllMovesTile(x int, y int, turnTeam Team) []BoardState {
 		}
 		for _, direction := range moves {
 			for _, move := range direction {
-				moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[0])
+				moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[1])
 				if moveTile.Team == Empty && onBoard {
 					newBS := bs
-					newBS.SetBoardTile(x + move[0], y+ move[0], checkingTile)
+					newBS.SetBoardTile(x + move[0], y + move[1], checkingTile)
 					newBS.SetBoardTile(x, y, Tile{})
 					boards = append(boards, newBS)
 				} else {
@@ -135,10 +135,15 @@ func (bs BoardState) AllMovesTile(x int, y int, turnTeam Team) []BoardState {
 		}
 
 		for _, move := range moves {
-			moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[0])
+			moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[1])
 			if moveTile.Team == Empty && onBoard {
 				newBS := bs
-				newBS.SetBoardTile(x + move[0], y+ move[0], checkingTile)
+				if moveTile.Team == Black && y + move[1] == 0 { //Promote to king condition
+					checkingTile.King = true
+				} else if moveTile.Team == White && y + move[1] == 7 {
+					checkingTile.King = true
+				}
+				newBS.SetBoardTile(x + move[0], y + move[1], checkingTile)
 				newBS.SetBoardTile(x, y, Tile{})
 				boards = append(boards, newBS)
 			}
