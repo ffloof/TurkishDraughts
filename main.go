@@ -296,35 +296,51 @@ func (bs BoardState) RawBoardValue() float64 { //Game is always from whites pers
 }
 
 //TODO: make sure to inverse board team
-func (bs BoardState) BoardValue(depth int, turnTeam Team) float64 {
+func (bs BoardState) BoardValue(depth int, turnTeam Team) (float64, BoardState) {
 	//add a check for winner here
 	winState := bs.PlayerHasWon()
-	if winState == White {
-		return 100.0
-	} else if winState == Black {
-		return -100.0
+	if winState == White { 
+		return 100.0, bs 
+	} else if winState == Black { 
+		return -100.0, bs 
 	}
 
 	if depth == 0 {
-		return bs.RawBoardValue()
+		return bs.RawBoardValue(), bs
 	}
 
 	options := bs.MaxTakeBoards(turnTeam)
 	if len(options) == 0 {
 		options = bs.AllMoveBoards(turnTeam)
+
+		if len(options) == 0 { //No legal move check
+			if turnTeam == White { return -100.0, bs }
+			if turnTeam == Black { return 100.0, bs }
+		}
 	}
 	
-	for _, branch := range options{
+
+	var bestValue float64
+	bestBoard := bs
+
+	for i, branch := range options{
 		if turnTeam == White {
-			value := branch.BoardValue(depth-1, Black)
+			value, board := branch.BoardValue(depth-1, Black)
+			if i==0 || value > bestValue {
+				bestValue = value //White tries to maximize value
+				bestBoard = board
+			}
 		}
 		if turnTeam == Black {
-			value := branch.BoardValue(depth-1, White)
+			value, board := branch.BoardValue(depth-1, White)
+			if i==0 || value < bestValue {
+				bestValue = value //Black tries to minimize value
+				bestBoard = board
+			}
 		}
-		
 	}
 	
-	return 0.0;
+	return bestValue, bestBoard;
 }
 
 
