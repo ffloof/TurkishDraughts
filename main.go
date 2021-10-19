@@ -69,7 +69,7 @@ func (bs BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
 			if bs[(y*8)+ x].King {
 				bs.FindKingTakes(x,y,0,[2]int{0,0})
 			} else {
-				bs.FindPawnTakes(x,y,0,[2]int{0,0})
+				bs.FindPawnTakes(x,y,0)
 			}
 		}
 	}
@@ -83,24 +83,30 @@ func (bs BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]in
 	return 0, []BoardState{}
 }
 
-func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
+func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState) {
 	boards := []BoardState{ bs }
 	bestTake := currentTakes
 	currentTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
 
 	//TODO: Add check for most takes
 	//Up (white only)
-	if currentTile.Team == White && !(lastDir[0] == 0 && lastDir[1] == 1) {
+
+	for _, v := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
+		if currentTile.Team == White && !(v[0] == 0 && v[1] == 1) { continue }
+		if currentTile.Team == Black && !(v[0] == 0 && v[1] == -1) { continue }
+
 		newBS := bs
-		jumpOverTile, onBoard1 := bs.GetBoardTile(x,y+1)
-		landingTile, onBoard2 := bs.GetBoardTile(x,y+2)
+		jumpPos := [2]int{ x+v[0],y+v[1] }
+		landingPos := [2]int { x+(2*v[0]) , y+(2*v[1]) }
+		jumpOverTile, onBoard1 := bs.GetBoardTile(jumpPos[0], jumpPos[1])
+		landingTile, onBoard2 := bs.GetBoardTile(landingPos[0], landingPos[1])
 		if onBoard1 && onBoard2 {
 			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
-				newBS.SetBoardTile(x,y+2, currentTile)
-				newBS.SetBoardTile(x,y+1, Tile{Empty, false})
+				newBS.SetBoardTile(landingPos[0], landingPos[1], currentTile)
+				newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{Empty, false})
 				newBS.SetBoardTile(x,y, Tile{Empty, false})
 				
-				takes, possibleBoards := newBS.FindPawnTakes(x,y+2,currentTakes+1,[2]int{0,1})
+				takes, possibleBoards := newBS.FindPawnTakes(landingPos[0], landingPos[1],currentTakes+1)
 				if takes > bestTake {
 					bestTake = takes
 					boards = possibleBoards
@@ -110,74 +116,6 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int, lastDir [2]in
 				}
 			}
 		}
-	}
-	//Down (black only)
-	if currentTile.Team == Black && !(lastDir[0] == 0 && lastDir[1] == -1) {
-		newBS := bs
-		jumpOverTile, onBoard1 := bs.GetBoardTile(x,y-1)
-		landingTile, onBoard2 := bs.GetBoardTile(x,y-2)
-		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
-				newBS.SetBoardTile(x,y-2, currentTile)
-				newBS.SetBoardTile(x,y-1, Tile{Empty, false})
-				newBS.SetBoardTile(x,y, Tile{Empty, false})
-				
-				takes, possibleBoards := newBS.FindPawnTakes(x,y-2,currentTakes+1,[2]int{0,-1})
-				if takes > bestTake {
-					bestTake = takes
-					boards = possibleBoards
-				}
-				if takes == bestTake {
-					boards = append(boards, possibleBoards...)
-				}
-			}
-		}
-	}
-	//Left (either)
-	if !(lastDir[0] == -1 && lastDir[1] == 0) {
-		newBS := bs
-		jumpOverTile, onBoard1 := bs.GetBoardTile(x-1,y)
-		landingTile, onBoard2 := bs.GetBoardTile(x-2,y)
-		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
-				newBS.SetBoardTile(x-2,y, currentTile)
-				newBS.SetBoardTile(x-1,y, Tile{Empty, false})
-				newBS.SetBoardTile(x,y, Tile{Empty, false})
-				
-				takes, possibleBoards := newBS.FindPawnTakes(x-2,y,currentTakes+1,[2]int{-1,0})
-				if takes > bestTake {
-					bestTake = takes
-					boards = possibleBoards
-				}
-				if takes == bestTake {
-					boards = append(boards, possibleBoards...)
-				}
-			}
-		}
-	} 
-
-	//Right (either)
-	if !(lastDir[0] == 1 && lastDir[1] == 0) {
-		newBS := bs
-		jumpOverTile, onBoard1 := bs.GetBoardTile(x+1,y)
-		landingTile, onBoard2 := bs.GetBoardTile(x+2,y)
-		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
-				newBS.SetBoardTile(x+2,y, currentTile)
-				newBS.SetBoardTile(x+1,y, Tile{Empty, false})
-				newBS.SetBoardTile(x,y, Tile{Empty, false})
-
-				takes, possibleBoards := newBS.FindPawnTakes(x+2,y,currentTakes+1,[2]int{1,0})
-				if takes > bestTake {
-					bestTake = takes
-					boards = possibleBoards
-				}
-				if takes == bestTake {
-					boards = append(boards, possibleBoards...)
-				}
-			}
-		}
-
 	}
 
 	return bestTake, boards
