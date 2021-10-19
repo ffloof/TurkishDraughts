@@ -60,21 +60,30 @@ func (bs BoardState) Print(){
 	}
 }
 
-//Get board where maximum amount of pieces were taken
 func (bs BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
-	possibleTakeBoards := []BoardState{}
+	possibleMaxTakeBoards := []BoardState{}
+	bestTake := 1 //Filters boards with no jumps
+
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
 			if turnTeam != bs[(y*8)+x].Team { continue }
+			var takes int
+			var possibleTakeBoards []BoardState
 			if bs[(y*8)+ x].King {
-				bs.FindKingTakes(x,y,0,[2]int{0,0})
+				takes, possibleTakeBoards = bs.FindKingTakes(x,y,0,[2]int{0,0})
 			} else {
-				bs.FindPawnTakes(x,y,0)
+				takes, possibleTakeBoards = bs.FindPawnTakes(x,y,0)
+			}
+			if takes > bestTake {
+					bestTake = takes
+					possibleMaxTakeBoards = possibleTakeBoards
+			} else if takes == bestTake {
+				possibleMaxTakeBoards = append(possibleMaxTakeBoards, possibleTakeBoards...)
 			}
 		}
 	}
 
-	return possibleTakeBoards
+	return possibleMaxTakeBoards
 }
 
 func (bs BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
@@ -161,10 +170,9 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Board
 	return bestTake, boards
 }
 
-func (bs BoardState) AllMovesTile(x int, y int, turnTeam Team) []BoardState {
+func (bs BoardState) AllMovesTile(x int, y int) []BoardState {
 	boards := []BoardState{}
 	checkingTile, _ := bs.GetBoardTile(x,y)
-	if checkingTile.Team != turnTeam { return boards }
 	if checkingTile.King {
 		for _, direction := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} { //Right
 			for i:=1;i<8;i++ {
@@ -206,7 +214,8 @@ func (bs BoardState) AllMoveBoards(turnTeam Team) []BoardState {
 	possibleMoveBoards := []BoardState {}
 	for y := 0; y<8; y++ {
 		for x := 0; x<8; x++ {
-			possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesTile(x, y, turnTeam)...)
+			if turnTeam != bs[(y*8)+x].Team { continue }
+			possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesTile(x, y)...)
 		}
 	}
 	return possibleMoveBoards
@@ -260,7 +269,7 @@ func (bs BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = bl
 	//If a player has no playable moves they lose (checked in another part of the code)
 }
 
-//Draw check would optimize returning 0 instead of worthless move searches
+//TODO: Draw check would optimize returning 0 instead of worthless move searches
 func (bs BoardState) PlayersDrawed() bool {
 	//Check if players are in a stalemate / draw
 	return false
@@ -297,27 +306,25 @@ func (bs BoardState) BoardValue(depth int, turnTeam Team) float64 {
 	}
 
 	if depth == 0 {
-		//return weight of piece count in current boardstate
 		return bs.RawBoardValue()
-	} else {
-		depth -= 1
 	}
 
-	//Loop through all possible takes -> recursively find max take
 	options := bs.MaxTakeBoards(turnTeam)
-	//If length take options == 0 move on to look through all movements 
 	if len(options) == 0 {
 		options = bs.AllMoveBoards(turnTeam)
-		//Add check for no move options, which would mean other player wins
 	}
 	
-	//Recursively find value of each boardstate
-	/*
-	for _, v := range options{
-		BoardValue(v)
-	}*/
+	for _, branch := range options{
+		if turnTeam == White {
+			value := branch.BoardValue(depth-1, Black)
+		}
+		if turnTeam == Black {
+			value := branch.BoardValue(depth-1, White)
+		}
+		
+	}
 	
-	return 0.0
+	return 0.0;
 }
 
 
