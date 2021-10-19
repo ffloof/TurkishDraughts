@@ -1,17 +1,17 @@
 package board
 
-//TODO: make sure to inverse board team
-func (bs BoardState) BoardValue(depth int, turnTeam Team) (float64, BoardState) {
+//TODO: add multiple possibility return
+func (bs *BoardState) BoardValue(depth int, turnTeam Team) (float64, BoardState) {
 	//add a check for winner here
 	winState := bs.PlayerHasWon()
 	if winState == White { 
-		return 100.0, bs 
+		return 100.0, *bs 
 	} else if winState == Black { 
-		return -100.0, bs 
+		return -100.0, *bs 
 	}
 
 	if depth == 0 {
-		return bs.RawBoardValue(), bs
+		return bs.RawBoardValue(), *bs
 	}
 
 	options := bs.MaxTakeBoards(turnTeam)
@@ -19,37 +19,36 @@ func (bs BoardState) BoardValue(depth int, turnTeam Team) (float64, BoardState) 
 		options = bs.AllMoveBoards(turnTeam)
 
 		if len(options) == 0 { //No legal move check
-			if turnTeam == White { return -100.0, bs }
-			if turnTeam == Black { return 100.0, bs }
+			if turnTeam == White { return -100.0, *bs }
+			if turnTeam == Black { return 100.0, *bs }
 		}
 	}
 	
 
 	var bestValue float64
-	bestBoard := bs
+	var bestBranch BoardState
 
 	for i, branch := range options{
 		if turnTeam == White {
-			value, board := branch.BoardValue(depth-1, Black)
-			if i==0 || value > bestValue {
+			value, _ := branch.BoardValue(depth-1, Black)
+			if i==0 || value >= bestValue {
 				bestValue = value //White tries to maximize value
-				bestBoard = board
+				bestBranch = branch
 			}
-		}
-		if turnTeam == Black {
-			value, board := branch.BoardValue(depth-1, White)
-			if i==0 || value < bestValue {
+		} else if turnTeam == Black {
+			value, _ := branch.BoardValue(depth-1, White)
+			if i==0 || value <= bestValue {
 				bestValue = value //Black tries to minimize value
-				bestBoard = board
+				bestBranch = branch
 			}
 		}
 	}
 	
-	return bestValue, bestBoard;
+	return bestValue, bestBranch;
 }
 
 
-func (bs BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = black wins
+func (bs *BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = black wins
 	//If either player is out of pieces they lose
 	wKings := 0
 	wPieces := 0
@@ -98,12 +97,12 @@ func (bs BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = bl
 }
 
 //TODO: Draw check would optimize returning 0 instead of worthless move searches
-func (bs BoardState) PlayersDrawed() bool {
+func (bs *BoardState) PlayersDrawed() bool {
 	//Check if players are in a stalemate / draw
 	return false
 }
 
-func (bs BoardState) RawBoardValue() float64 { //Game is always from whites perspective
+func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites perspective
 	value := 0.0
 	for _, piece := range bs {
 		if piece.Team == White {

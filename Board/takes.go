@@ -1,6 +1,6 @@
 package board
 
-func (bs BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
+func (bs *BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
 	possibleMaxTakeBoards := []BoardState{}
 	bestTake := 1 //Filters boards with no jumps
 
@@ -26,8 +26,8 @@ func (bs BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
 	return possibleMaxTakeBoards
 }
 
-func (bs BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
-	boards := []BoardState{ bs }
+func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
+	boards := []BoardState{ *bs }
 	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
 
@@ -49,7 +49,7 @@ func (bs BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]in
 						break
 					} else {
 						if landingTile.Team != Empty { break }
-						newBS := bs
+						newBS := *bs
 						newBS.SetBoardTile(landingPos[0], landingPos[1], attackingTile)
 						newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{Empty, false})
 						newBS.SetBoardTile(x,y, Tile{Empty, false})
@@ -74,8 +74,8 @@ func (bs BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]in
 	return 0, []BoardState{}
 }
 
-func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState) {
-	boards := []BoardState{ bs }
+func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState) {
+	boards := []BoardState{ *bs }
 	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
 
@@ -90,7 +90,7 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Board
 		landingTile, onBoard2 := bs.GetBoardTile(landingPos[0], landingPos[1])
 		if onBoard1 && onBoard2 {
 			if landingTile.Team == Empty && jumpOverTile.Team != Empty && attackingTile.Team != jumpOverTile.Team {
-				newBS := bs
+				newBS := *bs
 				newBS.SetBoardTile(landingPos[0], landingPos[1], attackingTile)
 				newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{Empty, false})
 				newBS.SetBoardTile(x,y, Tile{Empty, false})

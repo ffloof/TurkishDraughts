@@ -6,8 +6,11 @@ import (
 )
 
 func main() {
-	x := board.CreateStartingBoard()
-	x.Print()
+	fmt.Println("Started")
+	b := board.BoardFromStr("-------- bbbbbbbb bbbbbbbb -------- -------- wwwwwwww wwwwwwww --------")
+	value, nextBoard := b.BoardValue(6, board.White)
+	fmt.Println(value)
+	nextBoard.Print()
 }
 
 //TODO: add unit tests
