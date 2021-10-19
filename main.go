@@ -12,6 +12,14 @@ const (
 	Black
 )
 
+const (
+	NoDir Direction = iota
+	Up
+	Down
+	Left
+	Right
+)
+
 type Tile struct {
 	Team Team //0 empty space, 1 team white, 2 team black
 	King bool
@@ -43,13 +51,13 @@ func (bs BoardState) Print(){
 			if team == Empty {
 				lineStr += "-"
 			} else if team == White {
-				if King {
+				if king {
 					lineStr += "W"
 				} else {
 					lineStr += "w"
 				}
 			} else if team == Black {
-				if King {
+				if king {
 					lineStr += "B"
 				} else {
 					lineStr += "b"
@@ -62,7 +70,125 @@ func (bs BoardState) Print(){
 
 //Get board where maximum amount of pieces were taken
 func (bs BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
-	return []BoardState {}
+	possibleTakeBoards := []BoardState{}
+	for y:=0;y<8;y++ {
+		for x:=0;x<8;x++ {
+			if turnTeam != bs[(y*8)+x].Team { continue }
+			if bs[(y*8)+ x].King {
+				bs.FindKingTakes(x,y,0,[2]int{0,0})
+			} else {
+				bs.FindPawnTakes(x,y,0,[2]int{0,0})
+			}
+		}
+	}
+
+	return possibleTakeBoards
+}
+
+func (bs BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
+
+
+	return 0, []BoardState{}
+}
+
+func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
+	boards := []BoardState{ bs }
+	bestTake := currentTakes
+	currentTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
+
+	//TODO: Add check for most takes
+	//Up (white only)
+	if currentTile.Team == White && !(lastDir[0] == 0 && lastDir[1] == 1) {
+		newBS := bs
+		jumpOverTile, onBoard1 := bs.GetBoardTile(x,y+1)
+		landingTile, onBoard2 := bs.GetBoardTile(x,y+2)
+		if onBoard1 && onBoard2 {
+			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+				newBS.SetBoardTile(x,y+2, currentTile)
+				newBS.SetBoardTile(x,y+1, Tile{Empty, false})
+				newBS.SetBoardTile(x,y, Tile{Empty, false})
+				
+				possibleBoards, takes := newBS.FindPawnTakes(x,y+2,currentTakes+1,[2]int{0,1})
+				if takes > bestTake {
+					bestTake = takes
+					boards = possibleBoards
+				}
+				if takes == bestTake {
+					boards = append(boards, possibleBoards)
+				}
+			}
+		}
+	}
+	//Down (black only)
+	if currentTile.Team == Black && !(lastDir[0] == 0 && lastDir[1] == -1) {
+		newBS := bs
+		jumpOverTile, onBoard1 := bs.GetBoardTile(x,y-1)
+		landingTile, onBoard2 := bs.GetBoardTile(x,y-2)
+		if onBoard1 && onBoard2 {
+			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+				newBS.SetBoardTile(x,y-2, currentTile)
+				newBS.SetBoardTile(x,y-1, Tile{Empty, false})
+				newBS.SetBoardTile(x,y, Tile{Empty, false})
+				
+				possibleBoards, takes := newBS.FindPawnTakes(x,y-2,currentTakes+1,[2]int{0,-1})
+				if takes > bestTake {
+					bestTake = takes
+					boards = possibleBoards
+				}
+				if takes == bestTake {
+					boards = append(boards, possibleBoards)
+				}
+			}
+		}
+	}
+	//Left (either)
+	if !(lastDir[0] == -1 && lastDir[1] == 0) {
+		newBS := bs
+		jumpOverTile, onBoard1 := bs.GetBoardTile(x-1,y)
+		landingTile, onBoard2 := bs.GetBoardTile(x-2,y)
+		if onBoard1 && onBoard2 {
+			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+				newBS.SetBoardTile(x-2,y, currentTile)
+				newBS.SetBoardTile(x-1,y, Tile{Empty, false})
+				newBS.SetBoardTile(x,y, Tile{Empty, false})
+				
+				possibleBoards, takes := newBS.FindPawnTakes(x-2,y,currentTakes+1,[2]int{-1,0})
+				if takes > bestTake {
+					bestTake = takes
+					boards = possibleBoards
+				}
+				if takes == bestTake {
+					boards = append(boards, possibleBoards)
+				}
+			}
+		}
+	} 
+
+	//Right (either)
+	if !(lastDir[0] == 1 && lastDir[1] == 0) {
+		newBS := bs
+		jumpOverTile, onBoard1 := bs.GetBoardTile(x+1,y)
+		landingTile, onBoard2 := bs.GetBoardTile(x+2,y)
+		if onBoard1 && onBoard2 {
+			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+				newBS.SetBoardTile(x+2,y, currentTile)
+				newBS.SetBoardTile(x+1,y, Tile{Empty, false})
+				newBS.SetBoardTile(x,y, Tile{Empty, false})
+
+				possibleBoards, takes := newBS.FindPawnTakes(x+2,y,currentTakes+1,[2]int{1,0})
+				if takes > bestTake {
+					bestTake = takes
+					boards = possibleBoards
+				}
+				if takes == bestTake {
+					boards = append(boards, possibleBoards)
+				}
+			}
+		}
+
+	}
+
+	return bestTake, boards
 }
 
 func (bs BoardState) AllMovesTile(x int, y int, turnTeam Team) []BoardState {
@@ -153,13 +279,13 @@ func (bs BoardState) AllMovesTile(x int, y int, turnTeam Team) []BoardState {
 }
 
 func (bs BoardState) AllMoveBoards(turnTeam Team) []BoardState {
-	allBoards := []BoardState {}
+	possibleMoveBoards := []BoardState {}
 	for y := 0; y<8; y++ {
 		for x := 0; x<8; x++ {
-			allBoards = append(allBoards, bs.AllMovesTile(x, y, turnTeam)...)
+			possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesTile(x, y, turnTeam)...)
 		}
 	}
-	return allBoards
+	return possibleMoveBoards
 }
 
 func (bs BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = black wins
@@ -170,7 +296,7 @@ func (bs BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = bl
 	bKings := 0
 	bPieces := 0
 
-	for _, piece := range BoardState {
+	for _, piece := range bs {
 		if piece.Team == White {
 			if piece.King {
 				wKings += 1
@@ -218,7 +344,7 @@ func (bs BoardState) PlayersDrawed() bool {
 
 func (bs BoardState) RawBoardValue() float64 { //Game is always from whites perspective
 	value := 0.0
-	for _, piece := range BoardState {
+	for _, piece := range bs {
 		if piece.Team == White {
 			if piece.King {
 				value += 5.0
@@ -236,11 +362,16 @@ func (bs BoardState) RawBoardValue() float64 { //Game is always from whites pers
 	return value
 }
 
-
-
 //TODO: make sure to inverse board team
 func (bs BoardState) BoardValue(depth int, turnTeam Team) float64 {
 	//add a check for winner here
+	winState := bs.PlayerHasWon()
+	if winState == White {
+		return 100.0
+	} else if winState == Black {
+		return -100.0
+	}
+
 	if depth == 0 {
 		//return weight of piece count in current boardstate
 		return bs.RawBoardValue()
