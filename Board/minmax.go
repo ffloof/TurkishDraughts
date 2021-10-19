@@ -1,17 +1,29 @@
 package board
 
+import (
+	"math"
+)
+
+const (
+	AlphaBetaMax = 1000.0
+	WinWeight = 100.0
+	KingWeight = 5.0
+	PawnWeight = 1.0
+)
+
+
 //TODO: add multiple possibility return
-func (bs *BoardState) BoardValue(depth int, turnTeam Team) (float64, BoardState) {
+func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTeam Team) float64 {
 	//add a check for winner here
 	winState := bs.PlayerHasWon()
 	if winState == White { 
-		return 100.0, *bs 
+		return WinWeight
 	} else if winState == Black { 
-		return -100.0, *bs 
+		return -WinWeight 
 	}
 
 	if depth == 0 {
-		return bs.RawBoardValue(), *bs
+		return bs.RawBoardValue()
 	}
 
 	options := bs.MaxTakeBoards(turnTeam)
@@ -19,32 +31,34 @@ func (bs *BoardState) BoardValue(depth int, turnTeam Team) (float64, BoardState)
 		options = bs.AllMoveBoards(turnTeam)
 
 		if len(options) == 0 { //No legal move check
-			if turnTeam == White { return -100.0, *bs }
-			if turnTeam == Black { return 100.0, *bs }
+			if turnTeam == White { return -WinWeight }
+			if turnTeam == Black { return WinWeight }
 		}
 	}
 	
-
 	var bestValue float64
-	var bestBranch BoardState
 
-	for i, branch := range options{
-		if turnTeam == White {
-			value, _ := branch.BoardValue(depth-1, Black)
-			if i==0 || value >= bestValue {
-				bestValue = value //White tries to maximize value
-				bestBranch = branch
-			}
-		} else if turnTeam == Black {
-			value, _ := branch.BoardValue(depth-1, White)
-			if i==0 || value <= bestValue {
-				bestValue = value //Black tries to minimize value
-				bestBranch = branch
-			}
+	if turnTeam == White {
+		bestValue = -AlphaBetaMax
+		for _, branch := range options {
+			value := branch.BoardValue(depth-1, alpha, beta, Black)
+			bestValue = math.Max(bestValue, value)
+			
+			alpha = math.Max(alpha, value)
+			if beta <= alpha { break }
+		}
+	} else if turnTeam == Black {
+		bestValue = AlphaBetaMax
+		for _, branch := range options {
+			value := branch.BoardValue(depth-1, alpha, beta, White)
+			bestValue = math.Min(bestValue, value)
+
+			beta = math.Min(beta, value)
+			if beta <= alpha { break }
+
 		}
 	}
-	
-	return bestValue, bestBranch;
+	return bestValue
 }
 
 
@@ -107,15 +121,15 @@ func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites per
 	for _, piece := range bs {
 		if piece.Team == White {
 			if piece.King {
-				value += 5.0
+				value += KingWeight
 			} else {
-				value += 1.0
+				value += PawnWeight
 			}
 		} else if piece.Team == Black {
 			if piece.King {
-				value -= 5.0
+				value -= KingWeight
 			} else {
-				value -= 1.0
+				value -= PawnWeight
 			}
 		}
 	}
