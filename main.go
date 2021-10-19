@@ -88,16 +88,14 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Board
 	bestTake := currentTakes
 	currentTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
 
-	//TODO: Add check for most takes
 	//Up (white only)
-
-	for _, v := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
-		if currentTile.Team == White && !(v[0] == 0 && v[1] == 1) { continue }
-		if currentTile.Team == Black && !(v[0] == 0 && v[1] == -1) { continue }
+	for _, move := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
+		if currentTile.Team == White && !(move[0] == 0 && move[1] == 1) { continue }
+		if currentTile.Team == Black && !(move[0] == 0 && move[1] == -1) { continue }
 
 		newBS := bs
-		jumpPos := [2]int{ x+v[0],y+v[1] }
-		landingPos := [2]int { x+(2*v[0]) , y+(2*v[1]) }
+		jumpPos := [2]int{ x+move[0],y+move[1] }
+		landingPos := [2]int { x+(2*move[0]) , y+(2*move[1]) }
 		jumpOverTile, onBoard1 := bs.GetBoardTile(jumpPos[0], jumpPos[1])
 		landingTile, onBoard2 := bs.GetBoardTile(landingPos[0], landingPos[1])
 		if onBoard1 && onBoard2 {
@@ -126,43 +124,9 @@ func (bs BoardState) AllMovesTile(x int, y int, turnTeam Team) []BoardState {
 	checkingTile, _ := bs.GetBoardTile(x,y)
 	if checkingTile.Team != turnTeam { return boards }
 	if checkingTile.King {
-		var moves = [4][7][2]int{
-			{	
-				{0,-1}, //Up
-				{0,-2},
-				{0,-3},
-				{0,-4},
-				{0,-5},
-				{0,-6},
-				{0,-7},
-			}, {
-				{0,1}, //Down
-				{0,2},
-				{0,3},
-				{0,4},
-				{0,5},
-				{0,6},
-				{0,7},
-			}, {
-				{-1,0}, //Left
-				{-2,0},
-				{-3,0},
-				{-4,0},
-				{-5,0},
-				{-6,0},
-				{-7,0},
-			}, {
-				{1,0},  //Right
-				{2,0},
-				{3,0},
-				{4,0},
-				{5,0},
-				{6,0},
-				{7,0},
-			},
-		}
-		for _, direction := range moves {
-			for _, move := range direction {
+		for _, direction := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} { //Right
+			for i:=1;i<8;i++ {
+				move := [2]int{direction[0]*i, direction[1]*i}
 				moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[1])
 				if moveTile.Team == Empty && onBoard {
 					newBS := bs
@@ -175,22 +139,10 @@ func (bs BoardState) AllMovesTile(x int, y int, turnTeam Team) []BoardState {
 			}
 		}
 	} else {
-		var moves [3][2]int
-		if checkingTile.Team == White {
-			moves = [3][2]int{ //TODO: make these constants
-				{0,-1}, //Up
-				{-1,0}, //Left
-				{1,0},  //Right
-			}
-		} else if checkingTile.Team == Black {
-			moves = [3][2]int{
-				{0,1}, //Down
-				{-1,0}, //Left
-				{1,0},  //Right
-			}
-		}
-
-		for _, move := range moves {
+		for _, move := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
+			if checkingTile.Team == White && !(move[0] == 0 && move[1] == 1) { continue }
+			if checkingTile.Team == Black && !(move[0] == 0 && move[1] == -1) { continue }
+			
 			moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[1])
 			if moveTile.Team == Empty && onBoard {
 				newBS := bs
