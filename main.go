@@ -12,14 +12,6 @@ const (
 	Black
 )
 
-const (
-	NoDir Direction = iota
-	Up
-	Down
-	Left
-	Right
-)
-
 type Tile struct {
 	Team Team //0 empty space, 1 team white, 2 team black
 	King bool
@@ -103,18 +95,18 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int, lastDir [2]in
 		jumpOverTile, onBoard1 := bs.GetBoardTile(x,y+1)
 		landingTile, onBoard2 := bs.GetBoardTile(x,y+2)
 		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
 				newBS.SetBoardTile(x,y+2, currentTile)
 				newBS.SetBoardTile(x,y+1, Tile{Empty, false})
 				newBS.SetBoardTile(x,y, Tile{Empty, false})
 				
-				possibleBoards, takes := newBS.FindPawnTakes(x,y+2,currentTakes+1,[2]int{0,1})
+				takes, possibleBoards := newBS.FindPawnTakes(x,y+2,currentTakes+1,[2]int{0,1})
 				if takes > bestTake {
 					bestTake = takes
 					boards = possibleBoards
 				}
 				if takes == bestTake {
-					boards = append(boards, possibleBoards)
+					boards = append(boards, possibleBoards...)
 				}
 			}
 		}
@@ -125,18 +117,18 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int, lastDir [2]in
 		jumpOverTile, onBoard1 := bs.GetBoardTile(x,y-1)
 		landingTile, onBoard2 := bs.GetBoardTile(x,y-2)
 		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
 				newBS.SetBoardTile(x,y-2, currentTile)
 				newBS.SetBoardTile(x,y-1, Tile{Empty, false})
 				newBS.SetBoardTile(x,y, Tile{Empty, false})
 				
-				possibleBoards, takes := newBS.FindPawnTakes(x,y-2,currentTakes+1,[2]int{0,-1})
+				takes, possibleBoards := newBS.FindPawnTakes(x,y-2,currentTakes+1,[2]int{0,-1})
 				if takes > bestTake {
 					bestTake = takes
 					boards = possibleBoards
 				}
 				if takes == bestTake {
-					boards = append(boards, possibleBoards)
+					boards = append(boards, possibleBoards...)
 				}
 			}
 		}
@@ -147,18 +139,18 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int, lastDir [2]in
 		jumpOverTile, onBoard1 := bs.GetBoardTile(x-1,y)
 		landingTile, onBoard2 := bs.GetBoardTile(x-2,y)
 		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
 				newBS.SetBoardTile(x-2,y, currentTile)
 				newBS.SetBoardTile(x-1,y, Tile{Empty, false})
 				newBS.SetBoardTile(x,y, Tile{Empty, false})
 				
-				possibleBoards, takes := newBS.FindPawnTakes(x-2,y,currentTakes+1,[2]int{-1,0})
+				takes, possibleBoards := newBS.FindPawnTakes(x-2,y,currentTakes+1,[2]int{-1,0})
 				if takes > bestTake {
 					bestTake = takes
 					boards = possibleBoards
 				}
 				if takes == bestTake {
-					boards = append(boards, possibleBoards)
+					boards = append(boards, possibleBoards...)
 				}
 			}
 		}
@@ -170,18 +162,18 @@ func (bs BoardState) FindPawnTakes(x int, y int, currentTakes int, lastDir [2]in
 		jumpOverTile, onBoard1 := bs.GetBoardTile(x+1,y)
 		landingTile, onBoard2 := bs.GetBoardTile(x+2,y)
 		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile != Empty && currentTile.Team != jumpOverTile.Team {
+			if landingTile.Team == Empty && jumpOverTile.Team != Empty && currentTile.Team != jumpOverTile.Team {
 				newBS.SetBoardTile(x+2,y, currentTile)
 				newBS.SetBoardTile(x+1,y, Tile{Empty, false})
 				newBS.SetBoardTile(x,y, Tile{Empty, false})
 
-				possibleBoards, takes := newBS.FindPawnTakes(x+2,y,currentTakes+1,[2]int{1,0})
+				takes, possibleBoards := newBS.FindPawnTakes(x+2,y,currentTakes+1,[2]int{1,0})
 				if takes > bestTake {
 					bestTake = takes
 					boards = possibleBoards
 				}
 				if takes == bestTake {
-					boards = append(boards, possibleBoards)
+					boards = append(boards, possibleBoards...)
 				}
 			}
 		}
