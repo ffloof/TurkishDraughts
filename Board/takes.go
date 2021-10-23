@@ -75,14 +75,14 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 }
 
 func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState) {
-	boards := []BoardState{ *bs }
+	boards := []BoardState{}
 	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
 
 	
 	for _, move := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
-		if attackingTile.Team == White && !(move[0] == 0 && move[1] == 1) { continue } //Down (black only)
-		if attackingTile.Team == Black && !(move[0] == 0 && move[1] == -1) { continue } //Up (white only)
+		if attackingTile.Team == White && (move[0] == 0 && move[1] == 1) { continue } //Down (black only)
+		if attackingTile.Team == Black && (move[0] == 0 && move[1] == -1) { continue } //Up (white only)
 
 		jumpPos := [2]int{ x+move[0],y+move[1] }
 		landingPos := [2]int { x+(2*move[0]) , y+(2*move[1]) }
@@ -107,5 +107,9 @@ func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Boar
 		}
 	}
 
+	if len(boards) == 0 {
+		return currentTakes, []BoardState{ *bs }
+	}
 	return bestTake, boards
+	
 }

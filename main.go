@@ -7,9 +7,9 @@ import (
 
 func main() {
 	fmt.Println("Started")
-	b := board.BoardFromStr("-------- --W---w- -------- -------- -------- -------- -------- --------")
+	b := board.BoardFromStr("-------- --wb---- -------- -------- -------- -------- -------- --------")
 	
-	options := b.AllMoveBoards(board.White)
+	options := b.MaxTakeBoards(board.White)
 
 	for i, branch := range options{
 		fmt.Println()
