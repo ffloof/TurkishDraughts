@@ -7,7 +7,7 @@ import (
 
 func main() {
 	fmt.Println("Started")
-	b := board.BoardFromStr("-------- --wb---- -------- -------- -------- -------- -------- --------")
+	b := board.BoardFromStr("-------- -------- -b---b-- --b-b--- ---b---- ---w---- -------- --------")
 	
 	options := b.MaxTakeBoards(board.White)
 
