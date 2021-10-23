@@ -12,7 +12,6 @@ const (
 )
 
 
-//TODO: add multiple possibility return
 func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTeam Team) float64 {
 	//add a check for winner here
 	winState := bs.PlayerHasWon()
@@ -116,6 +115,8 @@ func (bs *BoardState) PlayersDrawed() bool {
 	return false
 }
 
+
+//TODO: maybe add heuristics about board positions
 func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites perspective
 	value := 0.0
 	for _, piece := range bs {

@@ -18,6 +18,7 @@ type Tile struct {
 	King bool
 }
 
+//TODO: try to convert tile[] into 3bit[] for performance
 type BoardState [64]Tile
 
 func (bs *BoardState) GetBoardTile(x int, y int) (Tile, bool) {
@@ -35,7 +36,8 @@ func (bs *BoardState) SetBoardTile(x int, y int, t Tile) {
 	}
 }
 
-func (bs *BoardState) Print(){
+func BoardToStr(bs *BoardState) string {
+	fullStr := ""
 	for y:=0;y<8;y++ {
 		lineStr := ""
 		for x:=0;x<8;x++ {
@@ -57,8 +59,16 @@ func (bs *BoardState) Print(){
 				}
 			}
 		}
-		fmt.Println(lineStr)
+		fullStr += lineStr + "\n"
 	}
+	fullStr = strings.TrimSpace(fullStr)
+	return fullStr
+}
+
+func (bs *BoardState) Print(){
+	for _, line := range strings.Fields(BoardToStr(bs)) {
+		fmt.Println(line)
+	} 
 }
 
 func CreateStartingBoard() BoardState {

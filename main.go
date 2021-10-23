@@ -1,22 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"TurkishDraughts/Board"
+	"TurkishDraughts/Network"
 )
 
 func main() {
-	fmt.Println("Started")
-	b := board.BoardFromStr("-------- -------- -b---b-- --b-b--- ---b---- ---w---- -------- --------")
-	
-	options := b.MaxTakeBoards(board.White)
-
-	for i, branch := range options{
-		fmt.Println()
-		fmt.Println(i)
-		branch.Print()
-	}
+	network.Init()
 }
+
+//-------- bbbbbbbb bbbbbbbb -------- -------- wwwwwwww wwwwwwww --------
 
 //TODO: add unit tests
 //TODO: try adding start move and end move table
+//TODO: change move ordering to check promotions first to optimize ab pruning 

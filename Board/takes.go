@@ -1,7 +1,5 @@
 package board
 
-//import "fmt"
-
 func (bs *BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
 	possibleMaxTakeBoards := []BoardState{}
 	bestTake := 1 //Filters boards with no jumps
