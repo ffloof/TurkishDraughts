@@ -28,7 +28,6 @@ func (bs *BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
 
 func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
 	boards := []BoardState{}
-	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
 
 	for _, direction := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
@@ -56,11 +55,10 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 
 						takes, possibleBoards := newBS.FindKingTakes(landingPos[0], landingPos[1],currentTakes+1, direction)
 						
-						if takes > bestTake {
-							bestTake = takes
+						if takes > currentTakes {
+							currentTakes = takes
 							boards = possibleBoards
-						}
-						if takes == bestTake {
+						} else if takes == currentTakes {
 							boards = append(boards, possibleBoards...)
 						}
 					}
@@ -72,12 +70,11 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 	if len(boards) == 0 {
 		return currentTakes, []BoardState{ *bs }
 	}
-	return bestTake, boards
+	return currentTakes, boards
 }
 
 func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState) {
 	boards := []BoardState{}
-	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
 
 	
@@ -97,11 +94,10 @@ func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Boar
 				newBS.SetBoardTile(x,y, Tile{Empty, false})
 				
 				takes, possibleBoards := newBS.FindPawnTakes(landingPos[0], landingPos[1],currentTakes+1)
-				if takes > bestTake {
-					bestTake = takes
+				if takes > currentTakes {
+					currentTakes = takes
 					boards = possibleBoards
-				}
-				if takes == bestTake {
+				} else if takes == currentTakes {
 					boards = append(boards, possibleBoards...)
 				}
 			}
@@ -111,6 +107,6 @@ func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Boar
 	if len(boards) == 0 {
 		return currentTakes, []BoardState{ *bs }
 	}
-	return bestTake, boards
+	return currentTakes, boards
 	
 }
