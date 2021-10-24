@@ -109,14 +109,12 @@ func (bs *BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = b
 	//If a player has no playable moves they lose (checked in another part of the code)
 }
 
-//TODO: Draw check would optimize returning 0 instead of worthless move searches
 func (bs *BoardState) PlayersDrawed() bool {
 	//Check if players are in a stalemate / draw
 	return false
 }
 
 
-//TODO: maybe add heuristics about board positions
 func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites perspective
 	value := 0.0
 	for _, piece := range bs {

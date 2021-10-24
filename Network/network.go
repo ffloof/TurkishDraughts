@@ -34,7 +34,7 @@ func analyze(b board.BoardState, myTeam board.Team) string {
 
 	results := make(chan struct{float64; board.BoardState})
 	for _, branch := range options{
-		go analyzeBranch(branch, myTeam, results) //TODO: implement proper worker pool instead of creating a thread for each initial move
+		go analyzeBranch(branch, myTeam, results)
 	}
 
 	var bestValue float64 

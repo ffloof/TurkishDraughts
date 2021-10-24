@@ -18,7 +18,6 @@ type Tile struct {
 	King bool
 }
 
-//TODO: try to convert tile[] into 3bit[] for performance
 type BoardState [64]Tile
 
 func (bs *BoardState) GetBoardTile(x int, y int) (Tile, bool) {
@@ -31,8 +30,6 @@ func (bs *BoardState) GetBoardTile(x int, y int) (Tile, bool) {
 func (bs *BoardState) SetBoardTile(x int, y int, t Tile) {
 	if -1 < x && x < 8 && -1 < y && y < 8 {
 		bs[(y*8)+ x] = t
-	} else {
-		fmt.Println("tripping season") //TODO: either error handling or call a panic
 	}
 }
 
@@ -86,7 +83,6 @@ func BoardFromStr(str string) BoardState {
 	rows := strings.Fields(str)
 	var board BoardState
 
-	//TODO: error out of bound checks
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
 			if string(rows[y][x]) == "-" { 

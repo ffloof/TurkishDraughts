@@ -29,7 +29,7 @@ func (bs *BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
 func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
 	boards := []BoardState{}
 	bestTake := currentTakes
-	attackingTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
+	attackingTile, _ := bs.GetBoardTile(x,y)
 
 	for _, direction := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
 		if -lastDir[0] == direction[0] && -lastDir[1] == direction[1] { continue } //Check to not go backwards in a direction
@@ -77,7 +77,7 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState) {
 	boards := []BoardState{}
 	bestTake := currentTakes
-	attackingTile, _ := bs.GetBoardTile(x,y) //TODO: add error checks for not on board and empty tiles
+	attackingTile, _ := bs.GetBoardTile(x,y)
 
 	
 	for _, move := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
