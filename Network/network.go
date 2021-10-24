@@ -32,33 +32,28 @@ func analyze(b board.BoardState, myTeam board.Team) string {
 		options = b.AllMoveBoards(myTeam)
 	}
 
-	results := make(chan struct{float64; board.BoardState})
-	for _, branch := range options{
-		go analyzeBranch(branch, myTeam, results)
-	}
-
 	var bestValue float64 
 	var bestBoard board.BoardState
 
-	for i := range options {
-		result := <- results
-		//fmt.Println(result.float64)
-		//result.BoardState.Print()
-		if i == 0 || (myTeam == board.White && result.float64 > bestValue) || (myTeam == board.Black && result.float64 < bestValue) {
-			bestValue = result.float64
-			bestBoard = result.BoardState
+	for i, branch := range options{
+		checkValue, checkBoard := analyzeBranch(branch, myTeam)
+		if i == 0 || (myTeam == board.White && checkValue > bestValue) || (myTeam == board.Black && checkValue < bestValue) {
+			bestValue = checkValue
+			bestBoard = checkBoard
 		}
 	}
+
 
 	fmt.Println(bestValue)
 	return board.BoardToStr(&bestBoard)
 }
 
 
-func analyzeBranch (branch board.BoardState, myTeam board.Team, results chan struct{float64; board.BoardState}){
+func analyzeBranch (branch board.BoardState, myTeam board.Team) (float64, board.BoardState){
 	if myTeam == board.White {
-		results <- struct{float64; board.BoardState}{branch.BoardValue(9, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch}
+		return branch.BoardValue(9, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch
 	} else if myTeam == board.Black {
-		results <- struct{float64; board.BoardState}{branch.BoardValue(9, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch}
+		return branch.BoardValue(9, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch
 	}
+	panic("Something went horribly wrong")
 }
