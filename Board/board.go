@@ -45,9 +45,9 @@ func (bs *BoardState) GetBoardTile(xed int, yed int) (Tile, bool) {
 		x := uint64(xed)
 		y := uint64(yed)
 
-		team := (bs.Team >> (y*8+x)) % 2
-		king := (bs.King >> (y*8+x)) % 2
-		full := (bs.Full >> (y*8+x)) % 2
+		team := (bs.Team >> (y*8+x)) & 1
+		king := (bs.King >> (y*8+x)) & 1
+		full := (bs.Full >> (y*8+x)) & 1
 
 		return Tile{TileTeam(team),TileKing(king),TileFull(full)}, true
 	}
@@ -59,9 +59,9 @@ func (bs *BoardState) SetBoardTile(xed int, yed int, t Tile) {
 		x := uint64(xed)
 		y := uint64(yed)
 
-		team := TileTeam((bs.Team >> (y*8+x)) % 2)
-		king := TileKing((bs.King >> (y*8+x)) % 2)
-		full := TileFull((bs.Full >> (y*8+x)) % 2)
+		team := TileTeam((bs.Team >> (y*8+x)) & 1)
+		king := TileKing((bs.King >> (y*8+x)) & 1)
+		full := TileFull((bs.Full >> (y*8+x)) & 1)
 		
 		if team != t.Team {
 			bs.Team ^= 1 << (y*8+x)

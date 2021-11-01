@@ -3,6 +3,8 @@ package network
 import (
 	"net/http"
 	"fmt"
+	//"sync"
+	"time"
 	"TurkishDraughts/Board"
 )
 
@@ -27,6 +29,7 @@ func analyzeWhite(w http.ResponseWriter, r *http.Request){
 }
 
 func analyze(b board.BoardState, myTeam board.TileTeam) string {
+	fmt.Println(time.Now().String())
 	board.Searches = 0
 
 	options := b.MaxTakeBoards(myTeam)
@@ -46,6 +49,7 @@ func analyze(b board.BoardState, myTeam board.TileTeam) string {
 	}
 
 	fmt.Println("Searches:", board.Searches)
+	fmt.Println(time.Now().String())
 
 	fmt.Println(bestValue)
 	return board.BoardToStr(&bestBoard)
@@ -54,8 +58,8 @@ func analyze(b board.BoardState, myTeam board.TileTeam) string {
 
 func analyzeBranch (branch board.BoardState, myTeam board.TileTeam) (float64, board.BoardState){
 	if myTeam == board.White {
-		return branch.BoardValue(10, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch
+		return branch.BoardValue(11, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch
 	} else {
-		return branch.BoardValue(10, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch
+		return branch.BoardValue(11, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch
 	}
 }
