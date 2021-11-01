@@ -54,8 +54,8 @@ func analyze(b board.BoardState, myTeam board.TileTeam) string {
 
 func analyzeBranch (branch board.BoardState, myTeam board.TileTeam) (float64, board.BoardState){
 	if myTeam == board.White {
-		return branch.BoardValue(12, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch
+		return branch.BoardValue(10, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch
 	} else {
-		return branch.BoardValue(12, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch
+		return branch.BoardValue(10, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch
 	}
 }

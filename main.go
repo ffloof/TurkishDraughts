@@ -1,14 +1,12 @@
 package main
 
 import (
-	//"TurkishDraughts/Network"
-	"TurkishDraughts/Board"
+	"TurkishDraughts/Network"
+	//"TurkishDraughts/Board"
 )
 
 func main() {
-	b := board.CreateStartingBoard()
-	b.Print()
-	//network.Init()
+	//b := board.CreateStartingBoard()
+	//b.Print()
+	network.Init()
 }
-
-//-------- bbbbbbbb bbbbbbbb -------- -------- wwwwwwww wwwwwwww --------
