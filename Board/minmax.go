@@ -11,8 +11,13 @@ const (
 	PawnWeight = 1.0
 )
 
+var (
+	Searches = 0
+)
 
-func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTeam Team) float64 {
+
+func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTeam Team, table *sync.Map) float64 {
+	Searches += 1
 	//add a check for winner here
 	winState := bs.PlayerHasWon()
 	if winState == White { 
@@ -40,7 +45,7 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTea
 	if turnTeam == White {
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
-			value := branch.BoardValue(depth-1, alpha, beta, Black)
+			value := branch.BoardValue(depth-1, alpha, beta, Black, table)
 			bestValue = math.Max(bestValue, value)
 			
 			alpha = math.Max(alpha, value)
@@ -49,7 +54,7 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTea
 	} else if turnTeam == Black {
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
-			value := branch.BoardValue(depth-1, alpha, beta, White)
+			value := branch.BoardValue(depth-1, alpha, beta, White, table)
 			bestValue = math.Min(bestValue, value)
 
 			beta = math.Min(beta, value)
