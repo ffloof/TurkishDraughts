@@ -35,6 +35,7 @@ type Tile struct {
 	Full TileFull
 }
 type BoardState struct { 
+	Turn TileTeam
 	Team uint64 
 	King uint64 
 	Full uint64 
@@ -72,6 +73,14 @@ func (bs *BoardState) SetBoardTile(xed int, yed int, t Tile) {
 		if full != t.Full {
 			bs.Full ^= 1 << (y*8+x)
 		}
+	}
+}
+
+func (bs *BoardState) SwapTeam(){
+	if bs.Turn == White {
+		bs.Turn = Black
+	} else {
+		bs.Turn = White
 	}
 }
 

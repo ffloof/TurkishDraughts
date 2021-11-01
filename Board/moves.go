@@ -48,12 +48,12 @@ func (bs *BoardState) AllMovesPawn(x int, y int) []BoardState {
 	return boards
 }
 
-func (bs *BoardState) AllMoveBoards(turn TileTeam) []BoardState {
+func (bs *BoardState) AllMoveBoards() []BoardState {
 	possibleMoveBoards := []BoardState {}
 	for i:=0;i<64;i++ {
 		piece, _ := bs.GetBoardTile(i%8,i/8)
 		if piece.Full == Empty { continue }
-		if piece.Team != turn { continue }
+		if piece.Team != bs.Turn { continue }
 		if piece.King == King {
 			possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesKing(i%8,i/8)...)
 		} else {

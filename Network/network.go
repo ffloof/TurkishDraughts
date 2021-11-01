@@ -3,7 +3,7 @@ package network
 import (
 	"net/http"
 	"fmt"
-	//"sync"
+	"sync"
 	"time"
 	"TurkishDraughts/Board"
 )
@@ -21,28 +21,34 @@ func isAlive(w http.ResponseWriter, r *http.Request){
 }
 
 func analyzeBlack(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintf(w, analyze(board.BoardFromStr(r.URL.Path[7:]), board.Black))
+	b := board.BoardFromStr(r.URL.Path[7:])
+	b.Turn = board.Black
+	fmt.Fprintf(w, analyze(b))
 }
 
 func analyzeWhite(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintf(w, analyze(board.BoardFromStr(r.URL.Path[7:]), board.White))
+	b := board.BoardFromStr(r.URL.Path[7:])
+	b.Turn = board.White
+	fmt.Fprintf(w, analyze(b))
 }
 
-func analyze(b board.BoardState, myTeam board.TileTeam) string {
+func analyze(b board.BoardState) string {
 	fmt.Println(time.Now().String())
 	board.Searches = 0
 
-	options := b.MaxTakeBoards(myTeam)
+	options := b.MaxTakeBoards()
 	if len(options) == 0 {
-		options = b.AllMoveBoards(myTeam)
+		options = b.AllMoveBoards()
 	}
+
+	var table sync.Map
 
 	var bestValue float64 
 	var bestBoard board.BoardState
 
 	for i, branch := range options{
-		checkValue, checkBoard := analyzeBranch(branch, myTeam)
-		if i == 0 || (myTeam == board.White && checkValue > bestValue) || (myTeam == board.Black && checkValue < bestValue) {
+		checkValue, checkBoard := analyzeBranch(branch, &table)
+		if i == 0 || (b.Turn == board.White && checkValue > bestValue) || (b.Turn == board.Black && checkValue < bestValue) {
 			bestValue = checkValue
 			bestBoard = checkBoard
 		}
@@ -56,10 +62,7 @@ func analyze(b board.BoardState, myTeam board.TileTeam) string {
 }
 
 
-func analyzeBranch (branch board.BoardState, myTeam board.TileTeam) (float64, board.BoardState){
-	if myTeam == board.White {
-		return branch.BoardValue(11, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch
-	} else {
-		return branch.BoardValue(11, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch
-	}
+func analyzeBranch (branch board.BoardState, table *sync.Map) (float64, board.BoardState){
+	branch.SwapTeam()
+	return branch.BoardValue(11, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch
 }

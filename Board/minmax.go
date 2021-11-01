@@ -2,6 +2,7 @@ package board
 
 import (
 	"math"
+	"sync"
 )
 
 const (
@@ -16,7 +17,14 @@ var (
 )
 
 
-func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turn TileTeam) float64 {
+func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *sync.Map) float64 {
+	/*
+	prevValue, exists := table.Load(*bs)
+	if exists {
+		return prevValue.(float64)
+	}
+	*/
+
 	Searches += 1
 	//add a check for winner here
 	playerWon, winWhite := bs.PlayerHasWon()
@@ -32,22 +40,23 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turn Ti
 		return bs.RawBoardValue()
 	}
 
-	options := bs.MaxTakeBoards(turn)
+	options := bs.MaxTakeBoards()
 	if len(options) == 0 {
-		options = bs.AllMoveBoards(turn)
+		options = bs.AllMoveBoards()
 
 		if len(options) == 0 { //No legal move check
-			if turn == White { return -WinWeight 
+			if bs.Turn == White { return -WinWeight 
 			} else { return WinWeight }
 		}
 	}
 	
 	var bestValue float64
 
-	if turn == White {
+	if bs.Turn == White {
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
-			value := branch.BoardValue(depth-1, alpha, beta, Black)
+			branch.SwapTeam()
+			value := branch.BoardValue(depth-1, alpha, beta, table)
 			bestValue = math.Max(bestValue, value)
 			
 			alpha = math.Max(alpha, value)
@@ -56,7 +65,8 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turn Ti
 	} else {
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
-			value := branch.BoardValue(depth-1, alpha, beta, White)
+			branch.SwapTeam()
+			value := branch.BoardValue(depth-1, alpha, beta, table)
 			bestValue = math.Min(bestValue, value)
 
 			beta = math.Min(beta, value)
@@ -64,6 +74,12 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turn Ti
 
 		}
 	}
+
+	/*
+	for _, branch := range options {
+		table.Store(branch, bestValue)
+	}
+	*/
 
 	return bestValue
 }

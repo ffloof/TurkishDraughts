@@ -1,12 +1,12 @@
 package board
 
-func (bs *BoardState) MaxTakeBoards(turn TileTeam) []BoardState {
+func (bs *BoardState) MaxTakeBoards() []BoardState {
 	possibleMaxTakeBoards := []BoardState{}
 	bestTake := 1 //Filters boards with no jumps
 
 	for i:=0;i<64;i++ {
 		piece, _ := bs.GetBoardTile(i%8,i/8)
-		if piece.Full == Empty || piece.Team != turn { continue }
+		if piece.Full == Empty || piece.Team != bs.Turn { continue }
 		var takes int
 		var possibleTakeBoards []BoardState
 		//if piece.King == King {
