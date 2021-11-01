@@ -7,6 +7,13 @@ import (
 	"TurkishDraughts/Board"
 )
 
+const Depth = 11
+
+type move struct {
+	value float64 
+	board board.BoardState
+}
+
 func Init(){
 	http.HandleFunc("/", isAlive)
 	http.HandleFunc("/black/", analyzeBlack)
@@ -42,24 +49,33 @@ func analyze(b board.BoardState) string {
 
 	var bestValue float64 
 	var bestBoard board.BoardState
+	output := make(chan move)
 
-	for i, branch := range options{
-		checkValue, checkBoard := analyzeBranch(branch, board.NewTable())
+	for _, branch := range options{
+		go analyzeBranch(branch, board.NewTable(), output)
+	}
+
+	for i := range options {
+		check := <- output
+		checkValue := check.value
+		checkBoard := check.board
 		if i == 0 || (b.Turn == board.White && checkValue > bestValue) || (b.Turn == board.Black && checkValue < bestValue) {
 			bestValue = checkValue
 			bestBoard = checkBoard
 		}
+
+		fmt.Println(i+1, "/", len(options))
 	}
 
-	fmt.Println("Searches:", board.Searches)
 	fmt.Println(time.Now().String())
+	fmt.Println("Searches:", board.Searches)
+	fmt.Println("Standing:", bestValue)
 
-	fmt.Println(bestValue)
 	return board.BoardToStr(&bestBoard)
 }
 
 
-func analyzeBranch (branch board.BoardState, table *board.TransposTable) (float64, board.BoardState){
+func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move) {
 	branch.SwapTeam()
-	return branch.BoardValue(11, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch
+	output <- move {branch.BoardValue(Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
 }

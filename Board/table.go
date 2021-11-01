@@ -1,7 +1,7 @@
 package board
 
 import (
-	"sync"
+	//"sync"
 )
 
 type Entry struct {
@@ -11,7 +11,7 @@ type Entry struct {
 }
 
 type TransposTable struct {
-	sync.RWMutex
+	//sync.RWMutex
 	internal []Entry 
 }
 
@@ -25,22 +25,22 @@ func NewTable() *TransposTable {
 }
 
 func (table *TransposTable) read(key uint64) Entry {
-	table.RLock()
+	//table.RLock()
 	entry := table.internal[key]
-	table.RUnlock()
+	//table.RUnlock()
 	return entry
 }
 
 func (table *TransposTable) delete(key uint64) {
-	table.Lock()
+	//table.Lock()
 	table.internal[key] = Entry{}
-	table.Unlock()
+	//table.Unlock()
 }
 
 func (table *TransposTable) write(key uint64, entry Entry) {
-	table.Lock()
+	//table.Lock()
 	table.internal[key] = entry
-	table.Unlock()
+	//table.Unlock()
 }
 
 func (b *BoardState) hashBoard() uint64 { //Does a hash based on columns and rows of filled positions % 2
