@@ -1,28 +1,26 @@
 package board
 
-func (bs *BoardState) MaxTakeBoards(turnTeam Team) []BoardState {
+func (bs *BoardState) MaxTakeBoards(turn TileTeam) []BoardState {
 	possibleMaxTakeBoards := []BoardState{}
 	bestTake := 1 //Filters boards with no jumps
 
-	for y:=0;y<8;y++ {
-		for x:=0;x<8;x++ {
-			if turnTeam != bs[(y*8)+x].Team { continue }
-			var takes int
-			var possibleTakeBoards []BoardState
-			if bs[(y*8)+ x].King {
-				takes, possibleTakeBoards = bs.FindKingTakes(x,y,0,[2]int{0,0})
-			} else {
-				takes, possibleTakeBoards = bs.FindPawnTakes(x,y,0)
-			}
-			if takes > bestTake {
-					bestTake = takes
-					possibleMaxTakeBoards = possibleTakeBoards
-			} else if takes == bestTake {
-				possibleMaxTakeBoards = append(possibleMaxTakeBoards, possibleTakeBoards...)
-			}
+	for i:=0;i<64;i++ {
+		piece, _ := bs.GetBoardTile(i%8,i/8)
+		if piece.Full == Empty || piece.Team != turn { continue }
+		var takes int
+		var possibleTakeBoards []BoardState
+		//if piece.King == King {
+		//	takes, possibleTakeBoards = bs.FindKingTakes(i%8,i/8,0,[2]int{0,0})
+		//} else {
+			takes, possibleTakeBoards = bs.FindPawnTakes(i%8,i/8,0)
+		//}
+		if takes > bestTake {
+				bestTake = takes
+				possibleMaxTakeBoards = possibleTakeBoards
+		} else if takes == bestTake {
+			possibleMaxTakeBoards = append(possibleMaxTakeBoards, possibleTakeBoards...)
 		}
 	}
-
 	return possibleMaxTakeBoards
 }
 
@@ -38,7 +36,7 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 			jumpPos := [2]int{direction[0]*i,direction[1]*i}
 			jumpOverTile, onBoard := bs.GetBoardTile(jumpPos[0],jumpPos[1])
 			if !onBoard { break }
-			if jumpOverTile.Team == Empty { continue }
+			if jumpOverTile.Full == Empty { continue }
 			if attackingTile.Team == jumpOverTile.Team { break }
 			if attackingTile.Team != jumpOverTile.Team {
 				//We have a jump
@@ -48,11 +46,11 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 					if !onBoard { 
 						break
 					} else {
-						if landingTile.Team != Empty { break }
+						if landingTile.Full == Filled { break }
 						newBS := *bs
 						newBS.SetBoardTile(landingPos[0], landingPos[1], attackingTile)
-						newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{Empty, false})
-						newBS.SetBoardTile(x,y, Tile{Empty, false})
+						newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{})
+						newBS.SetBoardTile(x,y, Tile{})
 
 						takes, possibleBoards := newBS.FindKingTakes(landingPos[0], landingPos[1],currentTakes+1, direction)
 						
@@ -89,11 +87,11 @@ func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Boar
 		jumpOverTile, onBoard1 := bs.GetBoardTile(jumpPos[0], jumpPos[1])
 		landingTile, onBoard2 := bs.GetBoardTile(landingPos[0], landingPos[1])
 		if onBoard1 && onBoard2 {
-			if landingTile.Team == Empty && jumpOverTile.Team != Empty && attackingTile.Team != jumpOverTile.Team {
+			if landingTile.Full == Empty && jumpOverTile.Full == Filled && attackingTile.Team != jumpOverTile.Team {
 				newBS := *bs
 				newBS.SetBoardTile(landingPos[0], landingPos[1], attackingTile)
-				newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{Empty, false})
-				newBS.SetBoardTile(x,y, Tile{Empty, false})
+				newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{})
+				newBS.SetBoardTile(x,y, Tile{})
 				
 				takes, possibleBoards := newBS.FindPawnTakes(landingPos[0], landingPos[1],currentTakes+1)
 				if takes > bestTake {

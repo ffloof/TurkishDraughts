@@ -5,31 +5,73 @@ import (
 	"strings"
 )
 
-type Team uint8 
+//3 bit combinations for representing tiles
+//0 = black, 1 = white
+//0 = pawn, 1 = king
+//0 = empty, 1 = piece
+
+type TileTeam uint8
+type TileKing uint8
+type TileFull uint8
 
 const (
-	Empty Team = iota
+	Empty TileFull = iota
+	Filled
+)
+
+const (
+	Pawn TileKing = iota
+	King
+)
+
+const (
+	Black TileTeam = iota
 	White
-	Black
 )
 
 type Tile struct {
-	Team Team //0 empty space, 1 team white, 2 team black
-	King bool
+	Team TileTeam
+	King TileKing
+	Full TileFull
+}
+type BoardState struct { 
+	Team uint64 
+	King uint64 
+	Full uint64 
 }
 
-type BoardState [64]Tile
+func (bs *BoardState) GetBoardTile(xed int, yed int) (Tile, bool) {
+	if -1 < xed && xed < 8 && -1 < yed && yed < 8 {
+		x := uint64(xed)
+		y := uint64(yed)
 
-func (bs *BoardState) GetBoardTile(x int, y int) (Tile, bool) {
-	if -1 < x && x < 8 && -1 < y && y < 8 {
-		return bs[(y*8)+ x], true
+		team := TileTeam((bs.Team >> (y*8)+x) % 2)
+		king := TileKing((bs.King >> (y*8)+x) % 2)
+		full := TileFull((bs.Full >> (y*8)+x) % 2)
+
+		return Tile{team,king,full}, true
 	}
 	return Tile{}, false 
 }
 
-func (bs *BoardState) SetBoardTile(x int, y int, t Tile) {
-	if -1 < x && x < 8 && -1 < y && y < 8 {
-		bs[(y*8)+ x] = t
+func (bs *BoardState) SetBoardTile(xed int, yed int, t Tile) {
+	if -1 < xed && xed < 8 && -1 < yed && yed < 8 {
+		x := uint64(xed)
+		y := uint64(yed)
+
+		team := TileTeam((bs.Team >> (y*8)+x) % 2)
+		king := TileKing((bs.King >> (y*8)+x) % 2)
+		full := TileFull((bs.Full >> (y*8)+x) % 2)
+		
+		if team != t.Team {
+			bs.Team ^= (1 << (y*8)+x)
+		}
+		if king != t.King {
+			bs.King ^= (1 << (y*8)+x)
+		}
+		if full != t.Full {
+			bs.Full ^= (1 << (y*8)+x)
+		}
 	}
 }
 
@@ -38,18 +80,17 @@ func BoardToStr(bs *BoardState) string {
 	for y:=0;y<8;y++ {
 		lineStr := ""
 		for x:=0;x<8;x++ {
-			team := bs[(y*8)+ x].Team
-			king := bs[(y*8)+ x].King
-			if team == Empty {
+			tile, _ := bs.GetBoardTile(x,y)
+			if tile.Full == Empty {
 				lineStr += "-"
-			} else if team == White {
-				if king {
+			} else if tile.Team == White {
+				if tile.King == King {
 					lineStr += "W"
 				} else {
 					lineStr += "w"
 				}
-			} else if team == Black {
-				if king {
+			} else {
+				if tile.King == King {
 					lineStr += "B"
 				} else {
 					lineStr += "b"
@@ -69,14 +110,7 @@ func (bs *BoardState) Print(){
 }
 
 func CreateStartingBoard() BoardState {
-	var bs BoardState
-	for y:=0;y<8;y++ {
-		for x:=0;x<8;x++ {
-			if y == 1 || y == 2 { bs[(y*8)+ x].Team = Black }
-			if y == 5 || y == 6 { bs[(y*8)+ x].Team = White }
-		}		
-	}
-	return bs
+	return BoardFromStr("-------- bbbbbbbb bbbbbbbb -------- -------- wwwwwwww wwwwwwww --------")
 }
 
 func BoardFromStr(str string) BoardState {
@@ -88,13 +122,13 @@ func BoardFromStr(str string) BoardState {
 			if string(rows[y][x]) == "-" { 
 				board.SetBoardTile(x,y,Tile{}) //empty
 			} else if string(rows[y][x]) == "b" { 
-				board.SetBoardTile(x,y,Tile{Black, false}) //black pawn
+				board.SetBoardTile(x,y,Tile{Black, Pawn, Filled}) //black pawn {TEAM KING FULL}
 			} else if string(rows[y][x]) == "w" {
-				board.SetBoardTile(x,y,Tile{White, false}) //white pawn 
+				board.SetBoardTile(x,y,Tile{White, Pawn, Filled}) //white pawn 
 			} else if string(rows[y][x]) == "B" {
-				board.SetBoardTile(x,y,Tile{Black, true}) //black king 
+				board.SetBoardTile(x,y,Tile{Black, King, Filled}) //black king 
 			} else if string(rows[y][x]) == "W" {
-				board.SetBoardTile(x,y,Tile{White, true}) //white king
+				board.SetBoardTile(x,y,Tile{White, King, Filled}) //white king
 			} 
 		}
 	}

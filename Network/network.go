@@ -3,7 +3,6 @@ package network
 import (
 	"net/http"
 	"fmt"
-	"sync"
 	"TurkishDraughts/Board"
 )
 
@@ -27,19 +26,19 @@ func analyzeWhite(w http.ResponseWriter, r *http.Request){
 	fmt.Fprintf(w, analyze(board.BoardFromStr(r.URL.Path[7:]), board.White))
 }
 
-func analyze(b board.BoardState, myTeam board.Team) string {
+func analyze(b board.BoardState, myTeam board.TileTeam) string {
+	board.Searches = 0
+
 	options := b.MaxTakeBoards(myTeam)
 	if len(options) == 0 {
 		options = b.AllMoveBoards(myTeam)
 	}
 
-	var table sync.Map
-
 	var bestValue float64 
 	var bestBoard board.BoardState
 
 	for i, branch := range options{
-		checkValue, checkBoard := analyzeBranch(&table, branch, myTeam)
+		checkValue, checkBoard := analyzeBranch(branch, myTeam)
 		if i == 0 || (myTeam == board.White && checkValue > bestValue) || (myTeam == board.Black && checkValue < bestValue) {
 			bestValue = checkValue
 			bestBoard = checkBoard
@@ -53,11 +52,10 @@ func analyze(b board.BoardState, myTeam board.Team) string {
 }
 
 
-func analyzeBranch (table *sync.Map, branch board.BoardState, myTeam board.Team) (float64, board.BoardState){
+func analyzeBranch (branch board.BoardState, myTeam board.TileTeam) (float64, board.BoardState){
 	if myTeam == board.White {
-		return branch.BoardValue(10, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black, table), branch
-	} else if myTeam == board.Black {
-		return branch.BoardValue(10, -board.AlphaBetaMax, board.AlphaBetaMax, board.White, table), branch
+		return branch.BoardValue(12, -board.AlphaBetaMax, board.AlphaBetaMax, board.Black), branch
+	} else {
+		return branch.BoardValue(12, -board.AlphaBetaMax, board.AlphaBetaMax, board.White), branch
 	}
-	panic("Something went horribly wrong")
 }

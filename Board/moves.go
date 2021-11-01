@@ -8,7 +8,7 @@ func (bs *BoardState) AllMovesKing(x int, y int) []BoardState {
 		for i:=1;i<8;i++ {
 			move := [2]int{direction[0]*i, direction[1]*i}
 			moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[1])
-			if moveTile.Team == Empty && onBoard {
+			if moveTile.Full == 1 && onBoard {
 				newBS := *bs
 				newBS.SetBoardTile(x + move[0], y + move[1], checkingTile)
 				newBS.SetBoardTile(x, y, Tile{})
@@ -31,15 +31,15 @@ func (bs *BoardState) AllMovesPawn(x int, y int) []BoardState {
 		if checkingTile.Team == Black && move[0] == 0 && move[1] == -1 { continue }
 		
 		moveTile, onBoard := bs.GetBoardTile(x + move[0],y + move[1])
-		if moveTile.Team == Empty && onBoard {
+		if moveTile.Full == Empty && onBoard {
 			newBS := *bs
 			king := checkingTile.King
 			if checkingTile.Team == White && y + move[1] == 0 { //Promote to king condition
-				king = true
+				king = King
 			} else if checkingTile.Team == Black && y + move[1] == 7 {
-				king = true
+				king = King
 			}
-			newBS.SetBoardTile(x + move[0], y + move[1], Tile{checkingTile.Team, king})
+			newBS.SetBoardTile(x + move[0], y + move[1], Tile{checkingTile.Team, king, Filled})
 			newBS.SetBoardTile(x, y, Tile{})
 			boards = append(boards, newBS)
 		}
@@ -48,17 +48,18 @@ func (bs *BoardState) AllMovesPawn(x int, y int) []BoardState {
 	return boards
 }
 
-func (bs *BoardState) AllMoveBoards(turnTeam Team) []BoardState {
+func (bs *BoardState) AllMoveBoards(turn TileTeam) []BoardState {
 	possibleMoveBoards := []BoardState {}
-	for y := 0; y<8; y++ {
-		for x := 0; x<8; x++ {
-			if turnTeam != bs[(y*8)+x].Team { continue }
-			if bs[(y*8)+x].King {
-				possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesKing(x, y)...)
-			} else {
-				possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesPawn(x, y)...)
-			}
+	for i:=0;i<64;i++ {
+		piece, _ := bs.GetBoardTile(i%8,i/8)
+		if piece.Full == Empty { continue }
+		if piece.Team != turn { continue }
+		if piece.King == King {
+			possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesKing(i%8,i/8)...)
+		} else {
+			possibleMoveBoards = append(possibleMoveBoards, bs.AllMovesPawn(i%8,i/8)...)
 		}
+		
 	}
 	return possibleMoveBoards
 }

@@ -16,13 +16,15 @@ var (
 )
 
 
-func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTeam Team, table *sync.Map) float64 {
+func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turn TileTeam) float64 {
 	Searches += 1
 	//add a check for winner here
-	winState := bs.PlayerHasWon()
-	if winState == White { 
-		return WinWeight
-	} else if winState == Black { 
+	playerWon, winWhite := bs.PlayerHasWon()
+	
+	if playerWon {
+		if winWhite == White {
+			return WinWeight
+		} 
 		return -WinWeight 
 	}
 
@@ -30,31 +32,31 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTea
 		return bs.RawBoardValue()
 	}
 
-	options := bs.MaxTakeBoards(turnTeam)
+	options := bs.MaxTakeBoards(turn)
 	if len(options) == 0 {
-		options = bs.AllMoveBoards(turnTeam)
+		options = bs.AllMoveBoards(turn)
 
 		if len(options) == 0 { //No legal move check
-			if turnTeam == White { return -WinWeight }
-			if turnTeam == Black { return WinWeight }
+			if turn == White { return -WinWeight 
+			} else { return WinWeight }
 		}
 	}
 	
 	var bestValue float64
 
-	if turnTeam == White {
+	if turn == White {
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
-			value := branch.BoardValue(depth-1, alpha, beta, Black, table)
+			value := branch.BoardValue(depth-1, alpha, beta, Black)
 			bestValue = math.Max(bestValue, value)
 			
 			alpha = math.Max(alpha, value)
 			if beta <= alpha { break }
 		}
-	} else if turnTeam == Black {
+	} else {
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
-			value := branch.BoardValue(depth-1, alpha, beta, White, table)
+			value := branch.BoardValue(depth-1, alpha, beta, White)
 			bestValue = math.Min(bestValue, value)
 
 			beta = math.Min(beta, value)
@@ -62,55 +64,54 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, turnTea
 
 		}
 	}
+
 	return bestValue
 }
 
 
-func (bs *BoardState) PlayerHasWon() Team { //0 = no winner 1 = white wins 2 = black wins
+func (bs *BoardState) PlayerHasWon() (bool, TileTeam) { 
 	//If either player is out of pieces they lose
-	wKings := 0
-	wPieces := 0
+	var wKings uint8 = 0
+	var wPieces uint8 = 0
 
-	bKings := 0
-	bPieces := 0
+	var bKings uint8 = 0
+	var bPieces uint8 = 0
 
-	for _, piece := range bs {
+	for i:=0;i<64;i++ {
+		piece, _ := bs.GetBoardTile(i%8,i/8)
+		if piece.Full == Empty { continue }
 		if piece.Team == White {
-			if piece.King {
-				wKings += 1
-			}
+			wKings += uint8(piece.King)
 			wPieces += 1
-		} else if piece.Team == Black {
-			if piece.King {
-				bKings += 1
-			}
+		} else {
+			bKings += uint8(piece.King)
 			bPieces += 1
-		}
+		}		
 	}
 
 	//If a player has no moves they lose lol
 	if wPieces == 0 {
-		return Black
+		return true, Black
 	} 
 
 	if bPieces == 0 {
-		return White
+		return true, White
 	}
 
 	//If one player has a king and the other has one piece they lose
 	if wPieces == 1 {
 		if bKings > 0 {
-			return Black
+			return true, Black
 		}
 	}
 
 	if bPieces == 1 {
 		if wKings > 0 {
-			return White
+			return true, White
 		}
 	}
 
-	return Empty //No winner
+	return false, 0 //No winner
 	//If a player has no playable moves they lose (checked in another part of the code)
 }
 
@@ -122,15 +123,18 @@ func (bs *BoardState) PlayersDrawed() bool {
 
 func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites perspective
 	value := 0.0
-	for _, piece := range bs {
+
+	for i:=0;i<64;i++ {
+		piece, _ := bs.GetBoardTile(i%8,i/8)
+		if piece.Full == Empty { continue }
 		if piece.Team == White {
-			if piece.King {
+			if piece.King == King {
 				value += KingWeight
 			} else {
 				value += PawnWeight
 			}
-		} else if piece.Team == Black {
-			if piece.King {
+		} else {
+			if piece.King == King {
 				value -= KingWeight
 			} else {
 				value -= PawnWeight
