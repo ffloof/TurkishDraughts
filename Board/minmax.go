@@ -2,7 +2,6 @@ package board
 
 import (
 	"math"
-	"sync"
 )
 
 const (
@@ -17,13 +16,12 @@ var (
 )
 
 
-func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *sync.Map) float64 {
-	/*
-	prevValue, exists := table.Load(*bs)
-	if exists {
-		return prevValue.(float64)
+func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *TransposTable) float64 {
+	
+	alreadyEval, prevValue := table.Load(bs)
+	if alreadyEval {
+		return prevValue
 	}
-	*/
 
 	Searches += 1
 	//add a check for winner here
@@ -75,11 +73,10 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *
 		}
 	}
 
-	/*
 	for _, branch := range options {
-		table.Store(branch, bestValue)
+		branch.SwapTeam()
+		table.Store(&branch, bestValue)
 	}
-	*/
 
 	return bestValue
 }

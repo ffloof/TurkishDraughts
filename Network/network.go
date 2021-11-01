@@ -3,7 +3,6 @@ package network
 import (
 	"net/http"
 	"fmt"
-	"sync"
 	"time"
 	"TurkishDraughts/Board"
 )
@@ -41,13 +40,11 @@ func analyze(b board.BoardState) string {
 		options = b.AllMoveBoards()
 	}
 
-	var table sync.Map
-
 	var bestValue float64 
 	var bestBoard board.BoardState
 
 	for i, branch := range options{
-		checkValue, checkBoard := analyzeBranch(branch, &table)
+		checkValue, checkBoard := analyzeBranch(branch, board.NewTable())
 		if i == 0 || (b.Turn == board.White && checkValue > bestValue) || (b.Turn == board.Black && checkValue < bestValue) {
 			bestValue = checkValue
 			bestBoard = checkBoard
@@ -62,7 +59,7 @@ func analyze(b board.BoardState) string {
 }
 
 
-func analyzeBranch (branch board.BoardState, table *sync.Map) (float64, board.BoardState){
+func analyzeBranch (branch board.BoardState, table *board.TransposTable) (float64, board.BoardState){
 	branch.SwapTeam()
 	return branch.BoardValue(11, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch
 }
