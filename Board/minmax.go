@@ -9,6 +9,8 @@ const (
 	WinWeight = 100.0
 	KingWeight = 5.0
 	PawnWeight = 1.0
+	//Heuristic weight of how far advanced a sides pawn pieces are 0.1 per piece per tile away from side
+	AdvanceWeight = 0.1 
 )
 
 var (
@@ -16,12 +18,12 @@ var (
 )
 
 
-func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *TransposTable) float64 {
+func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64 /*, table *TransposTable */) float64 {
 	
-	alreadyEval, prevValue := table.Load(bs)
+	/* alreadyEval, prevValue := table.Load(bs)
 	if alreadyEval {
 		return prevValue
-	}
+	} */
 
 	Searches += 1
 	//add a check for winner here
@@ -54,7 +56,7 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.BoardValue(depth-1, alpha, beta, table)
+			value := branch.BoardValue(depth-1, alpha, beta /*, table*/)
 			bestValue = math.Max(bestValue, value)
 			
 			alpha = math.Max(alpha, value)
@@ -64,7 +66,7 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.BoardValue(depth-1, alpha, beta, table)
+			value := branch.BoardValue(depth-1, alpha, beta /*, table*/)
 			bestValue = math.Min(bestValue, value)
 
 			beta = math.Min(beta, value)
@@ -73,10 +75,10 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *
 		}
 	}
 
-	for _, branch := range options {
+	/* for _, branch := range options {
 		branch.SwapTeam()
 		table.Store(&branch, bestValue)
-	}
+	} */
 
 	return bestValue
 }
@@ -137,20 +139,24 @@ func (bs *BoardState) PlayersDrawed() bool {
 func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites perspective
 	value := 0.0
 
-	for i:=0;i<64;i++ {
-		piece, _ := bs.GetBoardTile(i%8,i/8)
-		if piece.Full == Empty { continue }
-		if piece.Team == White {
-			if piece.King == King {
-				value += KingWeight
+	for y:=0;y<8;y++ {
+		for x:=0;x<8;x++ {
+			piece, _ := bs.GetBoardTile(x,y)
+			if piece.Full == Empty { continue }
+			if piece.Team == White {
+				if piece.King == King {
+					value += KingWeight
+				} else {
+					value += PawnWeight
+					value += float64(8-y) * PawnWeight
+				}
 			} else {
-				value += PawnWeight
-			}
-		} else {
-			if piece.King == King {
-				value -= KingWeight
-			} else {
-				value -= PawnWeight
+				if piece.King == King {
+					value -= KingWeight
+				} else {
+					value -= PawnWeight
+					value -= float64(y) * PawnWeight
+				}
 			}
 		}
 	}

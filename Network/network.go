@@ -52,7 +52,7 @@ func analyze(b board.BoardState) string {
 	output := make(chan move)
 
 	for _, branch := range options{
-		go analyzeBranch(branch, board.NewTable(), output)
+		go analyzeBranch(branch, /* board.NewTable(),*/ output)
 	}
 
 	for i := range options {
@@ -75,7 +75,7 @@ func analyze(b board.BoardState) string {
 }
 
 
-func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move) {
+func analyzeBranch (branch board.BoardState, /* table *board.TransposTable, */ output chan move) {
 	branch.SwapTeam()
-	output <- move {branch.BoardValue(Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
+	output <- move {branch.BoardValue(Depth, -board.AlphaBetaMax, board.AlphaBetaMax /*, table*/), branch}
 }
