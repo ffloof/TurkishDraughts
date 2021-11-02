@@ -19,7 +19,7 @@ var (
 )
 
 
-func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *TransposTable) float64 {
+func (bs *BoardState) BoardValue(depth uint32, alpha float64, beta float64, table *TransposTable) float64 {
 	if alreadyChecked, prevValue := table.Request(bs); alreadyChecked {
 		return prevValue
 	}
@@ -76,7 +76,7 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *
 
 	for _, branch := range options {
 		branch.SwapTeam()
-		table.Set(&branch, bestValue)
+		table.Set(&branch, bestValue, depth)
 	}
 
 	return bestValue
