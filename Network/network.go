@@ -7,7 +7,7 @@ import (
 	"TurkishDraughts/Board"
 )
 
-const Depth = 11
+const Depth = 13
 
 type move struct {
 	value float64 
@@ -49,10 +49,12 @@ func analyze(b board.BoardState) string {
 
 	var bestValue float64 
 	var bestBoard board.BoardState
+	//TODO: find a better solution that RWMutex, it really slows it down, might just make a table for each thread
+	transpositionTable := board.NewTable()
 	output := make(chan move)
 
 	for _, branch := range options{
-		go analyzeBranch(branch, /* board.NewTable(),*/ output)
+		go analyzeBranch(branch, transpositionTable, output)
 	}
 
 	for i := range options {
@@ -75,7 +77,7 @@ func analyze(b board.BoardState) string {
 }
 
 
-func analyzeBranch (branch board.BoardState, /* table *board.TransposTable, */ output chan move) {
+func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move) {
 	branch.SwapTeam()
-	output <- move {branch.BoardValue(Depth, -board.AlphaBetaMax, board.AlphaBetaMax /*, table*/), branch}
+	output <- move {branch.BoardValue(Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
 }

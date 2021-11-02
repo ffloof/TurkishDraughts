@@ -5,12 +5,13 @@ import (
 )
 
 const (
-	AlphaBetaMax = 1000.0
-	WinWeight = 100.0
-	KingWeight = 5.0
-	PawnWeight = 1.0
+	AlphaBetaMax = 9999.0
+	WinWeight = 1000.0
+	KingWeight = 50.0
+	PawnWeight = 10.0
 	//Heuristic weight of how far advanced a sides pawn pieces are 0.1 per piece per tile away from side
-	AdvanceWeight = 0.1 
+	//For some reason when its not 0.0 it makes ab pruning less efficient, but incentivises agressive play
+	AdvanceWeight = 2.0
 )
 
 var (
@@ -18,12 +19,10 @@ var (
 )
 
 
-func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64 /*, table *TransposTable */) float64 {
-	
-	/* alreadyEval, prevValue := table.Load(bs)
-	if alreadyEval {
+func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64, table *TransposTable) float64 {
+	if alreadyChecked, prevValue := table.Request(bs); alreadyChecked {
 		return prevValue
-	} */
+	}
 
 	Searches += 1
 	//add a check for winner here
@@ -56,7 +55,7 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64 /*, tabl
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.BoardValue(depth-1, alpha, beta /*, table*/)
+			value := branch.BoardValue(depth-1, alpha, beta, table)
 			bestValue = math.Max(bestValue, value)
 			
 			alpha = math.Max(alpha, value)
@@ -66,7 +65,7 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64 /*, tabl
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.BoardValue(depth-1, alpha, beta /*, table*/)
+			value := branch.BoardValue(depth-1, alpha, beta, table)
 			bestValue = math.Min(bestValue, value)
 
 			beta = math.Min(beta, value)
@@ -75,14 +74,13 @@ func (bs *BoardState) BoardValue(depth int, alpha float64, beta float64 /*, tabl
 		}
 	}
 
-	/* for _, branch := range options {
+	for _, branch := range options {
 		branch.SwapTeam()
-		table.Store(&branch, bestValue)
-	} */
+		table.Set(&branch, bestValue)
+	}
 
 	return bestValue
 }
-
 
 func (bs *BoardState) PlayerHasWon() (bool, TileTeam) { 
 	//If either player is out of pieces they lose
