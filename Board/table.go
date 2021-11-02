@@ -1,7 +1,6 @@
 package board
 
 import (
-	"sync"
 )
 
 type storedState struct {
@@ -10,7 +9,6 @@ type storedState struct {
 }
 
 type TransposTable struct {
-	lock sync.RWMutex
 	internal map[uint64]storedState
 }
 
@@ -23,9 +21,7 @@ func NewTable() *TransposTable {
 func (table *TransposTable) Request(board *BoardState) (bool, float64) {
 	//Hash board state and load entry
 	hash := board.hashBoard()
-	table.lock.RLock()
 	entry, exists := table.internal[hash]
-	table.lock.RUnlock()
 
 	if exists {
 		if entry.board == *board {
@@ -39,11 +35,8 @@ func (table *TransposTable) Request(board *BoardState) (bool, float64) {
 func (table *TransposTable) Set(board *BoardState, value float64){
 	//Hash board state and write to table
 	hash := board.hashBoard()
-	table.lock.Lock()
 	table.internal[hash] = storedState{*board, value}
-	table.lock.Unlock()
 }
-
 
 func (board *BoardState) hashBoard2() uint64 {
 	return 0

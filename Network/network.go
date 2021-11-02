@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"fmt"
 	"time"
+	//"runtime"
+	"runtime/debug"
 	"TurkishDraughts/Board"
 )
 
@@ -50,11 +52,10 @@ func analyze(b board.BoardState) string {
 	var bestValue float64 
 	var bestBoard board.BoardState
 	//TODO: find a better solution that RWMutex, it really slows it down, might just make a table for each thread
-	transpositionTable := board.NewTable()
 	output := make(chan move)
 
 	for _, branch := range options{
-		go analyzeBranch(branch, transpositionTable, output)
+		go analyzeBranch(branch, board.NewTable(), output)
 	}
 
 	for i := range options {
@@ -69,6 +70,7 @@ func analyze(b board.BoardState) string {
 		fmt.Println(i+1, "/", len(options))
 	}
 
+	debug.FreeOSMemory()
 	fmt.Println(time.Now().String())
 	fmt.Println("Searches:", board.Searches)
 	fmt.Println("Standing:", bestValue)
@@ -80,4 +82,5 @@ func analyze(b board.BoardState) string {
 func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move) {
 	branch.SwapTeam()
 	output <- move {branch.BoardValue(Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
+	debug.FreeOSMemory()
 }
