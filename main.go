@@ -2,11 +2,12 @@ package main
 
 import (
 	"TurkishDraughts/Network"
-	//"TurkishDraughts/Board"
+	"TurkishDraughts/Board"
+	"fmt"
 )
 
 func main() {
-	//b := board.CreateStartingBoard()
-	//b.Print()
+	b := board.CreateStartingBoard()
+	fmt.Println(b.RawBoardValue())
 	network.Init()
 }

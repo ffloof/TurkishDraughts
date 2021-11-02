@@ -148,14 +148,14 @@ func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites per
 					value += KingWeight
 				} else {
 					value += PawnWeight
-					value += float64(8-y) * PawnWeight
+					value += float64(7-y) * AdvanceWeight
 				}
 			} else {
 				if piece.King == King {
 					value -= KingWeight
 				} else {
 					value -= PawnWeight
-					value -= float64(y) * PawnWeight
+					value -= float64(y) * AdvanceWeight
 				}
 			}
 		}
