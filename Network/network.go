@@ -43,6 +43,7 @@ func analyzeWhite(w http.ResponseWriter, r *http.Request){
 func analyze(b board.BoardState) string {
 	fmt.Println(time.Now().String())
 	board.Searches = 0
+	board.Hits = 0
 
 	options := b.MaxTakeBoards()
 	if len(options) == 0 {
@@ -66,12 +67,13 @@ func analyze(b board.BoardState) string {
 			bestBoard = checkBoard
 		}
 
-		fmt.Println(i+1, "/", len(options))
+		fmt.Println(i+1, "/", len(options), "=", checkValue)
 	}
 
 	debug.FreeOSMemory()
 	fmt.Println(time.Now().String())
-	fmt.Println("Searches:", board.Searches)
+	fmt.Println("Searches:", board.Searches/1000, "k")
+	fmt.Println("Hits:", board.Hits/1000, "k")
 	fmt.Println("Standing:", bestValue)
 
 	return board.BoardToStr(&bestBoard)

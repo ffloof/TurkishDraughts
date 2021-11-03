@@ -16,20 +16,22 @@ const (
 
 	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
-	MinimumHashDepth = 3
+	MinimumHashDepth = 2
 )
 
 var (
+	Hits = 0
 	Searches = 0
 )
 
 //Minimax function TODO: convert to negamax?
 func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *TransposTable) float64 {
+	Hits += 1
+
 	if alreadyChecked, prevValue := table.Request(bs); alreadyChecked {
 		return prevValue
 	}
 
-	Searches += 1
 	//add a check for winner here
 	playerWon, winWhite := bs.PlayerHasWon()
 	
@@ -43,6 +45,8 @@ func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *T
 	if depth == 0 {
 		return bs.RawBoardValue()
 	}
+	
+	Searches += 1
 
 	options := bs.MaxTakeBoards()
 	if len(options) == 0 {
