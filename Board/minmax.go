@@ -9,17 +9,22 @@ const (
 	WinWeight = 1000.0
 	KingWeight = 50.0
 	PawnWeight = 10.0
+	
 	//Heuristic weight of how far advanced a sides pawn pieces are 0.1 per piece per tile away from side
 	//For some reason when its not 0.0 it makes ab pruning less efficient, but incentivises agressive play
 	AdvanceWeight = 2.0
+
+	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
+	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
+	MinimumHashDepth = 3
 )
 
 var (
 	Searches = 0
 )
 
-
-func (bs *BoardState) BoardValue(depth uint32, alpha float64, beta float64, table *TransposTable) float64 {
+//Minimax function TODO: convert to negamax?
+func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *TransposTable) float64 {
 	if alreadyChecked, prevValue := table.Request(bs); alreadyChecked {
 		return prevValue
 	}
@@ -55,7 +60,7 @@ func (bs *BoardState) BoardValue(depth uint32, alpha float64, beta float64, tabl
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.BoardValue(depth-1, alpha, beta, table)
+			value := branch.MinMax(depth-1, alpha, beta, table)
 			bestValue = math.Max(bestValue, value)
 			
 			alpha = math.Max(alpha, value)
@@ -65,7 +70,7 @@ func (bs *BoardState) BoardValue(depth uint32, alpha float64, beta float64, tabl
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.BoardValue(depth-1, alpha, beta, table)
+			value := branch.MinMax(depth-1, alpha, beta, table)
 			bestValue = math.Min(bestValue, value)
 
 			beta = math.Min(beta, value)
@@ -74,63 +79,15 @@ func (bs *BoardState) BoardValue(depth uint32, alpha float64, beta float64, tabl
 		}
 	}
 
-	for _, branch := range options {
-		branch.SwapTeam()
-		table.Set(&branch, bestValue, depth)
+	if depth > MinimumHashDepth {
+		for _, branch := range options {
+			branch.SwapTeam()
+			table.Set(&branch, bestValue, depth)
+		}
 	}
+	
 
 	return bestValue
-}
-
-func (bs *BoardState) PlayerHasWon() (bool, TileTeam) { 
-	//If either player is out of pieces they lose
-	var wKings uint8 = 0
-	var wPieces uint8 = 0
-
-	var bKings uint8 = 0
-	var bPieces uint8 = 0
-
-	for i:=0;i<64;i++ {
-		piece, _ := bs.GetBoardTile(i%8,i/8)
-		if piece.Full == Empty { continue }
-		if piece.Team == White {
-			wKings += uint8(piece.King)
-			wPieces += 1
-		} else {
-			bKings += uint8(piece.King)
-			bPieces += 1
-		}		
-	}
-
-	//If a player has no moves they lose lol
-	if wPieces == 0 {
-		return true, Black
-	} 
-
-	if bPieces == 0 {
-		return true, White
-	}
-
-	//If one player has a king and the other has one piece they lose
-	if wPieces == 1 {
-		if bKings > 0 {
-			return true, Black
-		}
-	}
-
-	if bPieces == 1 {
-		if wKings > 0 {
-			return true, White
-		}
-	}
-
-	return false, 0 //No winner
-	//If a player has no playable moves they lose (checked in another part of the code)
-}
-
-func (bs *BoardState) PlayersDrawed() bool {
-	//Check if players are in a stalemate / draw
-	return false
 }
 
 

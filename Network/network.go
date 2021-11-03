@@ -51,7 +51,6 @@ func analyze(b board.BoardState) string {
 
 	var bestValue float64 
 	var bestBoard board.BoardState
-	//TODO: find a better solution that RWMutex, it really slows it down, might just make a table for each thread
 	output := make(chan move)
 
 	for _, branch := range options{
@@ -81,6 +80,6 @@ func analyze(b board.BoardState) string {
 
 func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move) {
 	branch.SwapTeam()
-	output <- move {branch.BoardValue(Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
+	output <- move {branch.MinMax(Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
 	debug.FreeOSMemory()
 }

@@ -1,8 +1,5 @@
 package board
 
-import (
-)
-
 type storedState struct {
 	board BoardState
 	value float64
@@ -39,7 +36,8 @@ func (table *TransposTable) Set(board *BoardState, value float64, depth uint32){
 
 	//Replace only if greater depth
 	entry, exists := table.internal[hash]
-	if !exists || depth >= entry.depth {
+	if !exists || depth >= entry.depth { 
+		//By saving shallower branches not only do we save the most time saving possiblity, we also perform far fewer writes increasing efficiency. 
 		table.internal[hash] = storedState{*board, value, depth}
 	}
 }
@@ -48,8 +46,9 @@ func (board *BoardState) hashBoard() uint64 {
 	return (board.Full << 1) | uint64(board.Turn)
 }
 
-func (board *BoardState) hashBoard2() uint64 {
-	hash := ((board.Full >> 16) << 32)
+/* func (board *BoardState) hashBoard2() uint64 {
+	hash := (board.Full >> 16) & 0xFFFFFFFF
+	hash = hash << 1
 	hash |= uint64(board.Turn)
 	return hash
-}
+} */
