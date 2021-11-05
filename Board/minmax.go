@@ -1,9 +1,5 @@
 package board
 
-import (
-	"math"
-)
-
 const (
 	AlphaBetaMax = 999.0
 	WinWeight = 100.0
@@ -24,9 +20,8 @@ var (
 	Searches = 0
 )
 
-//Minimax function TODO: convert to negamax?
-//TODO: convert float64 to float32 for performance increase?
-func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *TransposTable) float64 {
+//TODO: check if promotion check is applied at end of take as well
+func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *TransposTable) float32 {
 	Hits += 1
 
 	if alreadyChecked, prevValue := table.Request(bs); alreadyChecked {
@@ -59,27 +54,28 @@ func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *T
 		}
 	}
 	
-	var bestValue float64
+	var bestValue float32
 
 	if bs.Turn == White {
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
+			branch.TryPromotion()
 			value := branch.MinMax(depth-1, alpha, beta, table)
-			bestValue = math.Max(bestValue, value)
 			
-			alpha = math.Max(alpha, value)
+			if value > bestValue { bestValue = value }
+			if value > alpha { alpha = value }
 			if beta <= alpha { break }
 		}
 	} else {
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
+			branch.TryPromotion()
 			value := branch.MinMax(depth-1, alpha, beta, table)
-			
-			bestValue = math.Min(bestValue, value)
 
-			beta = math.Min(beta, value)
+			if value < bestValue { bestValue = value }
+			if value < beta { beta = value }
 			if beta <= alpha { break }
 
 		}
@@ -92,12 +88,11 @@ func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *T
 		}
 	}
 	
-
 	return bestValue
 }
 
 
-func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites perspective
+func (bs *BoardState) RawBoardValue() float32 { //Game is always from whites perspective
 
 	wPawns := 0
 	wKings := 0
@@ -126,11 +121,11 @@ func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites per
 			}
 		}
 	}
-	value := 0.0
+	var value float32 = 0.0
 
-	value += PawnWeight * float64(wPawns - bPawns)
-	value += KingWeight * float64(wKings - bKings)
-	value += AdvanceWeight * float64(netAdvance)
+	value += PawnWeight * float32(wPawns - bPawns)
+	value += KingWeight * float32(wKings - bKings)
+	value += AdvanceWeight * float32(netAdvance)
 
 	return value
 }

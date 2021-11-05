@@ -9,11 +9,11 @@ func (bs *BoardState) MaxTakeBoards() []BoardState {
 		if piece.Full == Empty || piece.Team != bs.Turn { continue }
 		var takes int
 		var possibleTakeBoards []BoardState
-		//if piece.King == King {
-		//	takes, possibleTakeBoards = bs.FindKingTakes(i%8,i/8,0,[2]int{0,0})
-		//} else {
+		if piece.King == King {
+			takes, possibleTakeBoards = bs.FindKingTakes(i%8,i/8,0,[2]int{0,0})
+		} else {
 			takes, possibleTakeBoards = bs.FindPawnTakes(i%8,i/8,0)
-		//}
+		}
 		if takes > bestTake {
 				bestTake = takes
 				possibleMaxTakeBoards = possibleTakeBoards

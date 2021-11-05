@@ -2,7 +2,7 @@ package board
 
 type storedState struct {
 	board BoardState
-	value float64
+	value float32
 	depth uint32
 }
 
@@ -16,7 +16,7 @@ func NewTable() *TransposTable {
 	}
 }
 
-func (table *TransposTable) Request(board *BoardState) (bool, float64) {
+func (table *TransposTable) Request(board *BoardState) (bool, float32) {
 	//Hash board state and load entry
 	hash := board.hashBoard()
 	entry, exists := table.internal[hash]
@@ -30,7 +30,7 @@ func (table *TransposTable) Request(board *BoardState) (bool, float64) {
 
 }
 
-func (table *TransposTable) Set(board *BoardState, value float64, depth uint32){
+func (table *TransposTable) Set(board *BoardState, value float32, depth uint32){
 	//Hash board state and write to table
 	hash := board.hashBoard()
 

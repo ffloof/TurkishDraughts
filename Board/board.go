@@ -191,3 +191,21 @@ func (bs *BoardState) PlayerHasWon() (bool, TileTeam) {
 	return false, 0 //No winner
 	//If a player has no playable moves they lose (checked in another part of the code)
 }
+
+func (board *BoardState) TryPromotion(){
+	for x:=0;x<7;x++ {
+		//Promote white y=0
+		tile, _ := board.GetBoardTile(x,0)
+		if tile.Team == White && tile.Full == Filled {
+			tile.King = King
+			board.SetBoardTile(x,0,tile)
+		}
+
+		//Promote black y=7
+		tile, _ = board.GetBoardTile(x,7)
+		if tile.Team == Black && tile.Full == Filled {
+			tile.King = King
+			board.SetBoardTile(x,7,tile)
+		}
+	}
+}

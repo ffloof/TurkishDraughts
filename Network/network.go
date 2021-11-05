@@ -12,7 +12,7 @@ import (
 const Depth = 12
 
 type move struct {
-	value float64 
+	value float32 
 	board board.BoardState
 }
 
@@ -50,7 +50,7 @@ func Analyze(b board.BoardState) *board.BoardState {
 		options = b.AllMoveBoards()
 	}
 
-	var bestValue float64 
+	var bestValue float32 
 	var bestBoard board.BoardState
 	output := make(chan move)
 
