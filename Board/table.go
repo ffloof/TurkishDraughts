@@ -16,14 +16,14 @@ func NewTable() *TransposTable {
 	}
 }
 
-func (table *TransposTable) Request(board *BoardState) (bool, float32) {
+func (table *TransposTable) Request(board *BoardState, depth uint32) (bool, float32) {
 	//Hash board state and load entry
 	hash := board.hashBoard()
 	entry, exists := table.internal[hash]
 
 	if exists {
 		if entry.board == *board {
-			return true, entry.value
+			if !TableDepthAccuracy || entry.depth >= depth { return true, entry.value }
 		}
 	}
 	return false, 0.0

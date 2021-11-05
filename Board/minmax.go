@@ -8,11 +8,16 @@ const (
 	
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
 	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
-	AdvanceWeight = 0.2
+	AdvanceWeight = 0.0
 
 	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
 	MinimumHashDepth = 2
+
+	//When set to true it will force the transposition table to get values only evaluated at the same or a higher depth
+	//This guarentees accuracy but does causes a drastic performance drop 
+	//(Should always be true unless a high MinimumHashDepth is used or inaccuracy is acceptable for the sake of time optimization)
+	TableDepthAccuracy = true
 )
 
 var (
@@ -24,7 +29,7 @@ var (
 func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *TransposTable) float32 {
 	Hits += 1
 
-	if alreadyChecked, prevValue := table.Request(bs); alreadyChecked {
+	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
 		return prevValue
 	}
 

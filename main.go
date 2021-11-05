@@ -14,5 +14,6 @@ func main() {
 		b = *(network.Analyze(b))
 		b.Print()
 		if b.RawBoardValue() >= board.WinWeight { break }
+		if b == board.BoardFromStr("-------- -------- -------- -------- -------- -------- -------- --------") { break }
 	}
 }
