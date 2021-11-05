@@ -5,14 +5,14 @@ import (
 )
 
 const (
-	AlphaBetaMax = 9999.0
-	WinWeight = 1000.0
-	KingWeight = 50.0
-	PawnWeight = 10.0
+	AlphaBetaMax = 999.0
+	WinWeight = 100.0
+	KingWeight = 5.0
+	PawnWeight = 1.0
 	
-	//Heuristic weight of how far advanced a sides pawn pieces are 0.1 per piece per tile away from side
-	//For some reason when its not 0.0 it makes ab pruning less efficient, but incentivises agressive play
-	AdvanceWeight = 2.0
+	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
+	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
+	AdvanceWeight = 0.2
 
 	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
@@ -25,6 +25,7 @@ var (
 )
 
 //Minimax function TODO: convert to negamax?
+//TODO: convert float64 to float32 for performance increase?
 func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *TransposTable) float64 {
 	Hits += 1
 
@@ -75,6 +76,7 @@ func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *T
 		for _, branch := range options {
 			branch.SwapTeam()
 			value := branch.MinMax(depth-1, alpha, beta, table)
+			
 			bestValue = math.Min(bestValue, value)
 
 			beta = math.Min(beta, value)
@@ -96,7 +98,12 @@ func (bs *BoardState) MinMax(depth uint32, alpha float64, beta float64, table *T
 
 
 func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites perspective
-	value := 0.0
+
+	wPawns := 0
+	wKings := 0
+	bPawns := 0
+	bKings := 0
+	netAdvance := 0
 
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
@@ -104,20 +111,26 @@ func (bs *BoardState) RawBoardValue() float64 { //Game is always from whites per
 			if piece.Full == Empty { continue }
 			if piece.Team == White {
 				if piece.King == King {
-					value += KingWeight
+					wKings += 1
 				} else {
-					value += PawnWeight
-					value += float64(7-y) * AdvanceWeight
+					wPawns += 1
+					netAdvance += (7-y)
 				}
 			} else {
 				if piece.King == King {
-					value -= KingWeight
+					bKings += 1
 				} else {
-					value -= PawnWeight
-					value -= float64(y) * AdvanceWeight
+					bPawns += 1
+					netAdvance -= (y)
 				}
 			}
 		}
 	}
+	value := 0.0
+
+	value += PawnWeight * float64(wPawns - bPawns)
+	value += KingWeight * float64(wKings - bKings)
+	value += AdvanceWeight * float64(netAdvance)
+
 	return value
 }

@@ -119,7 +119,9 @@ func (bs *BoardState) Print(){
 }
 
 func CreateStartingBoard() BoardState {
-	return BoardFromStr("-------- bbbbbbbb bbbbbbbb -------- -------- wwwwwwww wwwwwwww --------")
+	b := BoardFromStr("-------- bbbbbbbb bbbbbbbb -------- -------- wwwwwwww wwwwwwww --------")
+	b.Turn = White
+	return b
 }
 
 func BoardFromStr(str string) BoardState {

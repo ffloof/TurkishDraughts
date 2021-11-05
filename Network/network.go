@@ -9,7 +9,7 @@ import (
 	"TurkishDraughts/Board"
 )
 
-const Depth = 13
+const Depth = 12
 
 type move struct {
 	value float64 
@@ -31,16 +31,16 @@ func isAlive(w http.ResponseWriter, r *http.Request){
 func analyzeBlack(w http.ResponseWriter, r *http.Request){
 	b := board.BoardFromStr(r.URL.Path[7:])
 	b.Turn = board.Black
-	fmt.Fprintf(w, analyze(b))
+	fmt.Fprintf(w, board.BoardToStr(Analyze(b)))
 }
 
 func analyzeWhite(w http.ResponseWriter, r *http.Request){
 	b := board.BoardFromStr(r.URL.Path[7:])
 	b.Turn = board.White
-	fmt.Fprintf(w, analyze(b))
+	fmt.Fprintf(w, board.BoardToStr(Analyze(b)))
 }
 
-func analyze(b board.BoardState) string {
+func Analyze(b board.BoardState) *board.BoardState {
 	fmt.Println(time.Now().String())
 	board.Searches = 0
 	board.Hits = 0
@@ -76,7 +76,7 @@ func analyze(b board.BoardState) string {
 	fmt.Println("Hits:", board.Hits/1000, "k")
 	fmt.Println("Standing:", bestValue)
 
-	return board.BoardToStr(&bestBoard)
+	return &bestBoard
 }
 
 
