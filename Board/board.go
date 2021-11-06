@@ -178,13 +178,13 @@ func (bs *BoardState) PlayerHasWon() (bool, TileTeam) {
 
 	//If one player has a king and the other has one piece they lose
 	if wPieces == 1 {
-		if bKings > 0 {
+		if bKings != 0 && wKings == 0 {
 			return true, Black
 		}
 	}
 
 	if bPieces == 1 {
-		if wKings > 0 {
+		if wKings != 0 && bKings == 0{
 			return true, White
 		}
 	}
