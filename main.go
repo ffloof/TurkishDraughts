@@ -11,7 +11,7 @@ func main() {
 
 	//Ai plays against itself for my amusement
 	for true {
-		b = *(network.Analyze(b, 12))
+		b = *(network.Analyze(b, 10))
 		b.Print()
 		if b.RawBoardValue() >= board.WinWeight { break }
 		if b == board.BoardFromStr("-------- -------- -------- -------- -------- -------- -------- --------") { break }

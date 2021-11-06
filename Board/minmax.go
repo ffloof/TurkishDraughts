@@ -8,11 +8,11 @@ const (
 	
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
 	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
-	AdvanceWeight = 0.0 //default 0.1
+	AdvanceWeight = 0.1 //default 0.1
 
 	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
-	MinimumHashDepth = 3 //default 2
+	MinimumHashDepth = 3  //default 2
 
 
 	//DANGER ZONE BELOW:

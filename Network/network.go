@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"fmt"
 	"time"
-	//"runtime"
 	"runtime/debug"
 	"TurkishDraughts/Board"
 )
@@ -47,7 +46,7 @@ func Analyze(b board.BoardState, depth uint32) *board.BoardState {
 		fmt.Println("================ BLACK ================")
 	}
 
-	fmt.Println(time.Now().String())
+	startTime := time.Now()
 	board.Searches = 0
 	board.Hits = 0
 
@@ -77,11 +76,10 @@ func Analyze(b board.BoardState, depth uint32) *board.BoardState {
 	}
 
 	debug.FreeOSMemory()
-	fmt.Println(time.Now().String())
-	fmt.Println("Searches:", board.Searches/1000, "k")
-	fmt.Println("Hits:", board.Hits/1000, "k")
+	duration := time.Since(startTime).Seconds()
+	fmt.Println("Time:", duration)
+	fmt.Println("Searches:", board.Searches/1000, "k  Efficiency:", 100.0-(100.0*float64(board.Searches)/float64(board.Hits)) ,"%  Speed (k/s):",float64(board.Searches)/duration/1000.0,"k/s")
 	fmt.Println("Standing:", bestValue)
-
 	return &bestBoard
 }
 
