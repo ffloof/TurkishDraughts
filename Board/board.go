@@ -77,6 +77,7 @@ func (bs *BoardState) SetBoardTile(xed int, yed int, t Tile) {
 }
 
 func (bs *BoardState) SwapTeam(){
+	bs.TryPromotion()
 	if bs.Turn == White {
 		bs.Turn = Black
 	} else {

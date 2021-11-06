@@ -23,7 +23,7 @@ func (table *TransposTable) Request(board *BoardState, depth uint32) (bool, floa
 
 	if exists {
 		if entry.board == *board {
-			if !TableDepthAccuracy || entry.depth >= depth { return true, entry.value }
+			if entry.depth + TableDepthAllowedInaccuracy >= depth { return true, entry.value }
 		}
 	}
 	return false, 0.0

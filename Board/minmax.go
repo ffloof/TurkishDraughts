@@ -1,23 +1,26 @@
 package board
 
 const (
-	AlphaBetaMax = 999.0
-	WinWeight = 100.0
-	KingWeight = 5.0
-	PawnWeight = 1.0
+	AlphaBetaMax = 999.0 //default 999.0
+	WinWeight = 100.0 //default 100.0
+	KingWeight = 5.0 //default 5.0
+	PawnWeight = 1.0 //default 1.0
 	
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
 	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
-	AdvanceWeight = 0.0
+	AdvanceWeight = 0.0 //default 0.1
 
 	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
-	MinimumHashDepth = 2
+	MinimumHashDepth = 3 //default 2
 
-	//When set to true it will force the transposition table to get values only evaluated at the same or a higher depth
-	//This guarentees accuracy but does causes a drastic performance drop 
-	//(Should always be true unless a high MinimumHashDepth is used or inaccuracy is acceptable for the sake of time optimization)
-	TableDepthAccuracy = true
+
+	//DANGER ZONE BELOW:
+	//When set to above 0 it will allow the transposition table to get values only evaluated at lower depths
+	//i.e. at = 2, it can use at depth 6 a previous evaluation at depth 4 
+	//This introduces inaccuracy but has a massive performance gain
+	//To minimize inaccuracy use a high MinimumHashDepth and a low TableDepthAllowedInaccuracy
+	TableDepthAllowedInaccuracy = 2 //default 0
 )
 
 var (
@@ -65,7 +68,6 @@ func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *T
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			branch.TryPromotion()
 			value := branch.MinMax(depth-1, alpha, beta, table)
 			
 			if value > bestValue { bestValue = value }
@@ -76,7 +78,6 @@ func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *T
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			branch.TryPromotion()
 			value := branch.MinMax(depth-1, alpha, beta, table)
 
 			if value < bestValue { bestValue = value }

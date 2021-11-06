@@ -9,7 +9,7 @@ import (
 	"TurkishDraughts/Board"
 )
 
-const Depth = 12
+const netDepth = 10
 
 type move struct {
 	value float32 
@@ -31,16 +31,22 @@ func isAlive(w http.ResponseWriter, r *http.Request){
 func analyzeBlack(w http.ResponseWriter, r *http.Request){
 	b := board.BoardFromStr(r.URL.Path[7:])
 	b.Turn = board.Black
-	fmt.Fprintf(w, board.BoardToStr(Analyze(b)))
+	fmt.Fprintf(w, board.BoardToStr(Analyze(b,netDepth)))
 }
 
 func analyzeWhite(w http.ResponseWriter, r *http.Request){
 	b := board.BoardFromStr(r.URL.Path[7:])
 	b.Turn = board.White
-	fmt.Fprintf(w, board.BoardToStr(Analyze(b)))
+	fmt.Fprintf(w, board.BoardToStr(Analyze(b,netDepth)))
 }
 
-func Analyze(b board.BoardState) *board.BoardState {
+func Analyze(b board.BoardState, depth uint32) *board.BoardState {
+	if b.Turn == board.White {
+		fmt.Println("================ WHITE ================")
+	} else {
+		fmt.Println("================ BLACK ================")
+	}
+
 	fmt.Println(time.Now().String())
 	board.Searches = 0
 	board.Hits = 0
@@ -55,7 +61,7 @@ func Analyze(b board.BoardState) *board.BoardState {
 	output := make(chan move)
 
 	for _, branch := range options{
-		go analyzeBranch(branch, board.NewTable(), output)
+		go analyzeBranch(branch, board.NewTable(), output, depth)
 	}
 
 	for i := range options {
@@ -80,8 +86,8 @@ func Analyze(b board.BoardState) *board.BoardState {
 }
 
 
-func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move) {
+func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move, depth uint32) {
 	branch.SwapTeam()
-	output <- move {branch.MinMax(Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
+	output <- move {branch.MinMax(depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
 	debug.FreeOSMemory()
 }
