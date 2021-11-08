@@ -2,6 +2,7 @@ package ui
 
 import (
 	"TurkishDraughts/Board"
+	"TurkishDraughts/network"
 
 	"image/color"
 	"github.com/faiface/pixel"
@@ -73,6 +74,11 @@ func Init() {
 
 		imd.Draw(win)
 		win.Update()
+
+		winner, _ := b.PlayerHasWon()
+		if !winner {  
+			b = *(network.Analyze(b, 10))
+		}
 	}
 }
 
@@ -104,7 +110,7 @@ func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
 			posX := (float64(x)+0.5)*size + Border
 			posY := (float64(y)+0.5)*size + Border
 
-			tile, _ := b.GetBoardTile(x,y)
+			tile, _ := b.GetBoardTile(x,7-y)
 			if tile.Full == board.Empty { continue }
 			
 			if tile.Team == board.White {
@@ -122,7 +128,7 @@ func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
 			posX := (float64(x)+0.5)*size + Border
 			posY := (float64(y)+0.5)*size + Border
 
-			tile, _ := b.GetBoardTile(x,y)
+			tile, _ := b.GetBoardTile(x,7-y)
 			if tile.Full == board.Empty || tile.King == board.Pawn { continue }
 			
 			if tile.Team == board.White {
