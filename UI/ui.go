@@ -7,7 +7,6 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
-	"golang.org/x/image/colornames"
 )
 
 const (
@@ -63,7 +62,7 @@ func Init() {
 
 	for !win.Closed() {
 		imd := imdraw.New(nil)
-		win.Clear(colornames.Aliceblue)
+		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
 		
 		drawBoard(imd)
 		drawPieces(&b, imd)
@@ -98,25 +97,21 @@ func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
 	size := (float64(Height) - (2*Border) + Gaps)/ 8.0
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
-			posX := float64(x)*size + Border
-			posY := float64(y)*size + Border
+			posX := float64(x)*size + Border - (size/2.0)
+			posY := float64(y)*size + Border - (size/2.0)
 
 			tile, _ := b.GetBoardTile(x,y)
 			if tile.Full == board.Empty { continue }
 			
-			imd.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
-			imd.Push(pixel.V(posX+InternalGap, posY+InternalGap), pixel.V(posX+size-InternalGap, posY+size-InternalGap))
-			imd.Ellipse(pixel.V(0.0, 0.0), 0)
-			//imd.Push(pixel.V(200, 500), pixel.V(800, 500))
-			//imd.Ellipse(pixel.V(120, 80), 0)
+			imd.Push(pixel.V(posX+InternalGap, posY+InternalGap))
 
 			if tile.Team == board.White {
-				imd.Color = color.RGBA{0xFF, 0xF9, 0xF4, 0xFF}
+				imd.Color = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
 			} else {
-				imd.Color = color.RGBA{0xC4, 0x00, 0x03, 0xFF}
+				imd.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 			}
 			imd.Push(pixel.V(200, 500), pixel.V(800, 500))
-			imd.Ellipse(pixel.V(120, 80), 0)
+			imd.Ellipse(pixel.V(size/2.0, size/2.0), 0)
 		}
 	}
 }
