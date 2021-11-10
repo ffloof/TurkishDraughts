@@ -89,7 +89,7 @@ func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *T
 
 	if depth > MinimumHashDepth {
 		for _, branch := range options {
-			branch.SwapTeam()
+			//branch.SwapTeam()
 			table.Set(&branch, bestValue, depth)
 		}
 	}

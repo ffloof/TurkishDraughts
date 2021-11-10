@@ -77,7 +77,7 @@ func Init() {
 
 		winner, _ := b.PlayerHasWon()
 		if !winner {  
-			b = *(network.Analyze(b, 10))
+			b = *(network.Analyze(b, 9))
 		}
 	}
 }
