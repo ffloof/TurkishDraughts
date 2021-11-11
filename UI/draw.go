@@ -3,8 +3,10 @@ package ui
 import (
 	"TurkishDraughts/Board"
 
+	"math"
 	"image/color"
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/imdraw"
 )
 
@@ -19,36 +21,54 @@ var (
 	TeamWhite = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
 	TeamBlack = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
+	HoverColor = color.RGBA{0xFF, 0x00, 0x00, 0xFF}
+
 	InternalGap = 4.0
 )
+
+func getTileSpace() float64 {
+	return (float64(Height) - (2*Border) - Gaps)/ 8.0
+}
+
+func getTileSize() float64{
+	return (getTileSpace() - Gaps)
+}
+
+func getTilePosBL(x int, y int) (float64, float64) {
+	return float64(x)*getTileSpace() + Border, float64(y)*getTileSpace() + Border
+	
+}
+
+func getTilePosCenter(x int, y int) (float64, float64) {
+	return (float64(x)+0.5)*getTileSpace() + Border, (float64(y)+0.5)*getTileSpace() + Border
+}
+
 
 func drawBoard(imd *imdraw.IMDraw){
 	imd.Color = BoardBg
 	imd.Push(pixel.V(0.0,0.0), pixel.V(float64(Height), float64(Height)))
 	imd.Rectangle(0.0)
 
-	size := (float64(Height) - (2*Border) + Gaps)/ 8.0
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
-			posX := float64(x)*size + Border
-			posY := float64(y)*size + Border
+			posX, posY := getTilePosBL(x,y)
+			
 			if (x+y)%2 == 0 {
 				imd.Color = TileDark
 			} else {
 				imd.Color = TileLight
 			}
-			imd.Push(pixel.V(posX, posY), pixel.V(posX+size-Gaps, posY+size-Gaps))
+			imd.Push(pixel.V(posX, posY), pixel.V(posX+getTileSize(), posY+getTileSize()))
 			imd.Rectangle(0.0)
 		}
 	}
 }
 
 func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
-	size := (float64(Height) - (2*Border) + Gaps)/ 8.0
+	size := getTileSpace()
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
-			posX := (float64(x)+0.5)*size + Border
-			posY := (float64(y)+0.5)*size + Border
+			posX, posY := getTilePosCenter(x,y)
 
 			tile, _ := b.GetBoardTile(x,7-y)
 			if tile.Full == board.Empty { continue }
@@ -65,8 +85,7 @@ func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
 
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
-			posX := (float64(x)+0.5)*size + Border
-			posY := (float64(y)+0.5)*size + Border
+			posX, posY := getTilePosCenter(x,y)
 
 			tile, _ := b.GetBoardTile(x,7-y)
 			if tile.Full == board.Empty || tile.King == board.Pawn { continue }
@@ -83,5 +102,28 @@ func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
 }
 
 func drawControls(){
+
+}
+
+func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
+	imd.Color = HoverColor
+	size := (float64(Height) - (2*Border) + Gaps)/ 8.0
+	mPos := win.MousePosition()
+
+	offsetX,offsetY := math.Mod(mPos.X, ((Height-(Border))/8)), math.Mod(mPos.Y, ((Height-(Border))/8))
+	mPos.X -= offsetX
+	mPos.Y -= offsetY
+
+
+	imd.Push(pixel.V(mPos.X, mPos.Y), pixel.V(mPos.X + size, mPos.Y + size))
+	imd.Rectangle(5.0)
+	return false, 0
+}
+
+func drawMoves() {
+
+}
+
+func drawTakePath() {
 
 }

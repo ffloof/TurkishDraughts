@@ -36,20 +36,19 @@ func Init() {
 	quit := make(chan bool)
 
 	for !win.Closed() {
-		//Drawing logic
 		imd := imdraw.New(nil)
+		//Drawing logic
 		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
 
 		drawBoard(imd)
 		drawPieces(&b, imd)
+		drawHover(win, imd)
 
 		imd.Draw(win)
 		win.Update()
 
 		winner, _ := b.PlayerHasWon()
-		if winner {
-			continue
-		}
+		if winner { continue }
 
 		//Engine logic
 		if totalMoves != len(possibleMoves) {
@@ -66,6 +65,7 @@ func Init() {
 		}
 
 		//Add auto pick move logic
+		/*
 		if totalMoves == len(possibleMoves) {
 			searching = false
 
@@ -78,7 +78,7 @@ func Init() {
 				}
 			}
 			b = bestMove.board
-		}
+		}*/
 
 
 	}

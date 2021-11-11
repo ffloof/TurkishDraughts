@@ -7,8 +7,6 @@ import (
 	"TurkishDraughts/Board"
 )
 
-const netDepth = 10
-
 type PossibleMove struct {
 	board board.BoardState
 	value float32 

@@ -8,7 +8,6 @@ import (
 
 func main() {
 	pixelgl.Run(ui.Init)
-	//network.Init()
 }
 
 
