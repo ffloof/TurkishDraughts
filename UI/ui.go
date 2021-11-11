@@ -15,8 +15,6 @@ const (
 )
 
 
-
-
 func Init() {
 	b := board.CreateStartingBoard()
 
@@ -30,32 +28,18 @@ func Init() {
 		panic(err)
 	}
 
-	/*
-	imd.Color = colornames.Blueviolet
-	imd.EndShape = imdraw.RoundEndShape
-	imd.Push(pixel.V(100, 100), pixel.V(700, 100))
-	imd.EndShape = imdraw.SharpEndShape
-	imd.Push(pixel.V(100, 500), pixel.V(700, 500))
-	imd.Line(30)
+	searching := false
+	totalMoves := 0
+	possibleMoves := []PossibleMove{} 
 
-	imd.Color = colornames.Limegreen
-	imd.Push(pixel.V(500, 500))
-	imd.Circle(300, 50)
-
-	imd.Color = colornames.Navy
-	imd.Push(pixel.V(200, 500), pixel.V(800, 500))
-	imd.Ellipse(pixel.V(120, 80), 0)
-
-	imd.Color = colornames.Red
-	imd.EndShape = imdraw.RoundEndShape
-	imd.Push(pixel.V(500, 350))
-	imd.CircleArc(150, -math.Pi, 0, 30)
-	*/
+	output := make(chan PossibleMove)
+	quit := make(chan bool)
 
 	for !win.Closed() {
+		//Drawing logic
 		imd := imdraw.New(nil)
 		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
-		
+
 		drawBoard(imd)
 		drawPieces(&b, imd)
 
@@ -63,9 +47,40 @@ func Init() {
 		win.Update()
 
 		winner, _ := b.PlayerHasWon()
-		if !winner {  
-			b = *(Analyze(b, 9))
+		if winner {
+			continue
 		}
+
+		//Engine logic
+		if totalMoves != len(possibleMoves) {
+			//Check if theres a result
+			select {
+			case pMove := <-output:
+				possibleMoves = append(possibleMoves, pMove)
+			}
+		} else if !searching {
+			searching = true
+			possibleMoves = []PossibleMove{}
+			totalMoves = Search(b, 9, quit, output)
+			//Start searching board states
+		}
+
+		//Add auto pick move logic
+		if totalMoves == len(possibleMoves) {
+			searching = false
+
+			var bestMove PossibleMove 
+
+			for i, checkMove := range possibleMoves {
+				//TODO: add cool arrows with numbers
+				if i == 0 || (b.Turn == board.White && checkMove.value > bestMove.value) || (b.Turn == board.Black && checkMove.value < bestMove.value) {
+					bestMove = checkMove
+				}
+			}
+			b = bestMove.board
+		}
+
+
 	}
 }
 

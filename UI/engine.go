@@ -1,19 +1,40 @@
 package ui
 
 import (
-	"fmt"
-	"time"
+	//"fmt"
+	//"time"
 	"runtime/debug"
 	"TurkishDraughts/Board"
 )
 
 const netDepth = 10
 
-type move struct {
-	value float32 
+type PossibleMove struct {
 	board board.BoardState
+	value float32 
 }
 
+//Two channels one for results back, and one for if it should quit searching
+func Search(b board.BoardState, depth uint32, quit chan bool, output chan PossibleMove) int {
+	options := b.MaxTakeBoards()
+	if len(options) == 0 {
+		options = b.AllMoveBoards()
+	}
+
+	for _, branch := range options{
+		go analyzeBranch(branch, board.NewTable(), output, depth)
+	}
+
+	return len(options)
+}
+
+func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan PossibleMove, depth uint32) {
+	branch.SwapTeam()
+	output <- PossibleMove {branch, branch.MinMax(depth, -board.AlphaBetaMax, board.AlphaBetaMax, table)}
+	debug.FreeOSMemory()
+}
+
+/*
 func Analyze(b board.BoardState, depth uint32) *board.BoardState {
 	if b.Turn == board.White {
 		fmt.Println("================ WHITE ================")
@@ -32,7 +53,7 @@ func Analyze(b board.BoardState, depth uint32) *board.BoardState {
 
 	var bestValue float32 
 	var bestBoard board.BoardState
-	output := make(chan move)
+	output := make(chan PossibleMove)
 
 	for _, branch := range options{
 		go analyzeBranch(branch, board.NewTable(), output, depth)
@@ -57,9 +78,4 @@ func Analyze(b board.BoardState, depth uint32) *board.BoardState {
 	return &bestBoard
 }
 
-
-func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan move, depth uint32) {
-	branch.SwapTeam()
-	output <- move {branch.MinMax(depth, -board.AlphaBetaMax, board.AlphaBetaMax, table), branch}
-	debug.FreeOSMemory()
-}
+*/
