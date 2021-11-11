@@ -1,7 +1,6 @@
-package network
+package ui
 
 import (
-	"net/http"
 	"fmt"
 	"time"
 	"runtime/debug"
@@ -13,30 +12,6 @@ const netDepth = 10
 type move struct {
 	value float32 
 	board board.BoardState
-}
-
-func Init(){
-	http.HandleFunc("/", isAlive)
-	http.HandleFunc("/black/", analyzeBlack)
-	http.HandleFunc("/white/", analyzeWhite)
-
-    http.ListenAndServe(":80", nil)
-}
-
-func isAlive(w http.ResponseWriter, r *http.Request){
-        fmt.Fprintf(w, "Its alive!")
-}
-
-func analyzeBlack(w http.ResponseWriter, r *http.Request){
-	b := board.BoardFromStr(r.URL.Path[7:])
-	b.Turn = board.Black
-	fmt.Fprintf(w, board.BoardToStr(Analyze(b,netDepth)))
-}
-
-func analyzeWhite(w http.ResponseWriter, r *http.Request){
-	b := board.BoardFromStr(r.URL.Path[7:])
-	b.Turn = board.White
-	fmt.Fprintf(w, board.BoardToStr(Analyze(b,netDepth)))
 }
 
 func Analyze(b board.BoardState, depth uint32) *board.BoardState {
@@ -75,7 +50,6 @@ func Analyze(b board.BoardState, depth uint32) *board.BoardState {
 		fmt.Println(i+1, "/", len(options), "=", checkValue)
 	}
 
-	debug.FreeOSMemory()
 	duration := time.Since(startTime).Seconds()
 	fmt.Println("Time:", duration)
 	fmt.Println("Searches:", board.Searches/1000, "k  Efficiency:", 100.0-(100.0*float64(board.Searches)/float64(board.Hits)) ,"%  Speed (k/s):",float64(board.Searches)/duration/1000.0,"k/s")
