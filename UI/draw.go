@@ -27,7 +27,7 @@ var (
 )
 
 func getTileSpace() float64 {
-	return (float64(Height) - (2*Border) - Gaps)/ 8.0
+	return (float64(Height) - (2*Border) + Gaps)/ 8.0
 }
 
 func getTileSize() float64{
@@ -107,16 +107,19 @@ func drawControls(){
 
 func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
 	imd.Color = HoverColor
-	size := (float64(Height) - (2*Border) + Gaps)/ 8.0
+	size := getTileSize()
 	mPos := win.MousePosition()
+	if mPos.X > Height - Border - Gaps { return false, 0 }
+	if mPos.Y > Height - Border - Gaps { return false, 0 }
 
-	offsetX,offsetY := math.Mod(mPos.X, ((Height-(Border))/8)), math.Mod(mPos.Y, ((Height-(Border))/8))
+	offsetX,offsetY := math.Mod(mPos.X - Border, getTileSpace()), math.Mod(mPos.Y - Border, getTileSpace())
 	mPos.X -= offsetX
 	mPos.Y -= offsetY
 
 
 	imd.Push(pixel.V(mPos.X, mPos.Y), pixel.V(mPos.X + size, mPos.Y + size))
 	imd.Rectangle(5.0)
+	
 	return false, 0
 }
 
