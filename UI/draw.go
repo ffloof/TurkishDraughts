@@ -3,8 +3,6 @@ package ui
 import (
 	"TurkishDraughts/Board"
 
-	"fmt"
-	"math"
 	"image/color"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -119,7 +117,6 @@ func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
 	tmpX, tmpY := getTilePosBL(tileX, tileY)
 	imd.Push(pixel.V(tmpX, tmpY), pixel.V(tmpX + size, tmpY + size))
 
-	//imd.Push(pixel.V(mPos.X, mPos.Y), pixel.V(mPos.X + size, mPos.Y + size))
 	imd.Rectangle(5.0)
 	
 	if win.JustPressed(pixelgl.MouseButtonLeft) {
