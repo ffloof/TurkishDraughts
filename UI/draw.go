@@ -3,6 +3,7 @@ package ui
 import (
 	"TurkishDraughts/Board"
 
+	"fmt"
 	"math"
 	"image/color"
 	"github.com/faiface/pixel"
@@ -112,21 +113,22 @@ func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
 	if mPos.X > Height - Border - Gaps { return false, 0 }
 	if mPos.Y > Height - Border - Gaps { return false, 0 }
 
-	offsetX,offsetY := math.Mod(mPos.X - Border, getTileSpace()), math.Mod(mPos.Y - Border, getTileSpace())
-	mPos.X -= offsetX
-	mPos.Y -= offsetY
+	tileX := int((mPos.X - Border) / getTileSpace())
+	tileY := int((mPos.Y - Border) / getTileSpace())
 
+	tmpX, tmpY := getTilePosBL(tileX, tileY)
+	imd.Push(pixel.V(tmpX, tmpY), pixel.V(tmpX + size, tmpY + size))
 
-	imd.Push(pixel.V(mPos.X, mPos.Y), pixel.V(mPos.X + size, mPos.Y + size))
+	//imd.Push(pixel.V(mPos.X, mPos.Y), pixel.V(mPos.X + size, mPos.Y + size))
 	imd.Rectangle(5.0)
 	
-	return false, 0
+	if win.JustPressed(pixelgl.MouseButtonLeft) {
+		return true, (tileY * 8) + tileX
+	} else {
+		return false, 0
+	}
 }
 
-func drawMoves() {
-
-}
-
-func drawTakePath() {
-
+func drawSelected(imd *imdraw.IMDraw) {
+	
 }

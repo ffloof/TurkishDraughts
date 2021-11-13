@@ -28,12 +28,17 @@ func Init() {
 		panic(err)
 	}
 
+	//Search variables
 	searching := false
 	totalMoves := 0
 	possibleMoves := []PossibleMove{} 
 
 	output := make(chan PossibleMove)
 	quit := make(chan bool)
+
+	//Interacting variables
+	lastTileIndex := -1
+	tileSelected := false
 
 	for !win.Closed() {
 		imd := imdraw.New(nil)
@@ -42,7 +47,26 @@ func Init() {
 
 		drawBoard(imd)
 		drawPieces(&b, imd)
-		drawHover(win, imd)
+		clicked, tileIndex := drawHover(win, imd)
+		
+		if tileSelected {
+			//Draw valid options
+			drawSelected(imd)
+
+			if clicked {
+				if tileIndex == lastTileIndex {
+					lastTileIndex = -1
+					tileSelected = false
+				} else {
+					//Move if clicked on a valid tile
+				}
+			}
+		} else {
+			if clicked {
+				lastTileIndex = tileIndex
+				tileSelected = true
+			}
+		}
 
 		imd.Draw(win)
 		win.Update()
@@ -84,3 +108,6 @@ func Init() {
 	}
 }
 
+func tryClick(selectedTileIndex int, targetTileIndex int) {
+	
+}
