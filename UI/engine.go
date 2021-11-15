@@ -1,8 +1,6 @@
 package ui
 
 import (
-	//"fmt"
-	//"time"
 	"runtime/debug"
 	"TurkishDraughts/Board"
 )

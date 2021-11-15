@@ -107,7 +107,3 @@ func Init() {
 
 	}
 }
-
-func tryClick(selectedTileIndex int, targetTileIndex int) {
-	
-}
