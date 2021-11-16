@@ -10,9 +10,9 @@ func (bs *BoardState) MaxTakeBoards() []BoardState {
 		var takes int
 		var possibleTakeBoards []BoardState
 		if piece.King == King {
-			takes, possibleTakeBoards = bs.FindKingTakes(i%8,i/8,0,[2]int{0,0})
+			takes, possibleTakeBoards, _ = bs.FindKingTakes(i%8,i/8,0,[2]int{0,0})
 		} else {
-			takes, possibleTakeBoards = bs.FindPawnTakes(i%8,i/8,0)
+			takes, possibleTakeBoards, _ = bs.FindPawnTakes(i%8,i/8,0)
 		}
 		if takes > bestTake {
 				bestTake = takes
@@ -24,10 +24,11 @@ func (bs *BoardState) MaxTakeBoards() []BoardState {
 	return possibleMaxTakeBoards
 }
 
-func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState) {
+func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState, []int) {
 	boards := []BoardState{}
 	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y)
+	validTakePos := []int{}
 
 	for _, direction := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
 		if -lastDir[0] == direction[0] && -lastDir[1] == direction[1] { continue } //Check to not go backwards in a direction
@@ -52,12 +53,18 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 					newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{})
 					newBS.SetBoardTile(x,y, Tile{})
 
-					takes, possibleBoards := newBS.FindKingTakes(landingPos[0], landingPos[1],currentTakes+1, direction)
+					takes, possibleBoards, _ := newBS.FindKingTakes(landingPos[0], landingPos[1],currentTakes+1, direction)
 					
 					if takes > bestTake {
+						if currentTakes == 0 {
+							validTakePos = []int{(landingPos[1]*8)+landingPos[0]}
+						}
 						bestTake = takes
 						boards = possibleBoards
 					} else if takes == bestTake {
+						if currentTakes == 0 {
+							validTakePos = append(validTakePos, (landingPos[1]*8)+landingPos[0])
+						}
 						boards = append(boards, possibleBoards...)
 					}
 				}
@@ -67,16 +74,16 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 	}
 
 	if len(boards) == 0 {
-		return bestTake, []BoardState{ *bs }
+		return bestTake, []BoardState{ *bs }, validTakePos
 	}
-	return bestTake, boards
+	return bestTake, boards, validTakePos
 }
 
-func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState) {
+func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState, []int) {
 	boards := []BoardState{}
 	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y)
-
+	validTakePos := []int{}
 	
 	for _, move := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
 		if attackingTile.Team == White && (move[0] == 0 && move[1] == 1) { continue } //Down (black only)
@@ -93,11 +100,17 @@ func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Boar
 				newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{})
 				newBS.SetBoardTile(x,y, Tile{})
 				
-				takes, possibleBoards := newBS.FindPawnTakes(landingPos[0], landingPos[1],currentTakes+1)
+				takes, possibleBoards, _ := newBS.FindPawnTakes(landingPos[0], landingPos[1],currentTakes+1)
 				if takes > bestTake {
+					if currentTakes == 0 {
+						validTakePos = []int{(landingPos[1]*8)+landingPos[0]}
+					}
 					bestTake = takes
 					boards = possibleBoards
 				} else if takes == bestTake {
+					if currentTakes == 0 {
+						validTakePos = append(validTakePos, (landingPos[1]*8)+landingPos[0])
+					}
 					boards = append(boards, possibleBoards...)
 				}
 			}
@@ -105,8 +118,8 @@ func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []Boar
 	}
 
 	if len(boards) == 0 {
-		return bestTake, []BoardState{ *bs }
+		return bestTake, []BoardState{ *bs }, validTakePos
 	}
-	return bestTake, boards
+	return bestTake, boards, validTakePos
 	
 }
