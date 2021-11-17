@@ -4,6 +4,8 @@ import (
 	"TurkishDraughts/Board"
 
 	"image/color"
+	"fmt"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
@@ -41,45 +43,40 @@ func Init() {
 
 	//Interacting variables
 	lastTileIndex := -1
-	tileSelected := false
-	var takeMap map[int][]int 
+	var takeMap map[int][]int
+	var moveMap map[int][]int 
 
 	for !win.Closed() {
 		imd := imdraw.New(nil)
+		if takeMap == nil { takeMap = ValidUiTakes(&b)}
+		if moveMap == nil { moveMap = ValidUiMoves(&b)}
+
 		//Drawing logic
 		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
 
 		drawBoard(imd)
 		drawPieces(&b, imd)
-		clicked, tileIndex := drawHover(win, imd)
-		
-		if takeMap == nil {
-			takeMap = ValidUiTakes(&b)
-		}
+		drawChecks(imd, takeMap)
+		if lastTileIndex != -1 {
+			if len(takeMap) == 0 {
 
-		if len(takeMap) != 0 {
-			//Gotta take take take
-			drawChecks(imd, takeMap)
-		} else {
-
-		}
-
-		if tileSelected {
-			//Draw valid options
+			}
 			drawSelected(imd)
+		}
 
-			if clicked {
+		clicked, tileIndex := drawHover(win, imd)
+
+		if clicked {
+			if lastTileIndex != -1 {
 				if tileIndex == lastTileIndex {
 					lastTileIndex = -1
-					tileSelected = false
+					fmt.Println(-1)
 				} else {
 					//Move if clicked on a valid tile
 				}
-			}
-		} else {
-			if clicked {
+			} else if t, _ := b.GetBoardTile(tileIndex%8, tileIndex/8); t.Full == board.Filled && t.Team == b.Turn {
 				lastTileIndex = tileIndex
-				tileSelected = true
+				fmt.Println(tileIndex)
 			}
 		}
 
