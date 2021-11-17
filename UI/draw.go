@@ -22,6 +22,7 @@ var (
 
 	HoverColor = color.RGBA{0x00, 0x88, 0x00, 0xFF}
 	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0xFF}
+	SelectColor = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
 	MoveColor = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
 	HairLength = 20.0
@@ -39,12 +40,12 @@ func getTileSize() float64{
 }
 
 func getTilePosBL(x int, y int) (float64, float64) {
-	return float64(x)*getTileSpace() + Border, float64(y)*getTileSpace() + Border
+	return float64(x)*getTileSpace() + Border, float64(7-y)*getTileSpace() + Border
 	
 }
 
 func getTilePosCenter(x int, y int) (float64, float64) {
-	return (float64(x)+0.5)*getTileSpace() + Border, (float64(y)+0.5)*getTileSpace() + Border
+	return (float64(x)+0.5)*getTileSpace() + Border, (float64(7-y)+0.5)*getTileSpace() + Border
 }
 
 
@@ -74,7 +75,7 @@ func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
 		for x:=0;x<8;x++ {
 			posX, posY := getTilePosCenter(x,y)
 
-			tile, _ := b.GetBoardTile(x,7-y)
+			tile, _ := b.GetBoardTile(x,y)
 			if tile.Full == board.Empty { continue }
 			
 			if tile.Team == board.White {
@@ -91,7 +92,7 @@ func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
 		for x:=0;x<8;x++ {
 			posX, posY := getTilePosCenter(x,y)
 
-			tile, _ := b.GetBoardTile(x,7-y)
+			tile, _ := b.GetBoardTile(x,y)
 			if tile.Full == board.Empty || tile.King == board.Pawn { continue }
 			
 			if tile.Team == board.White {
@@ -117,7 +118,7 @@ func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
 	if mPos.Y > Height - Border - Gaps { return false, 0 }
 
 	tileX := int((mPos.X - Border) / getTileSpace())
-	tileY := int((mPos.Y - Border) / getTileSpace())
+	tileY := 7 - int((mPos.Y - Border) / getTileSpace())
 
 	tmpX, tmpY := getTilePosBL(tileX, tileY)
 	imd.Push(pixel.V(tmpX, tmpY), pixel.V(tmpX + size, tmpY + size))
@@ -131,20 +132,27 @@ func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
 	}
 }
 
-func drawSelected(imd *imdraw.IMDraw) {
-	
+func drawSelected(imd *imdraw.IMDraw, index int) {
+	if index == -1 { return }
+	tileX, tileY := getTilePosBL(index%8, index/8)
+	imd.Color = SelectColor
+	corners(imd, tileX, tileY)
 }
 
 func drawChecks(imd *imdraw.IMDraw, tilemap map[int][]int) {
-	size := getTileSize()
+	
 	for a := range tilemap {
-		tileX, tileY := getTilePosBL(a%8, 7-(a/8))
+		tileX, tileY := getTilePosBL(a%8, a/8)
 		imd.Color = TakeColor
-		corners(imd, tileX, tileY, tileX + size, tileY + size)
+		corners(imd, tileX, tileY)
 	}
 }
 
-func corners(imd *imdraw.IMDraw, x1, y1, x2, y2 float64){
+func corners(imd *imdraw.IMDraw, x1, y1 float64){
+	size := getTileSize()
+	x2 := x1 + size
+	y2 := y1 + size
+
 	//Bottom left corner
 	imd.Push(pixel.V(x1+HairLength,y1), pixel.V(x1,y1), pixel.V(x1,y1+HairLength))
 	imd.Line(HairSize)

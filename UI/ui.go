@@ -4,7 +4,6 @@ import (
 	"TurkishDraughts/Board"
 
 	"image/color"
-	"fmt"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -19,7 +18,7 @@ const (
 
 func Init() {
 	//b := board.CreateStartingBoard()
-	b := board.BoardFromStr("-------- bbbb-bbb -------- bbbbbbbb wwwwwwww -------- wwwwwwww --------")
+	b := board.BoardFromStr("-------- bbbb-bbb bbbbbbbb bbbbbbbb wwwwwwww -------- wwwwwwww --------")
 	b.SwapTeam()
 
 	cfg := pixelgl.WindowConfig{
@@ -57,12 +56,7 @@ func Init() {
 		drawBoard(imd)
 		drawPieces(&b, imd)
 		drawChecks(imd, takeMap)
-		if lastTileIndex != -1 {
-			if len(takeMap) == 0 {
-
-			}
-			drawSelected(imd)
-		}
+		drawSelected(imd, lastTileIndex)
 
 		clicked, tileIndex := drawHover(win, imd)
 
@@ -70,13 +64,13 @@ func Init() {
 			if lastTileIndex != -1 {
 				if tileIndex == lastTileIndex {
 					lastTileIndex = -1
-					fmt.Println(-1)
 				} else {
 					//Move if clicked on a valid tile
 				}
 			} else if t, _ := b.GetBoardTile(tileIndex%8, tileIndex/8); t.Full == board.Filled && t.Team == b.Turn {
-				lastTileIndex = tileIndex
-				fmt.Println(tileIndex)
+				if _, exists := takeMap[tileIndex]; exists || len(takeMap) == 0 {
+					lastTileIndex = tileIndex
+				}
 			}
 		}
 
