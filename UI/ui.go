@@ -4,6 +4,7 @@ import (
 	"TurkishDraughts/Board"
 
 	"image/color"
+	"fmt"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -48,10 +49,9 @@ func Init() {
 	for !win.Closed() {
 		//Pre drawing logic
 		imd := imdraw.New(nil)
-		moving := false
 
 		if moveMap == nil { 
-			moveMap = ValidUiTakes(&b, -1)
+			moveMap = ValidUiTakes(&b, -1, [2]int{0,0})
 			isTakeMap = true
 		}
 		if len(moveMap) == 0 { 
@@ -82,7 +82,18 @@ func Init() {
 		//User input
 		if contains(moveMap[selectedTileIndex], tileIndex) {
 			if clicked || released {
-				moving = true
+				if contains(moveMap[selectedTileIndex], tileIndex) {
+					swapTeams, prevDirection := tryMove(&b, selectedTileIndex, tileIndex)
+					fmt.Println(prevDirection)
+					moveMap = ValidUiTakes(&b, tileIndex, prevDirection)
+					if swapTeams || len(moveMap) == 0 {
+						selectedTileIndex = -1
+						moveMap = nil
+						b.SwapTeam()
+					} else {
+						selectedTileIndex = tileIndex
+					}
+				}
 			}
 		} else {
 			if clicked {
@@ -103,19 +114,6 @@ func Init() {
 			moving = true
 		}
 		*/
-		if moving {
-			if contains(moveMap[selectedTileIndex], tileIndex) {
-				swapTeams := tryMove(&b, selectedTileIndex, tileIndex)
-				moveMap = ValidUiTakes(&b, tileIndex)
-				if swapTeams || len(moveMap) == 0 {
-					selectedTileIndex = -1
-					moveMap = nil
-					b.SwapTeam()
-				} else {
-					selectedTileIndex = tileIndex
-				}
-			}			
-		}
 
 		/*
 		//Engine logic
@@ -158,7 +156,7 @@ func contains(a []int, b int) bool {
 	return false
 }
 
-func tryMove(b *board.BoardState, fromIndex, toIndex int) bool {
+func tryMove(b *board.BoardState, fromIndex, toIndex int) (bool, [2]int) {
 	tile, _ := b.GetBoardTile(fromIndex%8, fromIndex/8)
 	b.SetBoardTile(toIndex%8, toIndex/8, tile)
 	b.SetBoardTile(fromIndex%8, fromIndex/8, board.Tile{})
@@ -183,6 +181,14 @@ func tryMove(b *board.BoardState, fromIndex, toIndex int) bool {
 		}
 		b.SetBoardTile(i%8, i/8, board.Tile{})
 	}
-	return swapTeam
+
+	moveDir := [2]int{changeIndex%8, changeIndex/8}
+	moveDir = [2]int{ moveDir[0]/abs(moveDir[0]), moveDir[1]/abs(moveDir[1]) }
+	return swapTeam, moveDir
 }
 
+func abs(a int) int {
+	if a == 0 { return 1 }
+	if a < 0 { return -a }
+	return a
+}

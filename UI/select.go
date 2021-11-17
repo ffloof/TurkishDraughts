@@ -4,7 +4,7 @@ import (
 	"TurkishDraughts/Board"
 )
 
-func ValidUiTakes(bs *board.BoardState, forcedIndex int) map[int][]int {
+func ValidUiTakes(bs *board.BoardState, forcedIndex int, lastDir [2]int) map[int][]int {
 	bestTake := 1 //Filters boards with no jumps
 	validTakes := map[int][]int{}
 
@@ -15,7 +15,7 @@ func ValidUiTakes(bs *board.BoardState, forcedIndex int) map[int][]int {
 		var takes int
 		var validTakePos []int
 		if piece.King == board.King {
-			takes, _, validTakePos = bs.FindKingTakes(i%8,i/8,0,[2]int{0,0})
+			takes, _, validTakePos = bs.FindKingTakes(i%8,i/8,0,lastDir)
 		} else {
 			takes, _, validTakePos = bs.FindPawnTakes(i%8,i/8,0)
 		}
