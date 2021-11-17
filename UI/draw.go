@@ -20,13 +20,13 @@ var (
 	TeamWhite = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
 	TeamBlack = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
-	HoverColor = color.RGBA{0x00, 0x88, 0x00, 0xFF}
 	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0xFF}
-	SelectColor = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
-	MoveColor = color.RGBA{0x00, 0x00, 0x00, 0xFF}
+	MoveColor = color.RGBA{0x00, 0x3F, 0x00, 0x7F}
 
 	HairLength = 20.0
 	HairSize = 5.0
+
+	HoverSize = 2.0
 
 	InternalGap = 4.0
 )
@@ -69,7 +69,7 @@ func drawBoard(imd *imdraw.IMDraw){
 	}
 }
 
-func drawPieces(b *board.BoardState, imd *imdraw.IMDraw){
+func drawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 	size := getTileSpace()
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
@@ -110,38 +110,39 @@ func drawControls(){
 
 }
 
-func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
-	imd.Color = HoverColor
-	size := getTileSize()
+func getMouseData(win *pixelgl.Window) (bool, bool, int) {
 	mPos := win.MousePosition()
-	if mPos.X > Height - Border - Gaps { return false, 0 }
-	if mPos.Y > Height - Border - Gaps { return false, 0 }
+	if mPos.X > Height - Border - Gaps { return false, false, -1 }
+	if mPos.Y > Height - Border - Gaps { return false, false, -1 }
 
 	tileX := int((mPos.X - Border) / getTileSpace())
 	tileY := 7 - int((mPos.Y - Border) / getTileSpace())
-
-	tmpX, tmpY := getTilePosBL(tileX, tileY)
-	imd.Push(pixel.V(tmpX, tmpY), pixel.V(tmpX + size, tmpY + size))
-
-	imd.Rectangle(5.0)
 	
-	if win.JustPressed(pixelgl.MouseButtonLeft) {
-		return true, (tileY * 8) + tileX
-	} else {
-		return false, 0
-	}
+	return win.JustPressed(pixelgl.MouseButtonLeft), win.JustReleased(pixelgl.MouseButtonLeft), (tileY * 8) + tileX
 }
 
 func drawSelected(imd *imdraw.IMDraw, index int) {
 	if index == -1 { return }
 	tileX, tileY := getTilePosBL(index%8, index/8)
-	imd.Color = SelectColor
-	corners(imd, tileX, tileY)
+	imd.Color = MoveColor
+	imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + getTileSize(), tileY + getTileSize()))
+	imd.Rectangle(0.0)
 }
 
-func drawChecks(imd *imdraw.IMDraw, tilemap map[int][]int) {
-	
-	for a := range tilemap {
+func drawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
+	if index == -1 { return }
+	moves, exist := moveMap[index]
+	if exist {
+		for _, imove := range moves {
+			tileX, tileY := getTilePosBL(imove%8, imove/8)
+			imd.Color = MoveColor
+			corners(imd, tileX, tileY)
+		}
+	}
+}
+
+func drawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
+	for a := range moveMap {
 		tileX, tileY := getTilePosBL(a%8, a/8)
 		imd.Color = TakeColor
 		corners(imd, tileX, tileY)
@@ -152,20 +153,21 @@ func corners(imd *imdraw.IMDraw, x1, y1 float64){
 	size := getTileSize()
 	x2 := x1 + size
 	y2 := y1 + size
+	imd.Color = MoveColor
 
 	//Bottom left corner
 	imd.Push(pixel.V(x1+HairLength,y1), pixel.V(x1,y1), pixel.V(x1,y1+HairLength))
-	imd.Line(HairSize)
+	imd.Polygon(0)
 
 	//Bottom right corner
 	imd.Push(pixel.V(x2-HairLength,y1), pixel.V(x2,y1), pixel.V(x2,y1+HairLength))
-	imd.Line(HairSize)
+	imd.Polygon(0)
 
 	//Top left corner
 	imd.Push(pixel.V(x1+HairLength,y2), pixel.V(x1,y2), pixel.V(x1,y2-HairLength))
-	imd.Line(HairSize)
+	imd.Polygon(0)
 
 	//Top right corner
 	imd.Push(pixel.V(x2-HairLength,y2), pixel.V(x2,y2), pixel.V(x2,y2-HairLength))
-	imd.Line(HairSize)
+	imd.Polygon(0)
 }

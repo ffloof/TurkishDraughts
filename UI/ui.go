@@ -41,47 +41,59 @@ func Init() {
 	quit := make(chan bool) */
 
 	//Interacting variables
-	lastTileIndex := -1
-	var takeMap map[int][]int
+	selectedTileIndex := -1
 	var moveMap map[int][]int 
+	isTakeMap := false
 
 	for !win.Closed() {
 		imd := imdraw.New(nil)
-		if takeMap == nil { takeMap = ValidUiTakes(&b)}
-		if moveMap == nil { moveMap = ValidUiMoves(&b)}
+		if moveMap == nil { 
+			moveMap = ValidUiTakes(&b)
+			isTakeMap = true
+		}
+		if len(moveMap) == 0 { 
+			moveMap = ValidUiMoves(&b)
+			isTakeMap = false
+		}
+
 
 		//Drawing logic
 		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
 
 		drawBoard(imd)
-		drawPieces(&b, imd)
-		drawChecks(imd, takeMap)
-		drawSelected(imd, lastTileIndex)
+		drawSelected(imd, selectedTileIndex)
 
-		clicked, tileIndex := drawHover(win, imd)
-
-		if clicked {
-			if lastTileIndex != -1 {
-				if tileIndex == lastTileIndex {
-					lastTileIndex = -1
-				} else {
-					//Move if clicked on a valid tile
-				}
-			} else if t, _ := b.GetBoardTile(tileIndex%8, tileIndex/8); t.Full == board.Filled && t.Team == b.Turn {
-				_, takeExists := takeMap[tileIndex]
-				moves, _ := moveMap[tileIndex]
-
-				if takeExists || (len(takeMap) == 0 && len(moves) != 0) {
-					lastTileIndex = tileIndex
-				}
-			}
+		if isTakeMap { drawChecks(imd, moveMap) }
+		
+		clicked, released, tileIndex := getMouseData(win)
+		if selectedTileIndex != -1 { 
+			drawMoves(imd, selectedTileIndex, moveMap) 
 		}
+
+		drawPieces(imd, &b)
 
 		imd.Draw(win)
 		win.Update()
 
 		winner, _ := b.PlayerHasWon()
 		if winner { continue }
+
+		if clicked {
+			if selectedTileIndex != -1 {
+				if tileIndex == selectedTileIndex {
+					selectedTileIndex = -1
+				} else {
+					tryMove(&b, tileIndex)
+				}
+			} else if _, moveExists := moveMap[tileIndex]; moveExists {
+				selectedTileIndex = tileIndex
+			}
+		}
+
+		if released && tileIndex != selectedTileIndex {
+			tryMove(&b, tileIndex)
+		}
+
 
 		/*
 		//Engine logic
@@ -115,4 +127,8 @@ func Init() {
 
 
 	}
+}
+
+func tryMove(b *board.BoardState, tileIndex int){
+
 }
