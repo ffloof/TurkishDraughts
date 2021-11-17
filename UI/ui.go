@@ -16,7 +16,8 @@ const (
 
 
 func Init() {
-	b := board.CreateStartingBoard()
+	//b := board.CreateStartingBoard()
+	b := board.BoardFromStr("-------- bbbbbbbb -------- bbbbbbbb wwwwwwww -------- wwwwwwww --------")
 
 	cfg := pixelgl.WindowConfig{
 		Title:  "Turkish Draughts Engine",
@@ -28,17 +29,19 @@ func Init() {
 		panic(err)
 	}
 
+	/*
 	//Search variables
 	searching := false
 	totalMoves := 0
 	possibleMoves := []PossibleMove{} 
 
 	output := make(chan PossibleMove)
-	quit := make(chan bool)
+	quit := make(chan bool) */
 
 	//Interacting variables
 	lastTileIndex := -1
 	tileSelected := false
+	var takeMap map[int][]int 
 
 	for !win.Closed() {
 		imd := imdraw.New(nil)
@@ -49,6 +52,17 @@ func Init() {
 		drawPieces(&b, imd)
 		clicked, tileIndex := drawHover(win, imd)
 		
+		if takeMap == nil {
+			takeMap = ValidUiTakes(&b)
+		}
+
+		if len(takeMap) != 0 {
+			//Gotta take take take
+			drawChecks(imd, takeMap)
+		} else {
+
+		}
+
 		if tileSelected {
 			//Draw valid options
 			drawSelected(imd)
@@ -74,6 +88,7 @@ func Init() {
 		winner, _ := b.PlayerHasWon()
 		if winner { continue }
 
+		/*
 		//Engine logic
 		if totalMoves != len(possibleMoves) {
 			//Check if theres a result
@@ -89,7 +104,6 @@ func Init() {
 		}
 
 		//Add auto pick move logic
-		/*
 		if totalMoves == len(possibleMoves) {
 			searching = false
 

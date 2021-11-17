@@ -20,7 +20,9 @@ var (
 	TeamWhite = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
 	TeamBlack = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
-	HoverColor = color.RGBA{0xFF, 0x00, 0x00, 0xFF}
+	HoverColor = color.RGBA{0x00, 0x88, 0x00, 0xFF}
+	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0xFF}
+	MoveColor = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
 	InternalGap = 4.0
 )
@@ -128,4 +130,14 @@ func drawHover(win *pixelgl.Window, imd *imdraw.IMDraw) (bool, int) {
 
 func drawSelected(imd *imdraw.IMDraw) {
 	
+}
+
+func drawChecks(imd *imdraw.IMDraw, tilemap map[int][]int) {
+	size := getTileSize()
+	for a := range tilemap {
+		tileX, tileY := getTilePosBL(a%8, a/8)
+		imd.Color = TakeColor
+		imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + size, tileY + size))
+		imd.Rectangle(5.0)
+	}
 }

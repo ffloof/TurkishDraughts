@@ -19,6 +19,7 @@ func ValidUiTakes(bs *board.BoardState) map[int][]int {
 			takes, _, validTakePos = bs.FindPawnTakes(i%8,i/8,0)
 		}
 		if takes > bestTake {
+			bestTake = takes
 			validTakes = map[int][]int{
 				i: validTakePos,
 			}
