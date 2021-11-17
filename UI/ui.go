@@ -17,9 +17,9 @@ const (
 
 
 func Init() {
-	//b := board.CreateStartingBoard()
-	b := board.BoardFromStr("-------- bbbb-bbb bbbbbbbb bbbbbbbb wwwwwwww -------- wwwwwwww --------")
-	b.SwapTeam()
+	b := board.CreateStartingBoard()
+	//b := board.BoardFromStr("-------- bbbb-bbb -------- bbbbbbbb wwwwwwww -------- wwwwwwww --------")
+	//b.SwapTeam()
 
 	cfg := pixelgl.WindowConfig{
 		Title:  "Turkish Draughts Engine",
@@ -68,7 +68,10 @@ func Init() {
 					//Move if clicked on a valid tile
 				}
 			} else if t, _ := b.GetBoardTile(tileIndex%8, tileIndex/8); t.Full == board.Filled && t.Team == b.Turn {
-				if _, exists := takeMap[tileIndex]; exists || len(takeMap) == 0 {
+				_, takeExists := takeMap[tileIndex]
+				moves, _ := moveMap[tileIndex]
+
+				if takeExists || (len(takeMap) == 0 && len(moves) != 0) {
 					lastTileIndex = tileIndex
 				}
 			}

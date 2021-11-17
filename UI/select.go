@@ -38,13 +38,17 @@ func ValidUiMoves(bs *board.BoardState) map[int][]int {
 		piece, _ := bs.GetBoardTile(a%8,a/8)
 		if piece.Full == board.Empty || piece.Team != bs.Turn { continue }
 
-		stepMax := 1 
-		if piece.King == board.King { stepMax = 8 }
+		stepMax := 1
+		if piece.King == board.King { stepMax = 7 }
 		
 		x, y := a%8, a/8
 		moveList := []int{} 
 		for _, direction := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
-			for b:=1;b<stepMax;b++ {
+			for b:=1;b<=stepMax;b++ {
+				if piece.King == board.Pawn {
+					if piece.Team == board.White && (direction[0] == 0 && direction[1] == 1) { continue } //Down (black only)
+					if piece.Team == board.Black && (direction[0] == 0 && direction[1] == -1) { continue } //Up (white only)
+				}
 				moveX := (direction[0]*b) + x
 				moveY := (direction[1]*b) + y
 				moveTile, onBoard := bs.GetBoardTile(moveX,moveY)
@@ -55,7 +59,9 @@ func ValidUiMoves(bs *board.BoardState) map[int][]int {
 				}
 			}
 		}
-		validMoves[a] = moveList
+		if len(moveList) != 0 {
+			validMoves[a] = moveList
+		}
 	}
 	return validMoves
 }
