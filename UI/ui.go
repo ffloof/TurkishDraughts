@@ -46,7 +46,10 @@ func Init() {
 	isTakeMap := false
 
 	for !win.Closed() {
+		//Pre drawing logic
 		imd := imdraw.New(nil)
+		moving := false
+
 		if moveMap == nil { 
 			moveMap = ValidUiTakes(&b)
 			isTakeMap = true
@@ -78,12 +81,13 @@ func Init() {
 		winner, _ := b.PlayerHasWon()
 		if winner { continue }
 
+		//User input
 		if clicked {
 			if selectedTileIndex != -1 {
 				if tileIndex == selectedTileIndex {
 					selectedTileIndex = -1
 				} else {
-					tryMove(&b, tileIndex)
+					moving = true
 				}
 			} else if _, moveExists := moveMap[tileIndex]; moveExists {
 				selectedTileIndex = tileIndex
@@ -91,9 +95,28 @@ func Init() {
 		}
 
 		if released && tileIndex != selectedTileIndex {
-			tryMove(&b, tileIndex)
+			moving = true
 		}
 
+		if moving {
+			contains := false
+			for _, val := range moveMap[selectedTileIndex] {
+				if val == tileIndex {
+					contains = true
+					break
+				}
+			}
+
+			if contains {
+				swapTeams := tryMove(&b, selectedTileIndex, tileIndex)
+				moveMap = ValidUiTakes(&b)
+				if swapTeams || len(moveMap) == 0 {
+					moveMap = nil
+					b.SwapTeam()
+				}
+			}
+			selectedTileIndex = tileIndex			
+		}
 
 		/*
 		//Engine logic
@@ -129,6 +152,30 @@ func Init() {
 	}
 }
 
-func tryMove(b *board.BoardState, tileIndex int){
+func tryMove(b *board.BoardState, fromIndex, toIndex int) bool {
+	tile, _ := b.GetBoardTile(fromIndex%8, fromIndex/8)
+	b.SetBoardTile(toIndex%8, toIndex/8, tile)
+	b.SetBoardTile(fromIndex%8, fromIndex/8, board.Tile{})
+	
+	changeIndex := toIndex - fromIndex
+	change := 0
 
+	if changeIndex >= 8 || changeIndex <= -8 {
+		change = 8
+	} else {
+		change = 1
+	}
+	if changeIndex < 0 {
+		change *= -1
+	}
+
+	swapTeam := true
+	for i:=fromIndex; i!=toIndex; i+=change{
+		tile, _ := b.GetBoardTile(i%8, i/8)
+		if tile.Full == board.Filled {
+			swapTeam = false
+		}
+		b.SetBoardTile(i%8, i/8, board.Tile{})
+	}
+	return swapTeam
 }

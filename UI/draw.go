@@ -20,7 +20,7 @@ var (
 	TeamWhite = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
 	TeamBlack = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
-	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0xFF}
+	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0x7F}
 	MoveColor = color.RGBA{0x00, 0x3F, 0x00, 0x7F}
 
 	HairLength = 20.0
@@ -153,7 +153,6 @@ func corners(imd *imdraw.IMDraw, x1, y1 float64){
 	size := getTileSize()
 	x2 := x1 + size
 	y2 := y1 + size
-	imd.Color = MoveColor
 
 	//Bottom left corner
 	imd.Push(pixel.V(x1+HairLength,y1), pixel.V(x1,y1), pixel.V(x1,y1+HairLength))
