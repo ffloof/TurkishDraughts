@@ -17,7 +17,8 @@ const (
 
 func Init() {
 	//b := board.CreateStartingBoard()
-	b := board.BoardFromStr("-------- bbbbbbbb -------- bbbbbbbb wwwwwwww -------- wwwwwwww --------")
+	b := board.BoardFromStr("-------- bbbb-bbb -------- bbbbbbbb wwwwwwww -------- wwwwwwww --------")
+	b.SwapTeam()
 
 	cfg := pixelgl.WindowConfig{
 		Title:  "Turkish Draughts Engine",

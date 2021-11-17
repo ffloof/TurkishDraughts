@@ -135,7 +135,7 @@ func drawSelected(imd *imdraw.IMDraw) {
 func drawChecks(imd *imdraw.IMDraw, tilemap map[int][]int) {
 	size := getTileSize()
 	for a := range tilemap {
-		tileX, tileY := getTilePosBL(a%8, a/8)
+		tileX, tileY := getTilePosBL(a%8, 7-(a/8))
 		imd.Color = TakeColor
 		imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + size, tileY + size))
 		imd.Rectangle(5.0)
