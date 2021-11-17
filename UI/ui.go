@@ -44,7 +44,6 @@ func Init() {
 	selectedTileIndex := -1
 	var moveMap map[int][]int 
 	isTakeMap := false
-	forcedIndex := false
 
 	for !win.Closed() {
 		//Pre drawing logic
@@ -52,7 +51,7 @@ func Init() {
 		moving := false
 
 		if moveMap == nil { 
-			moveMap = ValidUiTakes(&b)
+			moveMap = ValidUiTakes(&b, -1)
 			isTakeMap = true
 		}
 		if len(moveMap) == 0 { 
@@ -80,8 +79,18 @@ func Init() {
 		winner, _ := b.PlayerHasWon()
 		if winner { continue }
 
-		//User input 
-		if clicked { //Clicking
+		//User input
+		if contains(moveMap[selectedTileIndex], tileIndex) {
+			if clicked || released {
+				moving = true
+			}
+		} else {
+			if clicked {
+				selectedTileIndex = tileIndex
+			}
+		}
+
+		/*if clicked { //Clicking
 			if selectedTileIndex != -1 {
 				if tileIndex != selectedTileIndex {
 					moving = true
@@ -93,20 +102,19 @@ func Init() {
 		if released && tileIndex != selectedTileIndex { //Dragging
 			moving = true
 		}
-
+		*/
 		if moving {
 			if contains(moveMap[selectedTileIndex], tileIndex) {
 				swapTeams := tryMove(&b, selectedTileIndex, tileIndex)
-				moveMap = ValidUiTakes(&b)
+				moveMap = ValidUiTakes(&b, tileIndex)
 				if swapTeams || len(moveMap) == 0 {
-					forcedIndex = false
+					selectedTileIndex = -1
 					moveMap = nil
 					b.SwapTeam()
 				} else {
-					forcedIndex = true
+					selectedTileIndex = tileIndex
 				}
-			}
-			selectedTileIndex = tileIndex			
+			}			
 		}
 
 		/*

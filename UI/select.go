@@ -4,11 +4,12 @@ import (
 	"TurkishDraughts/Board"
 )
 
-func ValidUiTakes(bs *board.BoardState) map[int][]int {
+func ValidUiTakes(bs *board.BoardState, forcedIndex int) map[int][]int {
 	bestTake := 1 //Filters boards with no jumps
 	validTakes := map[int][]int{}
 
 	for i:=0;i<64;i++ {
+		if forcedIndex != -1 { i = forcedIndex }
 		piece, _ := bs.GetBoardTile(i%8,i/8)
 		if piece.Full == board.Empty || piece.Team != bs.Turn { continue }
 		var takes int
@@ -26,7 +27,7 @@ func ValidUiTakes(bs *board.BoardState) map[int][]int {
 		} else if takes == bestTake {
 			validTakes[i] = validTakePos
 		}
-		
+		if forcedIndex != -1 { break }
 	}
 	return validTakes
 }
