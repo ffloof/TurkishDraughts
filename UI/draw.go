@@ -24,6 +24,9 @@ var (
 	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0xFF}
 	MoveColor = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
+	HairLength = 20.0
+	HairSize = 5.0
+
 	InternalGap = 4.0
 )
 
@@ -137,7 +140,24 @@ func drawChecks(imd *imdraw.IMDraw, tilemap map[int][]int) {
 	for a := range tilemap {
 		tileX, tileY := getTilePosBL(a%8, 7-(a/8))
 		imd.Color = TakeColor
-		imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + size, tileY + size))
-		imd.Rectangle(5.0)
+		corners(imd, tileX, tileY, tileX + size, tileY + size)
 	}
+}
+
+func corners(imd *imdraw.IMDraw, x1, y1, x2, y2 float64){
+	//Bottom left corner
+	imd.Push(pixel.V(x1+HairLength,y1), pixel.V(x1,y1), pixel.V(x1,y1+HairLength))
+	imd.Line(HairSize)
+
+	//Bottom right corner
+	imd.Push(pixel.V(x2-HairLength,y1), pixel.V(x2,y1), pixel.V(x2,y1+HairLength))
+	imd.Line(HairSize)
+
+	//Top left corner
+	imd.Push(pixel.V(x1+HairLength,y2), pixel.V(x1,y2), pixel.V(x1,y2-HairLength))
+	imd.Line(HairSize)
+
+	//Top right corner
+	imd.Push(pixel.V(x2-HairLength,y2), pixel.V(x2,y2), pixel.V(x2,y2-HairLength))
+	imd.Line(HairSize)
 }
