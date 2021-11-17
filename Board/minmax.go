@@ -1,27 +1,27 @@
 package board
 
-const (
-	AlphaBetaMax = 999.0 //default 999.0
-	WinWeight = 100.0 //default 100.0
-	KingWeight = 5.0 //default 5.0
-	PawnWeight = 1.0 //default 1.0
+var (
+	Depth int32 = 9
+
+	AlphaBetaMax float32 = 999.0 //default 999.0
+	WinWeight float32 = 100.0 //default 100.0
+	KingWeight float32 = 5.0 //default 5.0
+	PawnWeight float32 = 1.0 //default 1.0
 	
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
 	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
-	AdvanceWeight = 0.1 //default 0.1
+	AdvanceWeight float32 = 0.1 //default 0.1
 
-	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
-	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
-	//MinimumHashDepth = 3  //default 2
-	MaximumHashDepth = 7
-
+	//Set maximum depth for hashes to reduce memory by only saving computationally expensive hashes
+	//Lower values lead to less memory consumption but slower computer performance
+	MaximumHashDepth int32 = 10
 
 	//DANGER ZONE BELOW:
 	//When set to above 0 it will allow the transposition table to get values only evaluated at lower depths
 	//i.e. at = 2, it can use at depth 6 a previous evaluation at depth 4 
 	//This introduces inaccuracy but has a massive performance gain
 	//To minimize inaccuracy use a low MaximumHashDepth and a low TableDepthAllowedInaccuracy
-	TableDepthAllowedInaccuracy = 2 //default 0
+	TableDepthAllowedInaccuracy int32 = 2 //default 0
 )
 
 var (
@@ -30,7 +30,7 @@ var (
 )
 
 //TODO: check if promotion check is applied at end of take as well
-func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *TransposTable) float32 {
+func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *TransposTable) float32 {
 	Hits += 1
 
 	if alreadyChecked, prevValue := table.request(bs, depth); alreadyChecked {
@@ -84,11 +84,10 @@ func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *T
 			if value < bestValue { bestValue = value }
 			if value < beta { beta = value }
 			if beta <= alpha { break }
-
 		}
 	}
 
-	if depth <= MaximumHashDepth {
+	if Depth - depth < MaximumHashDepth {
 		for _, branch := range options {
 			//branch.SwapTeam()
 			table.set(&branch, bestValue, depth)

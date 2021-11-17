@@ -31,14 +31,14 @@ func Init() {
 		panic(err)
 	}
 
-	/*
+	
 	//Search variables
 	searching := false
 	totalMoves := 0
 	possibleMoves := []PossibleMove{} 
 
 	output := make(chan PossibleMove)
-	quit := make(chan bool) */
+	quit := make(chan bool) 
 
 	//Interacting variables
 	selectedTileIndex := -1
@@ -99,7 +99,7 @@ func Init() {
 			}
 		}
 
-		/*
+		
 		//Engine logic
 		if totalMoves != len(possibleMoves) {
 			//Check if theres a result
@@ -110,7 +110,7 @@ func Init() {
 		} else if !searching {
 			searching = true
 			possibleMoves = []PossibleMove{}
-			totalMoves = Search(b, 9, quit, output)
+			totalMoves = Search(b, quit, output)
 			//Start searching board states
 		}
 
@@ -127,7 +127,7 @@ func Init() {
 				}
 			}
 			b = bestMove.board
-		}*/
+		}
 
 
 	}
