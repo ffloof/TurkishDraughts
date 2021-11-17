@@ -4,7 +4,6 @@ import (
 	"TurkishDraughts/Board"
 
 	"image/color"
-	"fmt"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -84,7 +83,6 @@ func Init() {
 			if clicked || released {
 				if contains(moveMap[selectedTileIndex], tileIndex) {
 					swapTeams, prevDirection := tryMove(&b, selectedTileIndex, tileIndex)
-					fmt.Println(prevDirection)
 					moveMap = ValidUiTakes(&b, tileIndex, prevDirection)
 					if swapTeams || len(moveMap) == 0 {
 						selectedTileIndex = -1

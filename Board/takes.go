@@ -1,5 +1,7 @@
 package board
 
+import "fmt"
+
 func (bs *BoardState) MaxTakeBoards() []BoardState {
 	possibleMaxTakeBoards := []BoardState{}
 	bestTake := 1 //Filters boards with no jumps
@@ -33,43 +35,62 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 	for _, direction := range [4][2]int {{0,1},{0,-1},{-1,0},{1,0},} {
 		if -lastDir[0] == direction[0] && -lastDir[1] == direction[1] { continue } //Check to not go backwards in a direction
 
-		for i:=1;i<8;i++ {
-			jumpPos := [2]int{x+direction[0]*i,y+direction[1]*i}
-			jumpOverTile, onBoard := bs.GetBoardTile(jumpPos[0],jumpPos[1])
-			if !onBoard { break }
-			if jumpOverTile.Full == Empty { continue }
-			if attackingTile.Team == jumpOverTile.Team { break }
-			
-			//We have a jump
-			for i=i+1;i<8;i++{
-				landingPos := [2]int{x+direction[0]*i, y+direction[1]*i} 
-				landingTile, onBoard := bs.GetBoardTile(landingPos[0], landingPos[1])
-				if !onBoard { 
-					break
-				} else {
-					if landingTile.Full == Filled { break }
-					newBS := *bs
-					newBS.SetBoardTile(landingPos[0], landingPos[1], attackingTile)
-					newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{})
-					newBS.SetBoardTile(x,y, Tile{})
+		var jumpPos [2]int
+		var jumpOverTile Tile
 
-					takes, possibleBoards, _ := newBS.FindKingTakes(landingPos[0], landingPos[1],currentTakes+1, direction)
-					
-					if takes > bestTake {
-						if currentTakes == 0 {
-							validTakePos = []int{(landingPos[1]*8)+landingPos[0]}
-						}
-						bestTake = takes
-						boards = possibleBoards
-					} else if takes == bestTake {
-						if currentTakes == 0 {
-							validTakePos = append(validTakePos, (landingPos[1]*8)+landingPos[0])
-						}
-						boards = append(boards, possibleBoards...)
-					}
-				}
+		i:=1
+		exit := false
+
+		for i<8{
+			var onBoard bool
+			jumpPos = [2]int{x+(direction[0]*i),y+(direction[1]*i)}
+			jumpOverTile, onBoard = bs.GetBoardTile(jumpPos[0],jumpPos[1])
+
+			i++
+
+			if !onBoard || attackingTile.Team == jumpOverTile.Team { 
+				exit = true
+				break
+			}
+			if jumpOverTile.Full == Empty { continue }
+			break
+		}
+		
+		if exit { continue }
+		
+		fmt.Println("treated like a punk you know thats unheard of")
+
+		//We have a jump
+		for i<8 {
+			landingPos := [2]int{x+(direction[0]*i), y+(direction[1]*i)} 
+			landingTile, onBoard := bs.GetBoardTile(landingPos[0], landingPos[1])
+
+			i++
+
+			if !onBoard || landingTile.Full == Filled { 
+				exit = true
+				break 
 			}
 			
+			newBS := *bs
+			newBS.SetBoardTile(landingPos[0], landingPos[1], attackingTile)
+			newBS.SetBoardTile(jumpPos[0], jumpPos[1], Tile{})
+			newBS.SetBoardTile(x,y, Tile{})
+
+			takes, possibleBoards, _ := newBS.FindKingTakes(landingPos[0], landingPos[1],currentTakes+1, direction)
+			
+			if takes > bestTake {
+				if currentTakes == 0 {
+					validTakePos = []int{(landingPos[1]*8)+landingPos[0]}
+				}
+				bestTake = takes
+				boards = possibleBoards
+			} else if takes == bestTake {
+				if currentTakes == 0 {
+					validTakePos = append(validTakePos, (landingPos[1]*8)+landingPos[0])
+				}
+				boards = append(boards, possibleBoards...)
+			}
 		}		
 	}
 
