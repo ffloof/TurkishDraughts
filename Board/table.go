@@ -16,7 +16,7 @@ func NewTable() *TransposTable {
 	}
 }
 
-func (table *TransposTable) Request(board *BoardState, depth uint32) (bool, float32) {
+func (table *TransposTable) request(board *BoardState, depth uint32) (bool, float32) {
 	//Hash board state and load entry
 	hash := board.hashBoard()
 	entry, exists := table.internal[hash]
@@ -30,7 +30,7 @@ func (table *TransposTable) Request(board *BoardState, depth uint32) (bool, floa
 
 }
 
-func (table *TransposTable) Set(board *BoardState, value float32, depth uint32){
+func (table *TransposTable) set(board *BoardState, value float32, depth uint32){
 	//Hash board state and write to table
 	hash := board.hashBoard()
 

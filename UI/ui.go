@@ -99,20 +99,6 @@ func Init() {
 			}
 		}
 
-		/*if clicked { //Clicking
-			if selectedTileIndex != -1 {
-				if tileIndex != selectedTileIndex {
-					moving = true
-				}
-			} else if _, moveExists := moveMap[tileIndex]; moveExists {
-				if (!forcedIndex) { selectedTileIndex = tileIndex }
-			}
-		}
-		if released && tileIndex != selectedTileIndex { //Dragging
-			moving = true
-		}
-		*/
-
 		/*
 		//Engine logic
 		if totalMoves != len(possibleMoves) {

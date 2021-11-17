@@ -1,7 +1,5 @@
 package board
 
-import "fmt"
-
 func (bs *BoardState) MaxTakeBoards() []BoardState {
 	possibleMaxTakeBoards := []BoardState{}
 	bestTake := 1 //Filters boards with no jumps
@@ -58,8 +56,6 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 		
 		if exit { continue }
 		
-		fmt.Println("treated like a punk you know thats unheard of")
-
 		//We have a jump
 		for i<8 {
 			landingPos := [2]int{x+(direction[0]*i), y+(direction[1]*i)} 

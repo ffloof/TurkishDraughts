@@ -12,14 +12,15 @@ const (
 
 	//Set minimum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Greater values lead to less memory consumption but slower computer performance (0 - depth-1)
-	MinimumHashDepth = 3  //default 2
+	//MinimumHashDepth = 3  //default 2
+	MaximumHashDepth = 7
 
 
 	//DANGER ZONE BELOW:
 	//When set to above 0 it will allow the transposition table to get values only evaluated at lower depths
 	//i.e. at = 2, it can use at depth 6 a previous evaluation at depth 4 
 	//This introduces inaccuracy but has a massive performance gain
-	//To minimize inaccuracy use a high MinimumHashDepth and a low TableDepthAllowedInaccuracy
+	//To minimize inaccuracy use a low MaximumHashDepth and a low TableDepthAllowedInaccuracy
 	TableDepthAllowedInaccuracy = 2 //default 0
 )
 
@@ -32,7 +33,7 @@ var (
 func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *TransposTable) float32 {
 	Hits += 1
 
-	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
+	if alreadyChecked, prevValue := table.request(bs, depth); alreadyChecked {
 		return prevValue
 	}
 
@@ -87,10 +88,10 @@ func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *T
 		}
 	}
 
-	if depth > MinimumHashDepth {
+	if depth <= MaximumHashDepth {
 		for _, branch := range options {
 			//branch.SwapTeam()
-			table.Set(&branch, bestValue, depth)
+			table.set(&branch, bestValue, depth)
 		}
 	}
 	
@@ -99,7 +100,6 @@ func (bs *BoardState) MinMax(depth uint32, alpha float32, beta float32, table *T
 
 
 func (bs *BoardState) RawBoardValue() float32 { //Game is always from whites perspective
-
 	wPawns := 0
 	wKings := 0
 	bPawns := 0

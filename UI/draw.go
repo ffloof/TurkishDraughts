@@ -23,8 +23,7 @@ var (
 	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0x7F}
 	MoveColor = color.RGBA{0x00, 0x3F, 0x00, 0x7F}
 
-	HairLength = 20.0
-	HairSize = 5.0
+	CornerSize = 20.0
 
 	HoverSize = 2.0
 
@@ -155,18 +154,18 @@ func corners(imd *imdraw.IMDraw, x1, y1 float64){
 	y2 := y1 + size
 
 	//Bottom left corner
-	imd.Push(pixel.V(x1+HairLength,y1), pixel.V(x1,y1), pixel.V(x1,y1+HairLength))
+	imd.Push(pixel.V(x1+CornerSize,y1), pixel.V(x1,y1), pixel.V(x1,y1+CornerSize))
 	imd.Polygon(0)
 
 	//Bottom right corner
-	imd.Push(pixel.V(x2-HairLength,y1), pixel.V(x2,y1), pixel.V(x2,y1+HairLength))
+	imd.Push(pixel.V(x2-CornerSize,y1), pixel.V(x2,y1), pixel.V(x2,y1+CornerSize))
 	imd.Polygon(0)
 
 	//Top left corner
-	imd.Push(pixel.V(x1+HairLength,y2), pixel.V(x1,y2), pixel.V(x1,y2-HairLength))
+	imd.Push(pixel.V(x1+CornerSize,y2), pixel.V(x1,y2), pixel.V(x1,y2-CornerSize))
 	imd.Polygon(0)
 
 	//Top right corner
-	imd.Push(pixel.V(x2-HairLength,y2), pixel.V(x2,y2), pixel.V(x2,y2-HairLength))
+	imd.Push(pixel.V(x2-CornerSize,y2), pixel.V(x2,y2), pixel.V(x2,y2-CornerSize))
 	imd.Polygon(0)
 }
