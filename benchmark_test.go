@@ -15,6 +15,7 @@ func benchmark(t *testing.T, b *board.BoardState, testDepth int32) {
 	value := b.MinMax(testDepth, -board.AlphaBetaMax, board.AlphaBetaMax, board.NewTable())
 
 	duration := time.Since(startTime).Seconds()
+	t.Log("---", testDepth)
 	t.Log("Time:", duration)
 	t.Log("Searches:", board.Searches/1000, "k")
 	t.Log("Efficiency:", float32(100.0-(100.0*float64(board.Searches)/float64(board.Hits))) ,"%")
@@ -23,9 +24,11 @@ func benchmark(t *testing.T, b *board.BoardState, testDepth int32) {
 }
 
 func TestBenchDefaultBoard(t *testing.T){
-	for i:=5;i<12;i++ {
+	var i int32 = 5
+	for i<12 {
 		b := board.CreateStartingBoard()
 		benchmark(t, &b, i)
+		i++
 	}
 	
 }
