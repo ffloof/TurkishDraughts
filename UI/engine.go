@@ -18,14 +18,14 @@ func Search(b board.BoardState, quit chan bool, output chan PossibleMove) int {
 	}
 
 	for _, branch := range options{
-		go analyzeBranch(branch, board.NewTable(), output, board.Depth)
+		go analyzeBranch(branch, board.NewTable(), output)
 	}
 
 	return len(options)
 }
 
-func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan PossibleMove, depth int32) {
+func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan PossibleMove) {
 	branch.SwapTeam()
-	output <- PossibleMove {branch, branch.MinMax(depth, -board.AlphaBetaMax, board.AlphaBetaMax, table)}
+	output <- PossibleMove {branch, branch.MinMax(board.Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table)}
 	debug.FreeOSMemory()
 }

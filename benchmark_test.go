@@ -10,6 +10,7 @@ func benchmark(t *testing.T, b *board.BoardState, testDepth int32) {
 	startTime := time.Now()
 	board.Searches = 0
 	board.Hits = 0
+	board.Depth = testDepth
 
 	value := b.MinMax(testDepth, -board.AlphaBetaMax, board.AlphaBetaMax, board.NewTable())
 
@@ -21,34 +22,12 @@ func benchmark(t *testing.T, b *board.BoardState, testDepth int32) {
 	t.Log("Standing:", value)
 }
 
-func TestBenchDefaultBoard5(t *testing.T){
-	b := board.CreateStartingBoard()
-	benchmark(t, &b, 5)
-}
-
-func TestBenchDefaultBoard6(t *testing.T){
-	b := board.CreateStartingBoard()
-	benchmark(t, &b, 6)
-}
-
-func TestBenchDefaultBoard7(t *testing.T){
-	b := board.CreateStartingBoard()
-	benchmark(t, &b, 7)
-}
-
-func TestBenchDefaultBoard8(t *testing.T){
-	b := board.CreateStartingBoard()
-	benchmark(t, &b, 8)
-}
-
-func TestBenchDefaultBoard9(t *testing.T){
-	b := board.CreateStartingBoard()
-	benchmark(t, &b, 9)
-}
-
-func TestBenchDefaultBoard10(t *testing.T){
-	b := board.CreateStartingBoard()
-	benchmark(t, &b, 10)
+func TestBenchDefaultBoard(t *testing.T){
+	for i:=5;i<12;i++ {
+		b := board.CreateStartingBoard()
+		benchmark(t, &b, i)
+	}
+	
 }
 
 /*
