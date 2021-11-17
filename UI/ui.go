@@ -44,6 +44,7 @@ func Init() {
 	selectedTileIndex := -1
 	var moveMap map[int][]int 
 	isTakeMap := false
+	forcedIndex := false
 
 	for !win.Closed() {
 		//Pre drawing logic
@@ -69,9 +70,7 @@ func Init() {
 		if isTakeMap { drawChecks(imd, moveMap) }
 		
 		clicked, released, tileIndex := getMouseData(win)
-		if selectedTileIndex != -1 { 
-			drawMoves(imd, selectedTileIndex, moveMap) 
-		}
+		drawMoves(imd, selectedTileIndex, moveMap)
 
 		drawPieces(imd, &b)
 
@@ -81,38 +80,30 @@ func Init() {
 		winner, _ := b.PlayerHasWon()
 		if winner { continue }
 
-		//User input
-		if clicked {
+		//User input 
+		if clicked { //Clicking
 			if selectedTileIndex != -1 {
-				if tileIndex == selectedTileIndex {
-					selectedTileIndex = -1
-				} else {
+				if tileIndex != selectedTileIndex {
 					moving = true
 				}
 			} else if _, moveExists := moveMap[tileIndex]; moveExists {
-				selectedTileIndex = tileIndex
+				if (!forcedIndex) { selectedTileIndex = tileIndex }
 			}
 		}
-
-		if released && tileIndex != selectedTileIndex {
+		if released && tileIndex != selectedTileIndex { //Dragging
 			moving = true
 		}
 
 		if moving {
-			contains := false
-			for _, val := range moveMap[selectedTileIndex] {
-				if val == tileIndex {
-					contains = true
-					break
-				}
-			}
-
-			if contains {
+			if contains(moveMap[selectedTileIndex], tileIndex) {
 				swapTeams := tryMove(&b, selectedTileIndex, tileIndex)
 				moveMap = ValidUiTakes(&b)
 				if swapTeams || len(moveMap) == 0 {
+					forcedIndex = false
 					moveMap = nil
 					b.SwapTeam()
+				} else {
+					forcedIndex = true
 				}
 			}
 			selectedTileIndex = tileIndex			
@@ -152,6 +143,13 @@ func Init() {
 	}
 }
 
+func contains(a []int, b int) bool {
+	for _, v := range a {
+		if b == v { return true }
+	}
+	return false
+}
+
 func tryMove(b *board.BoardState, fromIndex, toIndex int) bool {
 	tile, _ := b.GetBoardTile(fromIndex%8, fromIndex/8)
 	b.SetBoardTile(toIndex%8, toIndex/8, tile)
@@ -179,3 +177,4 @@ func tryMove(b *board.BoardState, fromIndex, toIndex int) bool {
 	}
 	return swapTeam
 }
+
