@@ -26,6 +26,6 @@ func Search(b board.BoardState, quit chan bool, output chan PossibleMove) int {
 
 func analyzeBranch (branch board.BoardState, table *board.TransposTable, output chan PossibleMove) {
 	branch.SwapTeam()
-	output <- PossibleMove {branch, branch.MinMax(board.Depth, -board.AlphaBetaMax, board.AlphaBetaMax, table)}
+	output <- PossibleMove {branch, branch.MinMax(0, -board.AlphaBetaMax, board.AlphaBetaMax, table)}
 	debug.FreeOSMemory()
 }

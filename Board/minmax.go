@@ -1,12 +1,14 @@
 package board
 
-var (
-	Depth int32 = 9
+const (
+	AlphaBetaMax float32 = 999.0
+	WinWeight float32 = 100.0
+	KingWeight float32 = 5.0
+	PawnWeight float32 = 1.0
+)
 
-	AlphaBetaMax float32 = 999.0 //default 999.0
-	WinWeight float32 = 100.0 //default 100.0
-	KingWeight float32 = 5.0 //default 5.0
-	PawnWeight float32 = 1.0 //default 1.0
+var (
+	MaxDepth int32 = 10 //default 10
 	
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
 	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
@@ -14,14 +16,13 @@ var (
 
 	//Set maximum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Lower values lead to less memory consumption but slower computer performance
-	MaximumHashDepth int32 = 10
+	MaximumHashDepth int32 = 7 //default 7
 
-	//DANGER ZONE BELOW:
-	//When set to above 0 it will allow the transposition table to get values only evaluated at lower depths
-	//i.e. at = 2, it can use at depth 6 a previous evaluation at depth 4 
+	//When set to above 0 it will allow the transposition table to get values evaluated at lower depths
+	//i.e. at = 2, for a 6 ply evaluation it can use previous 4 ply evaluation 
 	//This introduces inaccuracy but has a massive performance gain
 	//To minimize inaccuracy use a low MaximumHashDepth and a low TableDepthAllowedInaccuracy
-	TableDepthAllowedInaccuracy int32 = 2 //default 0
+	TableDepthAllowedInaccuracy int32 = 0 //default 0
 )
 
 var (
@@ -37,6 +38,10 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		return prevValue
 	}
 
+	if depth == MaxDepth {
+		return bs.RawBoardValue()
+	}
+
 	//add a check for winner here
 	playerWon, winWhite := bs.PlayerHasWon()
 	
@@ -45,12 +50,8 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 			return WinWeight
 		} 
 		return -WinWeight 
-	}
+	}	
 
-	if depth == 0 {
-		return bs.RawBoardValue()
-	}
-	
 	Searches += 1
 
 	options := bs.MaxTakeBoards()
@@ -69,7 +70,8 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		bestValue = -AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.MinMax(depth-1, alpha, beta, table)
+			value := branch.MinMax(depth+1, alpha, beta, table)
+			if depth <= MaximumHashDepth { table.set(&branch, value, depth+1) }
 			
 			if value > bestValue { bestValue = value }
 			if value > alpha { alpha = value }
@@ -79,7 +81,8 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
-			value := branch.MinMax(depth-1, alpha, beta, table)
+			value := branch.MinMax(depth+1, alpha, beta, table)
+			if depth <= MaximumHashDepth { table.set(&branch, value, depth+1) }
 
 			if value < bestValue { bestValue = value }
 			if value < beta { beta = value }
@@ -87,12 +90,12 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		}
 	}
 
-	if Depth - depth < MaximumHashDepth {
+	/*if Depth - depth < MaximumHashDepth {
 		for _, branch := range options {
-			//branch.SwapTeam()
+			branch.SwapTeam()
 			table.set(&branch, bestValue, depth)
 		}
-	}
+	}*/
 	
 	return bestValue
 }

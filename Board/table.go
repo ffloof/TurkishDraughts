@@ -23,7 +23,7 @@ func (table *TransposTable) request(board *BoardState, depth int32) (bool, float
 
 	if exists {
 		if entry.board == *board {
-			if entry.depth + TableDepthAllowedInaccuracy >= depth { return true, entry.value }
+			if entry.depth - TableDepthAllowedInaccuracy <= depth { return true, entry.value }
 		}
 	}
 	return false, 0.0
@@ -36,7 +36,7 @@ func (table *TransposTable) set(board *BoardState, value float32, depth int32){
 
 	//Replace only if greater depth
 	entry, exists := table.internal[hash]
-	if !exists || depth >= entry.depth { 
+	if !exists || depth <= entry.depth { 
 		//By saving shallower branches not only do we save the most time saving possiblity, we also perform far fewer writes increasing efficiency. 
 		table.internal[hash] = storedState{*board, value, depth}
 	}
