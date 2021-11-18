@@ -44,6 +44,9 @@ func Init() {
 	var moveMap map[int][]int 
 	isTakeMap := false
 
+	autoMoveWhite := false
+	autoMoveBlack := false
+
 	for !win.Closed() {
 		//Pre drawing logic
 		imd := imdraw.New(nil)
@@ -61,15 +64,27 @@ func Init() {
 		//Drawing logic
 		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
 
-		drawBoard(imd)
+		drawBoard(imd)	
 		drawSelected(imd, selectedTileIndex)
-
 		if isTakeMap { drawChecks(imd, moveMap) }
-		
 		clicked, released, tileIndex := getMouseData(win)
 		drawMoves(imd, selectedTileIndex, moveMap)
-
 		drawPieces(imd, &b)
+
+		if win.JustPressed(pixelgl.Key1) {
+			autoMoveBlack = !autoMoveBlack
+		}
+		if win.JustPressed(pixelgl.Key2) {
+			autoMoveWhite = !autoMoveWhite
+		}
+		if win.JustPressed(pixelgl.KeyMinus) {
+			board.MaxDepth -= 1
+			if board.MaxDepth < 0 {
+				board.MaxDepth = 0
+			}
+		}
+		if win.JustPressed(pixelgl.KeyEqual) { board.MaxDepth += 1 }
+		drawControls(imd, win, autoMoveBlack, autoMoveWhite)
 
 		imd.Draw(win)
 		win.Update()
@@ -77,60 +92,60 @@ func Init() {
 		gameWon, _, gameDraw := b.PlayerHasWon()
 		if gameWon || gameDraw { continue }
 
-		//User input
-		if contains(moveMap[selectedTileIndex], tileIndex) {
-			if clicked || released {
-				if contains(moveMap[selectedTileIndex], tileIndex) {
-					swapTeams, prevDirection := tryMove(&b, selectedTileIndex, tileIndex)
-					moveMap = ValidUiTakes(&b, tileIndex, prevDirection)
-					if swapTeams || len(moveMap) == 0 {
-						selectedTileIndex = -1
-						moveMap = nil
-						b.SwapTeam()
-					} else {
-						selectedTileIndex = tileIndex
+		if (!autoMoveWhite && b.Turn == board.White) || (!autoMoveBlack && b.Turn == board.Black) {
+			//User input
+			if contains(moveMap[selectedTileIndex], tileIndex) {
+				if clicked || released {
+					if contains(moveMap[selectedTileIndex], tileIndex) {
+						swapTeams, prevDirection := tryMove(&b, selectedTileIndex, tileIndex)
+						moveMap = ValidUiTakes(&b, tileIndex, prevDirection)
+						if swapTeams || len(moveMap) == 0 {
+							selectedTileIndex = -1
+							moveMap = nil
+							b.SwapTeam()
+						} else {
+							selectedTileIndex = tileIndex
+						}
 					}
 				}
-			}
-		} else {
-			if clicked {
-				selectedTileIndex = tileIndex
-			}
-		}
-
-		
-		//Engine logic
-		if totalMoves != len(possibleMoves) {
-			//Check if theres a result
-			select {
-			case pMove := <-output:
-				possibleMoves = append(possibleMoves, pMove)
-			}
-		} else if !searching {
-			searching = true
-			possibleMoves = []PossibleMove{}
-			totalMoves = Search(b, quit, output)
-			//Start searching board states
-		}
-
-		//Add auto pick move logic
-		if totalMoves == len(possibleMoves) {
-			searching = false
-
-			var bestMove PossibleMove 
-
-			for i, checkMove := range possibleMoves {
-				//TODO: add cool arrows with numbers
-				if i == 0 || (b.Turn == board.White && checkMove.value > bestMove.value) || (b.Turn == board.Black && checkMove.value < bestMove.value) {
-					bestMove = checkMove
+			} else {
+				if clicked {
+					selectedTileIndex = tileIndex
 				}
 			}
-			b = bestMove.board
-			selectedTileIndex = -1
-			moveMap = nil
+
+		} else {
+			//Engine logic
+			if totalMoves != len(possibleMoves) {
+				//Check if theres a result
+				select {
+				case pMove := <-output:
+					possibleMoves = append(possibleMoves, pMove)
+				}
+			} else if !searching {
+				searching = true
+				possibleMoves = []PossibleMove{}
+				totalMoves = Search(b, quit, output)
+				//Start searching board states
+			}
+
+			//Add auto pick move logic
+			if totalMoves == len(possibleMoves) {
+				searching = false
+
+				var bestMove PossibleMove 
+
+				for i, checkMove := range possibleMoves {
+					//TODO: add cool arrows with numbers
+					if i == 0 || (b.Turn == board.White && checkMove.value > bestMove.value) || (b.Turn == board.Black && checkMove.value < bestMove.value) {
+						bestMove = checkMove
+					}
+				}
+				b = bestMove.board
+				selectedTileIndex = -1
+				moveMap = nil
+			}
 		}
-
-
 	}
 }
 
