@@ -46,11 +46,11 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 
 			i++
 
+			if jumpOverTile.Full == Empty { continue }
 			if !onBoard || attackingTile.Team == jumpOverTile.Team { 
 				exit = true
 				break
 			}
-			if jumpOverTile.Full == Empty { continue }
 			break
 		}
 		

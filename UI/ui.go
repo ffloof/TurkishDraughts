@@ -17,10 +17,10 @@ const (
 
 
 func Init() {
+	board.MaxDepth = 8
 	b := board.CreateStartingBoard()
-	//b := board.BoardFromStr("-------- bbbb-bbb -------- bbbbbbbb wwwwwwww -------- wwwwwwww --------")
-	//b.SwapTeam()
-
+	b.SwapTeam()
+	
 	cfg := pixelgl.WindowConfig{
 		Title:  "Turkish Draughts Engine",
 		Bounds: pixel.R(0, 0, Width, Height),
@@ -39,7 +39,7 @@ func Init() {
 
 	output := make(chan PossibleMove)
 	quit := make(chan bool) 
-
+	
 	//Interacting variables
 	selectedTileIndex := -1
 	var moveMap map[int][]int 
@@ -127,6 +127,8 @@ func Init() {
 				}
 			}
 			b = bestMove.board
+			selectedTileIndex = -1
+			moveMap = nil
 		}
 
 
