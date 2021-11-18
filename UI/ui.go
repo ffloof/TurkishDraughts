@@ -19,7 +19,6 @@ const (
 func Init() {
 	board.MaxDepth = 8
 	b := board.CreateStartingBoard()
-	b.SwapTeam()
 	
 	cfg := pixelgl.WindowConfig{
 		Title:  "Turkish Draughts Engine",
@@ -75,8 +74,8 @@ func Init() {
 		imd.Draw(win)
 		win.Update()
 
-		winner, _ := b.PlayerHasWon()
-		if winner { continue }
+		gameWon, _, gameDraw := b.PlayerHasWon()
+		if gameWon || gameDraw { continue }
 
 		//User input
 		if contains(moveMap[selectedTileIndex], tileIndex) {

@@ -38,18 +38,20 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		return prevValue
 	}
 
-	if depth == MaxDepth {
-		return bs.RawBoardValue()
-	}
-
 	//add a check for winner here
-	playerWon, winWhite := bs.PlayerHasWon()
+	playerWon, winWhite, playerDrew := bs.PlayerHasWon()
 	
 	if playerWon {
 		if winWhite == White {
 			return WinWeight
 		} 
 		return -WinWeight 
+	} else if playerDrew {
+		return 0.0
+	}
+
+	if depth == MaxDepth {
+		return bs.RawBoardValue()
 	}	
 
 	Searches += 1

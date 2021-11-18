@@ -147,7 +147,7 @@ func BoardFromStr(str string) BoardState {
 	return board
 }
 
-func (bs *BoardState) PlayerHasWon() (bool, TileTeam) { 
+func (bs *BoardState) PlayerHasWon() (bool, TileTeam, bool) { 
 	//If either player is out of pieces they lose
 	var wKings uint8 = 0
 	var wPieces uint8 = 0
@@ -169,27 +169,33 @@ func (bs *BoardState) PlayerHasWon() (bool, TileTeam) {
 
 	//If a player has no moves they lose lol
 	if wPieces == 0 {
-		return true, Black
+		return true, Black, false
 	} 
 
 	if bPieces == 0 {
-		return true, White
+		return true, White, false
 	}
 
 	//If one player has a king and the other has one piece they lose
 	if wPieces == 1 {
-		if bKings != 0 && wKings == 0 {
-			return true, Black
+		if bKings > 0 && wKings == 0 {
+			return true, Black, false
 		}
 	}
 
 	if bPieces == 1 {
-		if wKings != 0 && bKings == 0{
-			return true, White
+		if wKings > 0 && bKings == 0{
+			return true, White, false
 		}
 	}
 
-	return false, 0 //No winner
+	if wPieces == 1 && bPieces == 1 {
+		if wKings == 1 && bKings == 1 {
+			return false, Black, false
+		}
+	}
+
+	return false, 0.0, false //No winner
 	//If a player has no playable moves they lose (checked in another part of the code)
 }
 
