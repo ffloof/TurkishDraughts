@@ -167,6 +167,7 @@ func (bs *BoardState) PlayerHasWon() (bool, TileTeam, bool) {
 		}		
 	}
 
+
 	//If a player has no moves they lose lol
 	if wPieces == 0 {
 		return true, Black, false
@@ -177,28 +178,22 @@ func (bs *BoardState) PlayerHasWon() (bool, TileTeam, bool) {
 	}
 
 	//If one player has a king and the other has one piece they lose
-	if wPieces == 1 && wKings == 0 {
-		if bKings > 0  {
-			return true, Black, false
-		} else {
-			//TODO: derive pawn end game
-			//1v1 Pawn end game
-		}
-	}
-
-	if bPieces == 1 && bKings == 0 {
-		if wKings > 0 {
-			return true, White, false
-		} else {
-			//1v1 Pawn end game
-		}
-	}
 
 	if wPieces == 1 && bPieces == 1 {
-		return false, Black, true 
+		if wKings > 0 {
+			if bKings > 0 {
+				return false, 0, true //Draw
+			}
+			return true, White, false //White wins
+		}
+
+		if bKings > 0 {
+			return true, Black, false //Black wins
+		}
+		//TODO: derive pawn end game
 	}
 
-	return false, 0.0, false //No winner
+	return false, 0.0, false //No winner or draw
 	//If a player has no playable moves they lose (checked in another part of the code)
 }
 
