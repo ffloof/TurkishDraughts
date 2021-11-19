@@ -37,8 +37,17 @@ func TestBenchStartBoard(t *testing.T){
 	}	
 }
 
-func TestBenchMaxHashes(){
-	
+func TestBenchNoAdvanced(t *testing.T){
+	//Config
+	board.AdvanceWeight = 0.0
+	board.TableDepthAllowedInaccuracy = 0
+
+	var i int32 = 5
+	for i<=12 {
+		b := board.CreateStartingBoard()
+		benchmarkDepths(t, &b, i)
+		i++
+	}
 }
 
 /*
