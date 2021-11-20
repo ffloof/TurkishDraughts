@@ -118,6 +118,7 @@ func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white boo
 	fmt.Fprintln(basicTxt, "[+,-] AI Depth:", board.MaxDepth)
 	fmt.Fprintln(basicTxt, "[1] Black AI Moves:", black)
 	fmt.Fprintln(basicTxt, "[2] White AI Moves:", white)
+	fmt.Fprintln(basicTxt, "[Z] Undo Move")
 	//fmt.Fprintln(basicTxt, "[Z] Undo")
 	basicTxt.Draw(win, pixel.IM.Scaled(basicTxt.Orig, 2))
 }

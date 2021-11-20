@@ -46,12 +46,17 @@ func Init() {
 
 	autoMoveWhite := false
 	autoMoveBlack := false
+	previousBoards := []board.BoardState{}
+	var nextPrevBoard board.BoardState
 
 	for !win.Closed() {
 		//Pre drawing logic
 		imd := imdraw.New(nil)
 
-		if moveMap == nil { 
+
+
+		if moveMap == nil {
+			nextPrevBoard = b
 			moveMap = ValidUiTakes(&b, -1, [2]int{0,0})
 			isTakeMap = true
 		}
@@ -71,12 +76,8 @@ func Init() {
 		drawMoves(imd, selectedTileIndex, moveMap)
 		drawPieces(imd, &b)
 
-		if win.JustPressed(pixelgl.Key1) {
-			autoMoveBlack = !autoMoveBlack
-		}
-		if win.JustPressed(pixelgl.Key2) {
-			autoMoveWhite = !autoMoveWhite
-		}
+		if win.JustPressed(pixelgl.Key1) { autoMoveBlack = !autoMoveBlack }
+		if win.JustPressed(pixelgl.Key2) { autoMoveWhite = !autoMoveWhite }
 		if win.JustPressed(pixelgl.KeyMinus) {
 			board.MaxDepth -= 1
 			if board.MaxDepth < 0 {
@@ -84,6 +85,15 @@ func Init() {
 			}
 		}
 		if win.JustPressed(pixelgl.KeyEqual) { board.MaxDepth += 1 }
+		if win.JustPressed(pixelgl.KeyZ) {
+			if len(previousBoards) > 0 {
+				b = previousBoards[len(previousBoards)-1]
+				previousBoards = previousBoards[0:len(previousBoards)-1]
+				selectedTileIndex = -1
+				moveMap = nil
+			}
+		}
+
 		drawControls(imd, win, autoMoveBlack, autoMoveWhite)
 
 		imd.Draw(win)
@@ -103,6 +113,7 @@ func Init() {
 							selectedTileIndex = -1
 							moveMap = nil
 							b.SwapTeam()
+							previousBoards = append(previousBoards, nextPrevBoard)
 						} else {
 							selectedTileIndex = tileIndex
 						}
@@ -144,6 +155,7 @@ func Init() {
 				b = bestMove.board
 				selectedTileIndex = -1
 				moveMap = nil
+				previousBoards = append(previousBoards, nextPrevBoard)
 			}
 		}
 	}
