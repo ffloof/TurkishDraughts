@@ -130,7 +130,52 @@ func TestBoardStr(t *testing.T){
 //Test PlayerHasWon
 
 func TestPlayerWin(t *testing.T){
+	//Draw from no pieces
+	board0 := board.BoardFromStr("-------- -------- -------- -------- -------- -------- -------- --------")
+	win, winTeam, draw := board0.PlayerHasWon()
+	if win || !draw { t.Fail() }
 
+	//Win by no pieces remaining
+	board1 := board.BoardFromStr("-------- -------- -------- -------- wwwwwwww wwwwwwww -------- --------")
+	win, winTeam, draw = board1.PlayerHasWon()
+	if !win || winTeam != board.White || draw { t.Fail()} 
+	board2 := board.BoardFromStr("-------- -------- -------- -------- bbbbbbbb bbbbbbbb -------- --------")
+	win, winTeam, draw = board2.PlayerHasWon()
+	if !win || winTeam != board.Black || draw { t.Fail()} 
+
+	//Not yet concluded
+	board3 := board.BoardFromStr("-------- -------- b------- -------- wwwwwwww wwwwwwww -------- --------")
+	win, winTeam, draw = board3.PlayerHasWon()
+	if win || draw { t.Fail() }
+	board4 := board.BoardFromStr("-------- -------- w------- -------- bbbbbbbb bbbbbbbb -------- --------")
+	win, winTeam, draw = board4.PlayerHasWon()
+	if win || draw { t.Fail() }
+
+	//Won by king v 1
+	board5 := board.BoardFromStr("-------- -------- b------- -------- Wwwwwwww wwwwwwww -------- --------")
+	win, winTeam, draw = board5.PlayerHasWon()
+	if !win || winTeam != board.White || draw { t.Fail()} 
+	board6 := board.BoardFromStr("-------- -------- w------- -------- Bbbbbbbb bbbbbbbb -------- --------")
+	win, winTeam, draw = board6.PlayerHasWon()
+	if !win || winTeam != board.Black || draw { t.Fail()} 
+
+	//Not yet concluded king v king + pieces
+	board7 := board.BoardFromStr("-------- -------- B------- -------- Wwwwwwww wwwwwwww -------- --------")
+	win, winTeam, draw = board7.PlayerHasWon()
+	if win || draw { t.Fail() }
+	board8 := board.BoardFromStr("-------- -------- W------- -------- Bbbbbbbb bbbbbbbb -------- --------")
+	win, winTeam, draw = board8.PlayerHasWon()
+	if win || draw { t.Fail() }
+
+	//Draw king v king
+	board9 := board.BoardFromStr("-------- -------- B------- -------- -------W -------- -------- --------")
+	win, winTeam, draw = board9.PlayerHasWon()
+	if win || !draw { t.Fail() }
+
+	//Won 2king v king
+	board10 := board.BoardFromStr("-------- B------- B------- -------- -------W -------- -------- --------")
+	win, winTeam, draw = board10.PlayerHasWon()
+	if !win || winTeam != board.Black || draw { t.Fail()} 
 }
 
 //Test table set and request
