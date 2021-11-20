@@ -7,7 +7,7 @@ import (
 	"TurkishDraughts/Board"
 )
 
-func GenRandomBoard() board.BoardState {
+func genRandomBoard() board.BoardState {
 	return board.BoardState { 
 		Turn: board.TileTeam(rand.Uint32()%2),
 		Team: rand.Uint64(),
@@ -16,7 +16,7 @@ func GenRandomBoard() board.BoardState {
 	}
 }
 
-func GenRandomTile() board.Tile {
+func genRandomTile() board.Tile {
 	return board.Tile { 
 		Team: board.TileTeam(rand.Uint32()%2), 
 		King: board.TileKing(rand.Uint32()%2), 
@@ -29,38 +29,40 @@ func GenRandomTile() board.Tile {
 func TestGetSetTile(t *testing.T){
 	t.Log("Ready Get Set Go")
 	rand.Seed(time.Now().UnixNano())
+	randomBoard := genRandomBoard()
 
-	randomBoard := GenRandomBoard()
-	testTiles := []board.Tile{}
+	for a:=0;a<100;a++{
+		testTiles := []board.Tile{}
 
-	for y:=-2;y<10;y++ {
-		for x:=-2;x<10;x++ {
-			randomTile := GenRandomTile()
-			testTiles = append(testTiles, randomTile)
-			randomBoard.SetBoardTile(x,y,randomTile)
+		for y:=-2;y<10;y++ {
+			for x:=-2;x<10;x++ {
+				randomTile := genRandomTile()
+				testTiles = append(testTiles, randomTile)
+				randomBoard.SetBoardTile(x,y,randomTile)
+			}
 		}
-	}
 
-	i := 0
-	for y:=-2;y<10;y++ {
-		for x:=-2;x<10;x++ {
-			myTile, valid := randomBoard.GetBoardTile(x,y)
-			if (y > 7 || y < 0 || x > 7 || x < 0) {
-				if valid {
+		i:=0
+		for y:=-2;y<10;y++ {
+			for x:=-2;x<10;x++ {
+				myTile, valid := randomBoard.GetBoardTile(x,y)
+				if (y > 7 || y < 0 || x > 7 || x < 0) {
+					if valid {
+						//Failed test
+						t.Log("Position off board returned a value",x,y)
+						t.Fail()
+					}
+				} else if !valid {
 					//Failed test
-					t.Log("Position off board returned a value",x,y)
+					t.Log("Position on board failed to return a value", x, y)
+					t.Fail()
+				} else if testTiles[i] != myTile {
+					//Failed test
+					t.Log("Original tile does not match tile that was written/recieved from board", x, y)
 					t.Fail()
 				}
-			} else if !valid {
-				//Failed test
-				t.Log("Position on board failed to return a value", x, y)
-				t.Fail()
-			} else if testTiles[i] != myTile {
-				//Failed test
-				t.Log("Original tile does not match tile that was written/recieved from board", x, y)
-				t.Fail()
+				i++
 			}
-			i++
 		}
 	}
 }
@@ -86,7 +88,6 @@ func TestPlayerWin(t *testing.T){
 //Test table set and request
 
 func TestTable(t *testing.T){
-
 }
 
 //Maybe test all moves board
