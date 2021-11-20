@@ -106,7 +106,25 @@ func TestSwapTeam(t *testing.T){
 //Test BoardToStr and BoardFromStr
 
 func TestBoardStr(t *testing.T){
+	board1 := board.BoardFromStr("wwwwWWWW bbbbBBBB -------- -------- -------- -------- -------- --------")
+	board2 := board.BoardState { 
+		Turn: 0, 
+		Full: 0x000000000000FFFF,
+		Team: 0x00000000000000FF,
+		King: 0x000000000000F0F0,
+	}
 
+	if board1 != board2 {
+		t.Log("Failed to make correct board from string")
+		t.Log(board1)
+		t.Fail()
+	}
+
+	if board2.ToStr() != "wwwwWWWW\nbbbbBBBB\n--------\n--------\n--------\n--------\n--------\n--------" {
+		t.Log("Failed to make correct string from board")
+		t.Log(board1.ToStr())
+		t.Fail()
+	}
 }
 
 //Test PlayerHasWon
