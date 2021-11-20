@@ -16,7 +16,7 @@ func NewTable() *TransposTable {
 	}
 }
 
-func (table *TransposTable) request(board *BoardState, depth int32) (bool, float32) {
+func (table *TransposTable) Request(board *BoardState, depth int32) (bool, float32) {
 	//Hash board state and load entry
 	hash := board.hashBoard()
 	entry, exists := table.internal[hash]
@@ -30,13 +30,13 @@ func (table *TransposTable) request(board *BoardState, depth int32) (bool, float
 
 }
 
-func (table *TransposTable) set(board *BoardState, value float32, depth int32){
+func (table *TransposTable) Set(board *BoardState, value float32, depth int32){
 	//Hash board state and write to table
 	hash := board.hashBoard()
 
 	//Replace only if greater depth
 	entry, exists := table.internal[hash]
-	if !exists || depth <= entry.depth { 
+	if !exists || depth <= entry.depth {
 		//By saving shallower branches not only do we save the most time saving possiblity, we also perform far fewer writes increasing efficiency. 
 		table.internal[hash] = storedState{*board, value, depth}
 	}

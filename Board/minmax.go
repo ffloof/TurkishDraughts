@@ -34,7 +34,7 @@ var (
 func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *TransposTable) float32 {
 	Hits += 1
 
-	if alreadyChecked, prevValue := table.request(bs, depth); alreadyChecked {
+	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
 		return prevValue
 	}
 
@@ -73,7 +73,7 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		for _, branch := range options {
 			branch.SwapTeam()
 			value := branch.MinMax(depth+1, alpha, beta, table)
-			if depth <= MaximumHashDepth { table.set(&branch, value, depth+1) }
+			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 			
 			if value > bestValue { bestValue = value }
 			if value > alpha { alpha = value }
@@ -84,20 +84,13 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		for _, branch := range options {
 			branch.SwapTeam()
 			value := branch.MinMax(depth+1, alpha, beta, table)
-			if depth <= MaximumHashDepth { table.set(&branch, value, depth+1) }
+			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 
 			if value < bestValue { bestValue = value }
 			if value < beta { beta = value }
 			if beta <= alpha { break }
 		}
 	}
-
-	/*if Depth - depth < MaximumHashDepth {
-		for _, branch := range options {
-			branch.SwapTeam()
-			table.set(&branch, bestValue, depth)
-		}
-	}*/
 	
 	return bestValue
 }
