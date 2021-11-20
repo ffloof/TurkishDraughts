@@ -85,7 +85,7 @@ func (bs *BoardState) SwapTeam(){
 	}
 }
 
-func BoardToStr(bs *BoardState) string {
+func (bs *BoardState) ToStr() string {
 	fullStr := ""
 	for y:=0;y<8;y++ {
 		lineStr := ""
@@ -114,7 +114,7 @@ func BoardToStr(bs *BoardState) string {
 }
 
 func (bs *BoardState) Print(){
-	for _, line := range strings.Fields(BoardToStr(bs)) {
+	for _, line := range strings.Fields(bs.ToStr()) {
 		fmt.Println(line)
 	} 
 }
@@ -198,7 +198,7 @@ func (bs *BoardState) PlayerHasWon() (bool, TileTeam, bool) {
 }
 
 func (board *BoardState) TryPromotion(){
-	for x:=0;x<7;x++ {
+	for x:=0;x<8;x++ {
 		//Promote white y=0
 		tile, _ := board.GetBoardTile(x,0)
 		if tile.Team == White && tile.Full == Filled {

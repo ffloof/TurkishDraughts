@@ -70,7 +70,37 @@ func TestGetSetTile(t *testing.T){
 //Test SwapTeam
 
 func TestSwapTeam(t *testing.T){
+	board1 := board.BoardFromStr("-------- -------- -------- -------- -------- -------- -------- --------")
+	board1.SwapTeam()
+	if board1.Turn != board.White {
+		t.Log("Failed empty board swap test b->w")
+		t.Fail()
+	}
+	board1.SwapTeam()
+	if board1.Turn != board.Black {
+		t.Log("Failed empty board swap test2 w->b")
+	}
 
+	board2 := board.BoardFromStr("wWbBWwBb wWbBWwBb bWbBWwBw WwbBWwbB wWbBWwBb wWbBWwBb wWbBWwBb wWbBWwBb")
+	board2.SwapTeam()
+
+	board3 := board.BoardFromStr("WWbBWWBb wWbBWwBb bWbBWwBw WwbBWwbB wWbBWwBb wWbBWwBb wWbBWwBb wWBBWwBB")
+	board3.Turn = board.White
+
+	if board2 != board3 {
+		t.Log("Failed promotion test1")
+		t.Log(board2.ToStr())
+		t.Fail()
+	}
+
+	board2.SwapTeam()
+	board3.Turn = board.Black
+
+	if board2 != board3 {
+		t.Log("Failed promotion test2")
+		t.Log(board2.ToStr())
+		t.Fail()
+	}
 }
 
 //Test BoardToStr and BoardFromStr
