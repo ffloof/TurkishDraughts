@@ -11,7 +11,7 @@ type PossibleMove struct {
 }
 
 //Two channels one for results back, and one for if it should quit searching
-func Search(b board.BoardState, quit chan bool, output chan PossibleMove) int {
+func Search(b board.BoardState, output chan PossibleMove) int {
 	options := b.MaxTakeBoards()
 	if len(options) == 0 {
 		options = b.AllMoveBoards()

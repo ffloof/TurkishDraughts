@@ -37,7 +37,6 @@ func Init() {
 	possibleMoves := []PossibleMove{} 
 
 	output := make(chan PossibleMove)
-	quit := make(chan bool) 
 	
 	//Interacting variables
 	selectedTileIndex := -1
@@ -136,7 +135,7 @@ func Init() {
 			} else if !searching {
 				searching = true
 				possibleMoves = []PossibleMove{}
-				totalMoves = Search(b, quit, output)
+				totalMoves = Search(b, output)
 				//Start searching board states
 			}
 
