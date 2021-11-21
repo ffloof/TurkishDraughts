@@ -1,6 +1,8 @@
 package board
 
 const (
+	//Weights for pieces/wins
+	//Win should always be greater than the theoretical max of value of a board where one side gets 16 kings
 	AlphaBetaMax float32 = 999.0
 	WinWeight float32 = 100.0
 	KingWeight float32 = 5.0
@@ -8,6 +10,7 @@ const (
 )
 
 var (
+	//What depth minmax searches to
 	MaxDepth int32 = 10 //default 10
 	
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
@@ -25,20 +28,22 @@ var (
 	TableDepthAllowedInaccuracy int32 = 0 //default 0
 )
 
-var (
+var ( //Values used for seeing benchmark performance
 	Hits = 0
 	Searches = 0
 )
 
-//TODO: check if promotion check is applied at end of take as well
+//Evaluates recursively the value of a board using the minmax algorithm
+//Board value is always when in whites favor positive and blacks favor negative
 func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *TransposTable) float32 {
 	Hits += 1
 
+	//Checks table to see if theres already an entry for this board
 	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
-		return prevValue
+		return prevValue //If there is one no need to research this branch of the tree
 	}
 
-	//add a check for winner here
+	//Checks if the board is won or if players have drawed and returns accordingly
 	playerWon, winWhite, playerDrew := bs.PlayerHasWon()
 	
 	if playerWon {
@@ -56,11 +61,11 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 
 	Searches += 1
 
-	options := bs.MaxTakeBoards()
-	if len(options) == 0 {
-		options = bs.AllMoveBoards()
+	options := bs.MaxTakeBoards() //Gets all possible combinations of takes where it takes the maximum amount of pieces
+	if len(options) == 0 { 
+		options = bs.AllMoveBoards() //If there aren't any takes get all possible moves
 
-		if len(options) == 0 { //No legal move check
+		if len(options) == 0 { //If a payer has no legal moves they lose
 			if bs.Turn == White { return -WinWeight 
 			} else { return WinWeight }
 		}
@@ -68,18 +73,22 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 	
 	var bestValue float32
 
+	//Search for the best possible value move
 	if bs.Turn == White {
 		bestValue = -AlphaBetaMax
-		for _, branch := range options {
+		for _, branch := range options { //Search each possible move with minmax
 			branch.SwapTeam()
 			value := branch.MinMax(depth+1, alpha, beta, table)
+			
+			//Cache move in the table to speed up later searches of identical situations
 			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 			
+			//AB pruning to speed up tree search
 			if value > bestValue { bestValue = value }
 			if value > alpha { alpha = value }
 			if beta <= alpha { break }
 		}
-	} else {
+	} else { //Same just from black's perspective
 		bestValue = AlphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
@@ -92,17 +101,19 @@ func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *Tr
 		}
 	}
 	
+	//Return final best value of a move found from this board
 	return bestValue
 }
 
-
-func (bs *BoardState) RawBoardValue() float32 { //Game is always from whites perspective
+//Gets the value of the board by summing piece weights and how far advanced a sides pieces are
+func (bs *BoardState) RawBoardValue() float32 { 
 	wPawns := 0
 	wKings := 0
 	bPawns := 0
 	bKings := 0
 	netAdvance := 0
 
+	//Sum amount of pieces and how advanced they are up the board
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
 			piece, _ := bs.GetBoardTile(x,y)
@@ -124,6 +135,8 @@ func (bs *BoardState) RawBoardValue() float32 { //Game is always from whites per
 			}
 		}
 	}
+
+	//Some arithmetic to get the final board value
 	var value float32 = 0.0
 
 	value += PawnWeight * float32(wPawns - bPawns)
