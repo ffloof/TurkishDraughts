@@ -2,6 +2,7 @@ package ui
 
 import (
 	"TurkishDraughts/Board"
+	"TurkishDraughts/UI/Theme"
 
 	"image/color"
 	"fmt"
@@ -19,6 +20,8 @@ const (
 )
 
 var basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
+var themeIndex = 0
+var themes = []DrawTheme{ theme.LichessTheme{}, theme.WikipediaTheme{}}
 
 func Init() {
 	board.MaxDepth = 8
@@ -70,6 +73,7 @@ func Init() {
 		//Drawing logic
 		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
 
+		currentTheme := themes[themeIndex]
 		currentTheme.DrawBoard(imd)	
 		currentTheme.DrawSelected(imd, selectedTileIndex)
 		if isTakeMap { currentTheme.DrawChecks(imd, moveMap) }
@@ -93,6 +97,19 @@ func Init() {
 				previousBoards = previousBoards[0:len(previousBoards)-1]
 				selectedTileIndex = -1
 				moveMap = nil
+			}
+		}
+
+		if win.JustPressed(pixelgl.KeyLeft) {
+			themeIndex--
+			if themeIndex < 0 {
+				themeIndex = len(themes) - 1
+			}
+		}
+		if win.JustPressed(pixelgl.KeyRight) {
+			themeIndex++
+			if themeIndex >= len(themes) {
+				themeIndex = 0
 			}
 		}
 
@@ -211,6 +228,7 @@ func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white boo
 	fmt.Fprintln(basicTxt, "[1] Black AI Moves:", black)
 	fmt.Fprintln(basicTxt, "[2] White AI Moves:", white)
 	fmt.Fprintln(basicTxt, "[Z] Undo Move")
+	fmt.Fprintln(basicTxt, "[<,>] Change Theme")
 	//fmt.Fprintln(basicTxt, "[Z] Undo")
 	basicTxt.Draw(win, pixel.IM.Scaled(basicTxt.Orig, 2))
 }
