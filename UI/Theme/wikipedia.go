@@ -42,13 +42,40 @@ func (t WikipediaTheme) DrawBoard(imd *imdraw.IMDraw){
 func (t WikipediaTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 	size := wikipediaDimensions.getTileSpace()
 
-	whiteColor := color.RGBA{0xFF, 0xFF, 0xFF, 0xFF} //White Team Color
-	blackColor := color.RGBA{0x00, 0x00, 0x00, 0xFF} //Black Team Color
+	//whiteColor := color.RGBA{0xFF, 0xFF, 0xFF, 0xFF} //White Team Color
+	blackColor := color.RGBA{0xC4, 0x00, 0x03, 0xFF} //Black Team Color
 
+	outlineThickness := 2.0
+
+	imd.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 	for i:=0;i<64;i++{
-
+		centerX, centerY := wikipediaDimensions.getTilePos(i,0.5,0.45)
+		imd.Push(pixel.V(centerX, centerY))
 	}
+	imd.Ellipse(pixel.V(size/3.0+outlineThickness, size/4.0+outlineThickness),0.0)
 
+	imd.Color = blackColor
+	for i:=0;i<64;i++{
+		centerX, centerY := wikipediaDimensions.getTilePos(i,0.5,0.5)
+		imd.Push(pixel.V(centerX, centerY))
+	}
+	imd.Ellipse(pixel.V(size/3.0, size/4.0),0.0)
+
+	imd.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
+	for i:=0;i<64;i++{
+		centerX, centerY := wikipediaDimensions.getTilePos(i,0.5,0.5)
+		imd.Push(pixel.V(centerX, centerY))
+	}
+	imd.Ellipse(pixel.V(size/3.0, size/4.0),outlineThickness*2.0)
+
+	imd.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
+	for i:=0;i<64;i++{
+		centerX, centerY := wikipediaDimensions.getTilePos(i,0.5,0.5)
+		imd.Push(pixel.V(centerX, centerY))
+	}
+	imd.Ellipse(pixel.V(size/9.0, size/12.0),0.0)
+
+	/*
 	for i:=0;i<64;i++{
 		centerX, centerY := wikipediaDimensions.getTilePos(i,0.5,0.4)
 		tile, _ := b.GetBoardTile(i%8,i/8)
@@ -78,7 +105,7 @@ func (t WikipediaTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 		imd.Push(pixel.V(centerX, centerY))
 	}
 
-	imd.Ellipse(pixel.V(size/4.0, size/4.0),0.0)
+	imd.Ellipse(pixel.V(size/4.0, size/4.0),0.0)*/
 }
 
 func (t WikipediaTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
