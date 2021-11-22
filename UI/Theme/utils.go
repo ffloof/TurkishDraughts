@@ -32,7 +32,6 @@ type dimensions struct {
 	Height float64
 	Border float64
 	Gaps float64
-	InternalGap float64
 }
 
 func (d *dimensions) getTileSpace() float64 {

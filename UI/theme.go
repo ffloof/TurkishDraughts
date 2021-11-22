@@ -17,4 +17,4 @@ type DrawTheme interface {
 	GetMouseData(*pixelgl.Window) (bool, bool, int)
 }
 
-var currentTheme DrawTheme = theme.LichessTheme{}
+var currentTheme DrawTheme = theme.WikipediaTheme{}

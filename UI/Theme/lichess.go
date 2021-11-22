@@ -1,5 +1,7 @@
 package theme
 
+//Theme based off the chess board/pieces at lichess.org, no affiliation.
+
 import (
 	"TurkishDraughts/Board"
 
@@ -17,14 +19,13 @@ var lichessDimensions = dimensions {
 	Height: 900.0,
 	Border: 20.0,
 	Gaps: 4.0,
-	InternalGap: 4.0,
 }
 
-func (l LichessTheme) GetMouseData(win *pixelgl.Window) (bool, bool, int) {
+func (t LichessTheme) GetMouseData(win *pixelgl.Window) (bool, bool, int) {
 	return lichessDimensions.getMouseData(win)
 }
 
-func (l LichessTheme) DrawBoard(imd *imdraw.IMDraw){
+func (t LichessTheme) DrawBoard(imd *imdraw.IMDraw){
 	imd.Color = color.RGBA{0xED, 0xEB, 0xE9, 0xFF} //Board background color
 	imd.Push(pixel.V(0.0,0.0), pixel.V(lichessDimensions.Height, lichessDimensions.Height))
 	imd.Rectangle(0.0)
@@ -42,7 +43,7 @@ func (l LichessTheme) DrawBoard(imd *imdraw.IMDraw){
 	}
 }
 
-func (l LichessTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
+func (t LichessTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 	size := lichessDimensions.getTileSpace()
 
 	whiteColor := color.RGBA{0xFF, 0xFF, 0xFF, 0xFF} //White Team Color
@@ -61,7 +62,7 @@ func (l LichessTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 		imd.Push(pixel.V(centerX, centerY))
 	}
 
-	imd.Ellipse(pixel.V((size/2.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps), (size/2.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps)),0.0)
+	imd.Ellipse(pixel.V(size/2.5, size/2.5), 0.0)
 
 	for i:=0;i<64;i++ {
 		centerX, centerY := lichessDimensions.getTilePos(i,0.5,0.5)
@@ -77,10 +78,10 @@ func (l LichessTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 		imd.Push(pixel.V(centerX, centerY))
 	}
 
-	imd.Ellipse(pixel.V((size/4.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps), (size/4.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps)),0.0)
+	imd.Ellipse(pixel.V(size/5.0, size/5.0),0.0)
 }
 
-func (l LichessTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
+func (t LichessTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
 	if index == -1 { return }
 	tileX, tileY := lichessDimensions.getTilePosBL(index)
 	imd.Color = color.RGBA{0x00, 0x3F, 0x00, 0x7F} //Selection Color
@@ -88,7 +89,7 @@ func (l LichessTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
 	imd.Rectangle(0.0)
 }
 
-func (l LichessTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
+func (t LichessTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
 	if index == -1 { return }
 	moves, exist := moveMap[index]
 	if exist {
@@ -99,7 +100,7 @@ func (l LichessTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][
 	}
 }
 
-func (l LichessTheme) DrawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
+func (t LichessTheme) DrawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
 	imd.Color = color.RGBA{0xFF, 0x00, 0x00, 0x7F} //Take Corner Color
 	for a := range moveMap {
 		corners(imd, a, 20.0, lichessDimensions)

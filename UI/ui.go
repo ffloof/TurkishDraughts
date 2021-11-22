@@ -18,6 +18,8 @@ const (
 	Height = 900
 )
 
+var basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
+
 func Init() {
 	board.MaxDepth = 8
 	b := board.CreateStartingBoard()
@@ -53,8 +55,6 @@ func Init() {
 	for !win.Closed() {
 		//Pre drawing logic
 		imd := imdraw.New(nil)
-
-
 
 		if moveMap == nil {
 			nextPrevBoard = b
@@ -147,7 +147,6 @@ func Init() {
 				var bestMove PossibleMove 
 
 				for i, checkMove := range possibleMoves {
-					//TODO: add cool arrows with numbers
 					if i == 0 || (b.Turn == board.White && checkMove.value > bestMove.value) || (b.Turn == board.Black && checkMove.value < bestMove.value) {
 						bestMove = checkMove
 					}
@@ -206,7 +205,6 @@ func abs(a int) int {
 }
 
 func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white bool){
-	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
 	basicTxt := text.New(pixel.V(Height+20, Height-30), basicAtlas)
 	basicTxt.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 	fmt.Fprintln(basicTxt, "[+,-] AI Depth:", board.MaxDepth)
