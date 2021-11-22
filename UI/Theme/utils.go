@@ -3,10 +3,12 @@ package theme
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
+	"github.com/faiface/pixel/pixelgl"
 )
 
 //TODO: convet xIndex and yIndex to 1 index
-func corners(imd *imdraw.IMDraw, xIndex, yIndex int, cornerSize float64, d dimensions){
+func corners(imd *imdraw.IMDraw, index int, cornerSize float64, d dimensions){
+	xIndex, yIndex := index%8, index/8
 	x1, y1 := d.getTilePos(xIndex, yIndex, 0.0, 0.0)
 	x2, y2 := d.getTilePos(xIndex, yIndex, 1.0, 1.0)
 
@@ -51,7 +53,19 @@ func (d *dimensions) getTilePosCenter(x int, y int) (float64, float64) {
 	return d.getTilePos(x,y,0.5,0.5)
 }
 
-func (d *dimensions) getTilePos(x, y int, spanX, spanY float64) (float64, float64) {
+func (d *dimensions) getTilePos(index int, spanX, spanY float64) (float64, float64) {
+	x, y := index%8, index/8
 	return (float64(x)*d.getTileSpace()) + (spanX * d.getTileSize()) + d.Border, (float64(7-y)*d.getTileSpace()) + (spanY * d.getTileSize()) + d.Border
 
+}
+
+func (d *dimensions) getMouseData(win *pixelgl.Window) (bool, bool, int) {
+	mPos := win.MousePosition()
+	if mPos.X > d.Height - d.Border - d.Gaps { return false, false, -1 }
+	if mPos.Y > d.Height - d.Border - d.Gaps { return false, false, -1 }
+
+	tileX := int((mPos.X - d.Border) / d.getTileSpace())
+	tileY := 7 - int((mPos.Y - d.Border) / d.getTileSpace())
+	
+	return win.JustPressed(pixelgl.MouseButtonLeft), win.JustReleased(pixelgl.MouseButtonLeft), (tileY * 8) + tileX
 }
