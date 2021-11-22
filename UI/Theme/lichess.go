@@ -1,20 +1,19 @@
-package ui
+package theme
 
 import (
 	"TurkishDraughts/Board"
-	"TurkishDraughts/UI/Theme"
 
-	"fmt"
 	"image/color"
 
 	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/imdraw"
-	"github.com/faiface/pixel/text"
-	"golang.org/x/image/font/basicfont"
 )
 
-var currentTheme DrawTheme =  theme.LichessTheme{}
+type LichessTheme struct {
+
+} 
+
+const Height = 900
 
 var (
 	Border = 20.0
@@ -57,38 +56,64 @@ func getTilePosCenter(x int, y int) (float64, float64) {
 }
 
 
-func drawBoard(imd *imdraw.IMDraw){
-	currentTheme.DrawBoard(imd)
+func (l LichessTheme) DrawBoard(imd *imdraw.IMDraw){
+	imd.Color = BoardBg
+	imd.Push(pixel.V(0.0,0.0), pixel.V(float64(Height), float64(Height)))
+	imd.Rectangle(0.0)
+
+	for y:=0;y<8;y++ {
+		for x:=0;x<8;x++ {
+			posX, posY := getTilePosBL(x,y)
+			
+			if (x+y)%2 == 0 {
+				imd.Color = TileDark
+			} else {
+				imd.Color = TileLight
+			}
+			imd.Push(pixel.V(posX, posY), pixel.V(posX+getTileSize(), posY+getTileSize()))
+			imd.Rectangle(0.0)
+		}
+	}
 }
 
-func drawPieces(imd *imdraw.IMDraw, b *board.BoardState){
-	currentTheme.DrawPieces(imd, b)
+func (l LichessTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
+	size := getTileSpace()
+	for y:=0;y<8;y++ {
+		for x:=0;x<8;x++ {
+			posX, posY := getTilePosCenter(x,y)
+
+			tile, _ := b.GetBoardTile(x,y)
+			if tile.Full == board.Empty { continue }
+			
+			if tile.Team == board.White {
+				imd.Color = TeamWhite
+			} else {
+				imd.Color = TeamBlack
+			}
+			imd.Push(pixel.V(posX-(Gaps/2.0), posY-(Gaps/2.0)))
+		}
+	}
+	imd.Ellipse(pixel.V((size/2.0)-(InternalGap)-(Gaps), (size/2.0)-(InternalGap)-(Gaps)),0.0)
+
+	for y:=0;y<8;y++ {
+		for x:=0;x<8;x++ {
+			posX, posY := getTilePosCenter(x,y)
+
+			tile, _ := b.GetBoardTile(x,y)
+			if tile.Full == board.Empty || tile.King == board.Pawn { continue }
+			
+			if tile.Team == board.White {
+				imd.Color = TeamBlack
+			} else {
+				imd.Color = TeamWhite
+			}
+			imd.Push(pixel.V(posX-(Gaps/2.0), posY-(Gaps/2.0)))
+		}
+	}
+	imd.Ellipse(pixel.V((size/4.0)-(InternalGap)-(Gaps), (size/4.0)-(InternalGap)-(Gaps)),0.0)
 }
 
-func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white bool){
-	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
-	basicTxt := text.New(pixel.V(Height+20, Height-30), basicAtlas)
-	basicTxt.Color = TextColor
-	fmt.Fprintln(basicTxt, "[+,-] AI Depth:", board.MaxDepth)
-	fmt.Fprintln(basicTxt, "[1] Black AI Moves:", black)
-	fmt.Fprintln(basicTxt, "[2] White AI Moves:", white)
-	fmt.Fprintln(basicTxt, "[Z] Undo Move")
-	//fmt.Fprintln(basicTxt, "[Z] Undo")
-	basicTxt.Draw(win, pixel.IM.Scaled(basicTxt.Orig, 2))
-}
-
-func getMouseData(win *pixelgl.Window) (bool, bool, int) {
-	mPos := win.MousePosition()
-	if mPos.X > Height - Border - Gaps { return false, false, -1 }
-	if mPos.Y > Height - Border - Gaps { return false, false, -1 }
-
-	tileX := int((mPos.X - Border) / getTileSpace())
-	tileY := 7 - int((mPos.Y - Border) / getTileSpace())
-	
-	return win.JustPressed(pixelgl.MouseButtonLeft), win.JustReleased(pixelgl.MouseButtonLeft), (tileY * 8) + tileX
-}
-
-func drawSelected(imd *imdraw.IMDraw, index int) {
+func (l LichessTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
 	if index == -1 { return }
 	tileX, tileY := getTilePosBL(index%8, index/8)
 	imd.Color = MoveColor
@@ -96,7 +121,7 @@ func drawSelected(imd *imdraw.IMDraw, index int) {
 	imd.Rectangle(0.0)
 }
 
-func drawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
+func (l LichessTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
 	if index == -1 { return }
 	moves, exist := moveMap[index]
 	if exist {
@@ -108,7 +133,7 @@ func drawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
 	}
 }
 
-func drawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
+func (l LichessTheme) DrawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
 	for a := range moveMap {
 		tileX, tileY := getTilePosBL(a%8, a/8)
 		imd.Color = TakeColor
