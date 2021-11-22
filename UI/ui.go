@@ -2,12 +2,16 @@ package ui
 
 import (
 	"TurkishDraughts/Board"
+	"TurkishDraughts/UI/Theme"
 
 	"image/color"
+	"fmt"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
+	"github.com/faiface/pixel/text"
+	"golang.org/x/image/font/basicfont"
 )
 
 const (
@@ -15,6 +19,7 @@ const (
 	Height = 900
 )
 
+var currentTheme DrawTheme =  theme.LichessTheme{}
 
 func Init() {
 	board.MaxDepth = 8
@@ -68,12 +73,13 @@ func Init() {
 		//Drawing logic
 		win.Clear(color.RGBA{0xFF, 0xFF, 0xFF, 0xFF})
 
-		drawBoard(imd)	
-		drawSelected(imd, selectedTileIndex)
-		if isTakeMap { drawChecks(imd, moveMap) }
-		clicked, released, tileIndex := getMouseData(win)
-		drawMoves(imd, selectedTileIndex, moveMap)
-		drawPieces(imd, &b)
+		currentTheme.DrawBoard(imd)	
+		currentTheme.DrawSelected(imd, selectedTileIndex)
+		if isTakeMap { currentTheme.DrawChecks(imd, moveMap) }
+		clicked, released, tileIndex := currentTheme.GetMouseData(win)
+		currentTheme.DrawMoves(imd, selectedTileIndex, moveMap)
+		currentTheme.DrawPieces(imd, &b)
+		drawControls(imd, win, autoMoveBlack, autoMoveWhite)
 
 		if win.JustPressed(pixelgl.Key1) { autoMoveBlack = !autoMoveBlack }
 		if win.JustPressed(pixelgl.Key2) { autoMoveWhite = !autoMoveWhite }
@@ -92,8 +98,6 @@ func Init() {
 				moveMap = nil
 			}
 		}
-
-		drawControls(imd, win, autoMoveBlack, autoMoveWhite)
 
 		imd.Draw(win)
 		win.Update()
@@ -202,4 +206,16 @@ func abs(a int) int {
 	if a == 0 { return 1 }
 	if a < 0 { return -a }
 	return a
+}
+
+func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white bool){
+	basicAtlas := text.NewAtlas(basicfont.Face7x13, text.ASCII)
+	basicTxt := text.New(pixel.V(Height+20, Height-30), basicAtlas)
+	basicTxt.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
+	fmt.Fprintln(basicTxt, "[+,-] AI Depth:", board.MaxDepth)
+	fmt.Fprintln(basicTxt, "[1] Black AI Moves:", black)
+	fmt.Fprintln(basicTxt, "[2] White AI Moves:", white)
+	fmt.Fprintln(basicTxt, "[Z] Undo Move")
+	//fmt.Fprintln(basicTxt, "[Z] Undo")
+	basicTxt.Draw(win, pixel.IM.Scaled(basicTxt.Orig, 2))
 }
