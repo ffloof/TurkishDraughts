@@ -10,126 +10,113 @@ import (
 	"github.com/faiface/pixel/imdraw"
 )
 
-type LichessTheme struct {
 
-} 
 
-const Height = 900
+type LichessTheme struct {} 
+
+
 
 var (
-	Border = 20.0
-	Gaps = 4.0
 	
-	BoardBg = color.RGBA{0xED, 0xEB, 0xE9, 0xFF}
-	TileDark = color.RGBA{0xB5, 0x88, 0x63, 0xFF}
-	TileLight = color.RGBA{0xF0, 0xD9, 0xB5, 0xFF}
+	lichessBoardBg = color.RGBA{0xED, 0xEB, 0xE9, 0xFF}
+	lichessTileDark = color.RGBA{0xB5, 0x88, 0x63, 0xFF}
+	lichessTileLight = color.RGBA{0xF0, 0xD9, 0xB5, 0xFF}
 	
-	TeamWhite = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
-	TeamBlack = color.RGBA{0x00, 0x00, 0x00, 0xFF}
+	lichessTeamWhite = color.RGBA{0xFF, 0xFF, 0xFF, 0xFF}
+	lichessTeamBlack = color.RGBA{0x00, 0x00, 0x00, 0xFF}
 
-	TakeColor = color.RGBA{0xFF, 0x00, 0x00, 0x7F}
-	MoveColor = color.RGBA{0x00, 0x3F, 0x00, 0x7F}
+	lichessTakeColor = color.RGBA{0xFF, 0x00, 0x00, 0x7F}
+	lichessMoveColor = color.RGBA{0x00, 0x3F, 0x00, 0x7F}
 
-	TextColor = color.RGBA{0x00, 0x00, 0x00, 0xFF}
+	lichessCornerSize = 20.0
 
-	CornerSize = 20.0
-
-	HoverSize = 2.0
-
-	InternalGap = 4.0
+	lichessHoverSize = 2.0
 )
 
-func getTileSpace() float64 {
-	return (float64(Height) - (2*Border) + Gaps)/ 8.0
-}
-
-func getTileSize() float64{
-	return (getTileSpace() - Gaps)
-}
-
-func getTilePosBL(x int, y int) (float64, float64) {
-	return float64(x)*getTileSpace() + Border, float64(7-y)*getTileSpace() + Border
-	
-}
-
-func getTilePosCenter(x int, y int) (float64, float64) {
-	return (float64(x)+0.5)*getTileSpace() + Border, (float64(7-y)+0.5)*getTileSpace() + Border
+var lichessDimensions = dimensions {
+	Height: 900.0,
+	Border: 20.0,
+	Gaps: 4.0,
+	InternalGap: 4.0,
 }
 
 
+//TODO: move to utils.go
 func (l LichessTheme) GetMouseData(win *pixelgl.Window) (bool, bool, int) {
 	mPos := win.MousePosition()
-	if mPos.X > Height - Border - Gaps { return false, false, -1 }
-	if mPos.Y > Height - Border - Gaps { return false, false, -1 }
+	if mPos.X > lichessDimensions.Height - lichessDimensions.Border - lichessDimensions.Gaps { return false, false, -1 }
+	if mPos.Y > lichessDimensions.Height - lichessDimensions.Border - lichessDimensions.Gaps { return false, false, -1 }
 
-	tileX := int((mPos.X - Border) / getTileSpace())
-	tileY := 7 - int((mPos.Y - Border) / getTileSpace())
+	tileX := int((mPos.X - lichessDimensions.Border) / lichessDimensions.getTileSpace())
+	tileY := 7 - int((mPos.Y - lichessDimensions.Border) / lichessDimensions.getTileSpace())
 	
 	return win.JustPressed(pixelgl.MouseButtonLeft), win.JustReleased(pixelgl.MouseButtonLeft), (tileY * 8) + tileX
 }
 
 func (l LichessTheme) DrawBoard(imd *imdraw.IMDraw){
-	imd.Color = BoardBg
-	imd.Push(pixel.V(0.0,0.0), pixel.V(float64(Height), float64(Height)))
+	imd.Color = lichessBoardBg
+	imd.Push(pixel.V(0.0,0.0), pixel.V(lichessDimensions.Height, lichessDimensions.Height))
 	imd.Rectangle(0.0)
 
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
-			posX, posY := getTilePosBL(x,y)
-			
 			if (x+y)%2 == 0 {
-				imd.Color = TileDark
+				imd.Color = lichessTileDark
 			} else {
-				imd.Color = TileLight
+				imd.Color = lichessTileLight
 			}
-			imd.Push(pixel.V(posX, posY), pixel.V(posX+getTileSize(), posY+getTileSize()))
+
+			x1, y1 := lichessDimensions.getTilePos(x,y,0.0,0.0)
+			x2, y2 := lichessDimensions.getTilePos(x,y,1.0,1.0)
+
+			imd.Push(pixel.V(x1, y1), pixel.V(x2, y2))
 			imd.Rectangle(0.0)
 		}
 	}
 }
 
 func (l LichessTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
-	size := getTileSpace()
+	size := lichessDimensions.getTileSpace()
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
-			posX, posY := getTilePosCenter(x,y)
+			centerX, centerY := lichessDimensions.getTilePos(x,y,0.5,0.5)
 
 			tile, _ := b.GetBoardTile(x,y)
 			if tile.Full == board.Empty { continue }
 			
 			if tile.Team == board.White {
-				imd.Color = TeamWhite
+				imd.Color = lichessTeamWhite
 			} else {
-				imd.Color = TeamBlack
+				imd.Color = lichessTeamBlack
 			}
-			imd.Push(pixel.V(posX-(Gaps/2.0), posY-(Gaps/2.0)))
+			imd.Push(pixel.V(centerX, centerY))
 		}
 	}
-	imd.Ellipse(pixel.V((size/2.0)-(InternalGap)-(Gaps), (size/2.0)-(InternalGap)-(Gaps)),0.0)
+	imd.Ellipse(pixel.V((size/2.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps), (size/2.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps)),0.0)
 
 	for y:=0;y<8;y++ {
 		for x:=0;x<8;x++ {
-			posX, posY := getTilePosCenter(x,y)
+			centerX, centerY := lichessDimensions.getTilePos(x,y,0.5,0.5)
 
 			tile, _ := b.GetBoardTile(x,y)
 			if tile.Full == board.Empty || tile.King == board.Pawn { continue }
 			
 			if tile.Team == board.White {
-				imd.Color = TeamBlack
+				imd.Color = lichessTeamBlack
 			} else {
-				imd.Color = TeamWhite
+				imd.Color = lichessTeamWhite
 			}
-			imd.Push(pixel.V(posX-(Gaps/2.0), posY-(Gaps/2.0)))
+			imd.Push(pixel.V(centerX, centerY))
 		}
 	}
-	imd.Ellipse(pixel.V((size/4.0)-(InternalGap)-(Gaps), (size/4.0)-(InternalGap)-(Gaps)),0.0)
+	imd.Ellipse(pixel.V((size/4.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps), (size/4.0)-(lichessDimensions.InternalGap)-(lichessDimensions.Gaps)),0.0)
 }
 
 func (l LichessTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
 	if index == -1 { return }
-	tileX, tileY := getTilePosBL(index%8, index/8)
-	imd.Color = MoveColor
-	imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + getTileSize(), tileY + getTileSize()))
+	tileX, tileY := lichessDimensions.getTilePosBL(index%8, index/8)
+	imd.Color = lichessMoveColor
+	imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + lichessDimensions.getTileSize(), tileY + lichessDimensions.getTileSize()))
 	imd.Rectangle(0.0)
 }
 
@@ -137,40 +124,17 @@ func (l LichessTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][
 	if index == -1 { return }
 	moves, exist := moveMap[index]
 	if exist {
+		imd.Color = lichessMoveColor
 		for _, imove := range moves {
-			tileX, tileY := getTilePosBL(imove%8, imove/8)
-			imd.Color = MoveColor
-			corners(imd, tileX, tileY)
+			corners(imd, imove%8, imove/8, lichessCornerSize, lichessDimensions)
 		}
 	}
 }
 
 func (l LichessTheme) DrawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
+	imd.Color = lichessTakeColor
 	for a := range moveMap {
-		tileX, tileY := getTilePosBL(a%8, a/8)
-		imd.Color = TakeColor
-		corners(imd, tileX, tileY)
+		corners(imd, a%8, a/8, lichessCornerSize, lichessDimensions)
 	}
 }
 
-func corners(imd *imdraw.IMDraw, x1, y1 float64){
-	size := getTileSize()
-	x2 := x1 + size
-	y2 := y1 + size
-
-	//Bottom left corner
-	imd.Push(pixel.V(x1+CornerSize,y1), pixel.V(x1,y1), pixel.V(x1,y1+CornerSize))
-	imd.Polygon(0)
-
-	//Bottom right corner
-	imd.Push(pixel.V(x2-CornerSize,y1), pixel.V(x2,y1), pixel.V(x2,y1+CornerSize))
-	imd.Polygon(0)
-
-	//Top left corner
-	imd.Push(pixel.V(x1+CornerSize,y2), pixel.V(x1,y2), pixel.V(x1,y2-CornerSize))
-	imd.Polygon(0)
-
-	//Top right corner
-	imd.Push(pixel.V(x2-CornerSize,y2), pixel.V(x2,y2), pixel.V(x2,y2-CornerSize))
-	imd.Polygon(0)
-}

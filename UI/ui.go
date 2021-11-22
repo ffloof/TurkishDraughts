@@ -2,7 +2,6 @@ package ui
 
 import (
 	"TurkishDraughts/Board"
-	"TurkishDraughts/UI/Theme"
 
 	"image/color"
 	"fmt"
@@ -18,8 +17,6 @@ const (
 	Width = 1600
 	Height = 900
 )
-
-var currentTheme DrawTheme =  theme.LichessTheme{}
 
 func Init() {
 	board.MaxDepth = 8
