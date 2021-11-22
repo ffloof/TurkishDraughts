@@ -8,9 +8,8 @@ import (
 
 //TODO: convet xIndex and yIndex to 1 index
 func corners(imd *imdraw.IMDraw, index int, cornerSize float64, d dimensions){
-	xIndex, yIndex := index%8, index/8
-	x1, y1 := d.getTilePos(xIndex, yIndex, 0.0, 0.0)
-	x2, y2 := d.getTilePos(xIndex, yIndex, 1.0, 1.0)
+	x1, y1 := d.getTilePos(index, 0.0, 0.0)
+	x2, y2 := d.getTilePos(index, 1.0, 1.0)
 
 	//Bottom left corner
 	imd.Push(pixel.V(x1+cornerSize,y1), pixel.V(x1,y1), pixel.V(x1,y1+cornerSize))
@@ -44,13 +43,13 @@ func (d *dimensions) getTileSize() float64{
 	return (d.getTileSpace() - d.Gaps)
 }
 
-func (d *dimensions) getTilePosBL(x int, y int) (float64, float64) {
-	return d.getTilePos(x,y,0.0,0.0)
+func (d *dimensions) getTilePosBL(index int) (float64, float64) {
+	return d.getTilePos(index,0.0,0.0)
 	
 }
 
-func (d *dimensions) getTilePosCenter(x int, y int) (float64, float64) {
-	return d.getTilePos(x,y,0.5,0.5)
+func (d *dimensions) getTilePosCenter(index int) (float64, float64) {
+	return d.getTilePos(index,0.5,0.5)
 }
 
 func (d *dimensions) getTilePos(index int, spanX, spanY float64) (float64, float64) {
