@@ -6,6 +6,7 @@ import (
 	"image/color"
 
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/pixelgl"
 	"github.com/faiface/pixel/imdraw"
 )
 
@@ -55,6 +56,17 @@ func getTilePosCenter(x int, y int) (float64, float64) {
 	return (float64(x)+0.5)*getTileSpace() + Border, (float64(7-y)+0.5)*getTileSpace() + Border
 }
 
+
+func (l LichessTheme) GetMouseData(win *pixelgl.Window) (bool, bool, int) {
+	mPos := win.MousePosition()
+	if mPos.X > Height - Border - Gaps { return false, false, -1 }
+	if mPos.Y > Height - Border - Gaps { return false, false, -1 }
+
+	tileX := int((mPos.X - Border) / getTileSpace())
+	tileY := 7 - int((mPos.Y - Border) / getTileSpace())
+	
+	return win.JustPressed(pixelgl.MouseButtonLeft), win.JustReleased(pixelgl.MouseButtonLeft), (tileY * 8) + tileX
+}
 
 func (l LichessTheme) DrawBoard(imd *imdraw.IMDraw){
 	imd.Color = BoardBg

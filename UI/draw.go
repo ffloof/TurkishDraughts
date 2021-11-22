@@ -78,42 +78,19 @@ func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white boo
 }
 
 func getMouseData(win *pixelgl.Window) (bool, bool, int) {
-	mPos := win.MousePosition()
-	if mPos.X > Height - Border - Gaps { return false, false, -1 }
-	if mPos.Y > Height - Border - Gaps { return false, false, -1 }
-
-	tileX := int((mPos.X - Border) / getTileSpace())
-	tileY := 7 - int((mPos.Y - Border) / getTileSpace())
-	
-	return win.JustPressed(pixelgl.MouseButtonLeft), win.JustReleased(pixelgl.MouseButtonLeft), (tileY * 8) + tileX
+	return currentTheme.GetMouseData(win)
 }
 
 func drawSelected(imd *imdraw.IMDraw, index int) {
-	if index == -1 { return }
-	tileX, tileY := getTilePosBL(index%8, index/8)
-	imd.Color = MoveColor
-	imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + getTileSize(), tileY + getTileSize()))
-	imd.Rectangle(0.0)
+	currentTheme.DrawSelected(imd, index)
 }
 
 func drawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
-	if index == -1 { return }
-	moves, exist := moveMap[index]
-	if exist {
-		for _, imove := range moves {
-			tileX, tileY := getTilePosBL(imove%8, imove/8)
-			imd.Color = MoveColor
-			corners(imd, tileX, tileY)
-		}
-	}
+	currentTheme.DrawMoves(imd, index, moveMap)
 }
 
 func drawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
-	for a := range moveMap {
-		tileX, tileY := getTilePosBL(a%8, a/8)
-		imd.Color = TakeColor
-		corners(imd, tileX, tileY)
-	}
+	currentTheme.DrawChecks(imd, moveMap)
 }
 
 func corners(imd *imdraw.IMDraw, x1, y1 float64){
