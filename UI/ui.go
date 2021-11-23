@@ -19,14 +19,16 @@ const (
 	Height = 900
 )
 
+//Theme stuff 
 var basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII)
 var themeIndex = 0
 var themes = []DrawTheme{ theme.LichessTheme{}, theme.WikipediaTheme{}}
 
 func Init() {
-	board.MaxDepth = 8
+	board.MaxDepth = 8 //Depth to search to for AI
 	b := board.CreateStartingBoard()
 	
+	//Create game window
 	cfg := pixelgl.WindowConfig{
 		Title:  "Turkish Draughts Engine",
 		Bounds: pixel.R(0, 0, Width, Height),
@@ -38,14 +40,14 @@ func Init() {
 	}
 
 	
-	//Search variables
+	//AI move search variables
 	searching := false
 	totalMoves := 0
 	possibleMoves := []PossibleMove{} 
 
 	output := make(chan PossibleMove)
 	
-	//Interacting variables
+	//Human player interacting variables
 	selectedTileIndex := -1
 	var moveMap map[int][]int 
 	isTakeMap := false
@@ -82,6 +84,7 @@ func Init() {
 		currentTheme.DrawPieces(imd, &b)
 		drawControls(imd, win, autoMoveBlack, autoMoveWhite)
 
+		//Control logic
 		if win.JustPressed(pixelgl.Key1) { autoMoveBlack = !autoMoveBlack }
 		if win.JustPressed(pixelgl.Key2) { autoMoveWhite = !autoMoveWhite }
 		if win.JustPressed(pixelgl.KeyMinus) {
@@ -119,8 +122,8 @@ func Init() {
 		gameWon, _, gameDraw := b.PlayerHasWon()
 		if gameWon || gameDraw { continue }
 
+		//User input
 		if (!autoMoveWhite && b.Turn == board.White) || (!autoMoveBlack && b.Turn == board.Black) {
-			//User input
 			if contains(moveMap[selectedTileIndex], tileIndex) {
 				if clicked || released {
 					if contains(moveMap[selectedTileIndex], tileIndex) {

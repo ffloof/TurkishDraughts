@@ -10,7 +10,7 @@ type PossibleMove struct {
 	value float32 
 }
 
-//Two channels one for results back, and one for if it should quit searching
+//Channel for sending move weight values without freezing rendering thread
 func Search(b board.BoardState, output chan PossibleMove) int {
 	options := b.MaxTakeBoards()
 	if len(options) == 0 {
