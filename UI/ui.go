@@ -5,7 +5,6 @@ import (
 	"TurkishDraughts/UI/Theme"
 
 	"image/color"
-	"fmt"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -53,7 +52,7 @@ func Init() {
 	//Controls variables
 	autoMoveWhite := false //If ai plays for white
 	autoMoveBlack := false //If ai plays for black
-	themeIndex := 0 //Current theme selected
+	themeIndex := 1 //Current theme selected
 	previousBoards := []board.BoardState{} //Previous boards for undo feature
 	var nextPrevBoard board.BoardState
 

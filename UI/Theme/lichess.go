@@ -18,7 +18,7 @@ type LichessTheme struct {}
 var lichessDimensions = dimensions {
 	Height: 900.0,
 	Border: 20.0,
-	Gaps: 4.0,
+	Gaps: 0.0,
 }
 
 func (t LichessTheme) GetMouseData(win *pixelgl.Window) (bool, bool, int) {

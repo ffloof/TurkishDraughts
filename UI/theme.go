@@ -3,7 +3,12 @@ package ui
 import (
 	"TurkishDraughts/Board"
 
+	"image/color"
+	"fmt"
+
+	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
+	"github.com/faiface/pixel/text"
 	"github.com/faiface/pixel/pixelgl"
 )
 
