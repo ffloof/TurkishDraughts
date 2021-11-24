@@ -79,10 +79,10 @@ func Init() {
 		//Select theme and then draw board and pieces
 		currentTheme := themes[themeIndex] 
 		currentTheme.DrawBoard(imd)	
-		currentTheme.DrawSelected(imd, selectedTileIndex)
+		if selectedTileIndex != -1 { currentTheme.DrawSelected(imd, selectedTileIndex) }
 		if isTakeMap { currentTheme.DrawChecks(imd, moveMap) }
 		//Mouse data is theme specific since tiles can be in slightly different alignments
-		currentTheme.DrawMoves(imd, selectedTileIndex, moveMap)
+		if selectedTileIndex != -1 { currentTheme.DrawMoves(imd, selectedTileIndex, moveMap) }
 		clicked, released, tileIndex := currentTheme.GetMouseData(win) 
 		currentTheme.DrawPieces(imd, &b)
 		drawControls(imd, win, autoMoveBlack, autoMoveWhite)

@@ -13,14 +13,15 @@ import (
 )
 
 type DrawTheme interface {
-	DrawBoard(*imdraw.IMDraw)
-	DrawPieces(*imdraw.IMDraw, *board.BoardState)
-	DrawSelected(*imdraw.IMDraw, int)
-	DrawMoves(*imdraw.IMDraw, int, map[int][]int)
-	DrawChecks(*imdraw.IMDraw, map[int][]int)
-	GetMouseData(*pixelgl.Window) (bool, bool, int)
+	DrawBoard(*imdraw.IMDraw) //Draws the checkerboard
+	DrawPieces(*imdraw.IMDraw, *board.BoardState) //Draws the pieces on it
+	DrawSelected(*imdraw.IMDraw, int) //Draws the marker on the currently selected tile
+	DrawMoves(*imdraw.IMDraw, int, map[int][]int) //If a tile is selected it draws the moves for that tile
+	DrawChecks(*imdraw.IMDraw, map[int][]int) //If there are moves a player has to make highlight the pieces they originate from
+	GetMouseData(*pixelgl.Window) (bool, bool, int) //Get whether the player clicked, released, and what tile index they are hovering over
 }
 
+//Control panel is the same for all themes
 func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white bool){
 	basicTxt := text.New(pixel.V(Height+20, Height-30), basicAtlas)
 	basicTxt.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
