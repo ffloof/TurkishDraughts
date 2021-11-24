@@ -55,6 +55,7 @@ func Init() {
 	themeIndex := 1 //Current theme selected
 	previousBoards := []board.BoardState{} //Previous boards for undo feature
 	var nextPrevBoard board.BoardState
+	var lastEval *PossibleMove
 
 	//Draw loop
 	for !win.Closed() {
@@ -85,7 +86,7 @@ func Init() {
 		if selectedTileIndex != -1 { currentTheme.DrawMoves(imd, selectedTileIndex, moveMap) }
 		clicked, released, tileIndex := currentTheme.GetMouseData(win) 
 		currentTheme.DrawPieces(imd, &b)
-		drawControls(imd, win, autoMoveBlack, autoMoveWhite)
+		drawControls(imd, win, autoMoveBlack, autoMoveWhite, lastEval)
 
 		//Control logic
 		if win.JustPressed(pixelgl.Key1) { autoMoveBlack = !autoMoveBlack } //Toggle ai white
@@ -103,6 +104,7 @@ func Init() {
 				previousBoards = previousBoards[0:len(previousBoards)-1]
 				selectedTileIndex = -1
 				moveMap = nil
+				lastEval = nil
 			}
 		}
 
@@ -140,6 +142,7 @@ func Init() {
 					if swapTeams || len(moveMap) == 0 {
 						selectedTileIndex = -1
 						moveMap = nil
+						lastEval = nil
 						b.SwapTeam()
 						previousBoards = append(previousBoards, nextPrevBoard)
 					} else {
@@ -185,6 +188,7 @@ func Init() {
 				b = bestMove.board
 				selectedTileIndex = -1
 				moveMap = nil
+				lastEval = &bestMove
 				previousBoards = append(previousBoards, nextPrevBoard)
 			}
 		}
