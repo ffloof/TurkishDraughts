@@ -44,7 +44,7 @@ type BoardState struct {
 }
 
 //Returns a board tile and a boolean of if it exists
-func (bs *BoardState) GetBoardTile(xed int, yed int) (Tile, bool) {
+func (bs *BoardState) GetBoardTile(xed, yed int) (Tile, bool) {
 	if -1 < xed && xed < 8 && -1 < yed && yed < 8 { //Check if its on the board
 		x := uint64(xed)
 		y := uint64(yed)
@@ -60,7 +60,7 @@ func (bs *BoardState) GetBoardTile(xed int, yed int) (Tile, bool) {
 }
 
 //Sets a tile at a given position
-func (bs *BoardState) SetBoardTile(xed int, yed int, t Tile) {
+func (bs *BoardState) SetBoardTile(xed, yed int, t Tile) {
 	if -1 < xed && xed < 8 && -1 < yed && yed < 8 { //Checks if the position is on the board
 		x := uint64(xed)
 		y := uint64(yed)

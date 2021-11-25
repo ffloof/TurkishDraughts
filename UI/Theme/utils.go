@@ -4,6 +4,8 @@ import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
+
+	"image/color"
 )
 
 //TODO: convet xIndex and yIndex to 1 index
@@ -66,4 +68,36 @@ func (d *dimensions) getMouseData(win *pixelgl.Window) (bool, bool, int) {
 	tileY := 7 - int((mPos.Y - d.Border) / d.getTileSpace())
 	
 	return win.JustPressed(pixelgl.MouseButtonLeft), win.JustReleased(pixelgl.MouseButtonLeft), (tileY * 8) + tileX
+}
+
+
+func hue2rgb(p, q, t float64) float64 {
+	if t < 0 { t += 1 }
+	if t > 1 { t -= 1 }
+	if t < 0.16666 { return p + (q - p) * 6 * t }
+	if t < 0.5 { return q }
+	if t < 0.66666 { return p + (q - p) * (2/3 - t) * 6 }
+	return p;
+}
+
+func HSLToRGB(h, s, l float64) color.Color {
+	var r, g, b float64
+	//if(s == 0){
+	//	r = l
+	//	g = l
+	//	b = l
+		 // achromatic
+	//}else{
+	var q float64
+	if l < 0.5 {
+		q = l * (1+s)
+	} else {
+		q = l + s - (l * s)
+	}
+	p := (2 * l) - q
+	r = hue2rgb(p, q, h + 0.333)
+	g = hue2rgb(p, q, h)
+	b = hue2rgb(p, q, h - 0.333)
+
+	return color.RGBA { uint8(r * 255), uint8(g * 255), uint8(b * 255), 0xFF }
 }

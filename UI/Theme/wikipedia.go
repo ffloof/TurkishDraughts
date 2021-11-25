@@ -122,7 +122,6 @@ func (t WikipediaTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 }
 
 func (t WikipediaTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
-	if index == -1 { return }
 	tileX, tileY := wikipediaDimensions.getTilePosBL(index)
 	imd.Color = color.RGBA{0x00, 0x3F, 0x00, 0x7F} //Selection Color
 	imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + wikipediaDimensions.getTileSize(), tileY + wikipediaDimensions.getTileSize()))
@@ -130,7 +129,6 @@ func (t WikipediaTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
 }
 
 func (t WikipediaTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
-	if index == -1 { return }
 	moves, exist := moveMap[index]
 	if exist {
 		imd.Color = color.RGBA{0x00, 0x3F, 0x00, 0x7F} //Move Corner Color
