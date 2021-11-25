@@ -198,21 +198,30 @@ func (bs *BoardState) PlayerHasWon() (bool, TileTeam, bool) {
 		return true, White, false
 	}
 
-	//If one player has at least 1 king and the other has one piece they lose
-	if wPieces == 1 && bPieces == 1 {
-		if wKings > 0 {
-			if bKings > 0 {
-				return false, 0, true //Draw
-			}
-			return true, White, false //White wins
-		}
-
-		if bKings > 0 {
-			return true, Black, false //Black wins
+	if bPieces == 1 && wPieces == 1 {
+		if bKings == 1 && wKings == 1 {
+			return false, 0, true
 		}
 	}
 
-	return false, 0.0, false //No winner or draw
+	//If one player has at least 1 king and the other has one piece they lose
+	if bPieces == 1 {
+		if wKings > 0 {
+			if bKings == 0 {
+				return true, White, false
+			}
+		}
+	}
+
+	if wPieces == 1 {
+		if bKings > 0 {
+			if wKings == 0 {
+				return true, Black, false
+			}
+		}
+	}
+
+	return false, 0, false //No winner or draw
 	//If a player has no playable moves they lose (checked in another part of the code)
 }
 
