@@ -240,7 +240,112 @@ func TestTable(t *testing.T){
 //Maybe test all moves board
 //Maybe test max take boards
 //Test AllMovesPawn
+
+func equalUnsorted(a []board.BoardState, b []board.BoardState) bool {
+	if len(a) != len(b) { return false }
+	for _, c := range b {
+		included := false
+		for _, d := range a {
+			if c == d { 
+				included = true
+				break
+			}
+		}
+		if !included { return false }
+	}
+	return true
+}
+
+func TestPawnMoves(t *testing.T){
+	//Free move both sides
+	board1 := board.BoardFromStr("-------- B------- -------- ---w---- -------- -------- -----b-- -bbb----")
+	
+	passed := equalUnsorted(board1.AllMovesPawn(3,3), []board.BoardState{
+		board.BoardFromStr("-------- B------- ---w---- -------- -------- -------- -----b-- -bbb----"),                                                                                       
+		board.BoardFromStr("-------- B------- -------- --w----- -------- -------- -----b-- -bbb----"),                                                                                         
+		board.BoardFromStr("-------- B------- -------- ----w--- -------- -------- -----b-- -bbb----"),
+	})
+	
+	if !passed {
+		t.Log("Failed white pawn move test")
+		t.Fail()
+	}
+
+	board2 := board.BoardFromStr("-------- W------- -------- ---b---- -------- -------- -----w-- -www----")
+	
+	passed = equalUnsorted(board2.AllMovesPawn(3,3), []board.BoardState{
+		board.BoardFromStr("-------- W------- -------- -------- ---b---- -------- -----w-- -www----"),
+		board.BoardFromStr("-------- W------- -------- --b----- -------- -------- -----w-- -www----"),
+		board.BoardFromStr("-------- W------- -------- ----b--- -------- -------- -----w-- -www----"),
+	})
+
+	if !passed {
+		t.Log("Failed black pawn move test")
+		t.Fail()
+	}
+
+	//Blocked move by pieces on some sides
+	board3 := board.BoardFromStr("---b---- --bw---- -------- -------- -------- -------- -------- --------")
+	passed = equalUnsorted(board3.AllMovesPawn(3,1), []board.BoardState{
+		board.BoardFromStr("---b---- --b-w--- -------- -------- -------- -------- -------- --------"),	
+	})
+
+	if !passed {
+		t.Log("Failed blocked move test")
+		t.Fail()
+	}
+
+
+	//Blocked move by wall
+	board4 := board.BoardFromStr("-------- w------- -------- -------- -------- -------- -------- --------")
+	passed = equalUnsorted(board4.AllMovesPawn(0,1), []board.BoardState{
+		board.BoardFromStr("w------- -------- -------- -------- -------- -------- -------- --------"),
+		board.BoardFromStr("-------- -w------ -------- -------- -------- -------- -------- --------"),
+	})
+
+	if !passed {
+		t.Log("Failed wall move test")
+		t.Fail()
+	}
+}
+
 //Test AllMovesKing
+func TestKingMoves(t *testing.T){
+	//Free move all sides
+	//board1 := board.BoardFromStr("-------- -------- -------- ---W---- -------- -------- -------- --------")
+
+	/*
+	-------- -------- -------- -------- ---W---- -------- -------- --------                                                                                          
+-------- -------- -------- -------- -------- ---W---- -------- --------                                                                                          
+-------- -------- -------- -------- -------- -------- ---W---- --------                                                                                          
+-------- -------- -------- -------- -------- -------- -------- ---W----                                                                                          
+-------- -------- ---W---- -------- -------- -------- -------- --------                                                                                          
+-------- ---W---- -------- -------- -------- -------- -------- --------                                                                                          
+---W---- -------- -------- -------- -------- -------- -------- --------                                                                                          
+-------- -------- -------- --W----- -------- -------- -------- --------                                                                                          
+-------- -------- -------- -W------ -------- -------- -------- --------                                                                                          
+-------- -------- -------- W------- -------- -------- -------- --------                                                                                          
+-------- -------- -------- ----W--- -------- -------- -------- --------                                                                                          
+-------- -------- -------- -----W-- -------- -------- -------- --------                                                                                          
+-------- -------- -------- ------W- -------- -------- -------- --------                                                                                          
+-------- -------- -------- -------W -------- -------- -------- --------
+*/
+	//Blocked move by piece on sides at close and long range and by a wall
+	//board2 := board.BoardFromStr("--bW--b- -------- -------- -------- -------- -------- -------- --------")
+/*
+--b---b- ---W---- -------- -------- -------- -------- -------- --------                                                                                          
+--b---b- -------- ---W---- -------- -------- -------- -------- --------                                                                                          
+--b---b- -------- -------- ---W---- -------- -------- -------- --------                                                                                          
+--b---b- -------- -------- -------- ---W---- -------- -------- --------                                                                                          
+--b---b- -------- -------- -------- -------- ---W---- -------- --------                                                                                          
+--b---b- -------- -------- -------- -------- -------- ---W---- --------                                                                                          
+--b---b- -------- -------- -------- -------- -------- -------- ---W----                                                                                          
+--b-W-b- -------- -------- -------- -------- -------- -------- --------                                                                                          
+--b--Wb- -------- -------- -------- -------- -------- -------- --------
+
+*/
+}
+
 //Test find king takes
 //Test find pawn takes
 //Maybe test random functions

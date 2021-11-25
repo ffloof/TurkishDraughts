@@ -129,6 +129,15 @@ func (bs *BoardState) Print(){
 	} 
 }
 
+//Prints the board for debugging
+func (bs *BoardState) PrintSingleLine(){
+	output := ""
+	for _, line := range strings.Fields(bs.ToStr()) {
+		output += line + " "
+	}
+	fmt.Println(output)
+}
+
 //Returns starting board
 func CreateStartingBoard() BoardState {
 	b := BoardFromStr("-------- bbbbbbbb bbbbbbbb -------- -------- wwwwwwww wwwwwwww --------")
