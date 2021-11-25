@@ -19,7 +19,7 @@ const (
 )
 
 var basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII) //Font
-var themes = []DrawTheme{ theme.LichessTheme{}, theme.WikipediaTheme{}} //Different themes to cycle through
+var themes = []DrawTheme{ theme.LichessTheme{}, theme.WikipediaTheme{}, theme.RainbowTheme{}} //Different themes to cycle through
 
 func Init() {
 	board.MaxDepth = 8 //Depth to search to for AI

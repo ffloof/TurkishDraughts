@@ -35,7 +35,7 @@ var ( //Values used for seeing benchmark performance
 
 //Evaluates recursively the value of a board using the minmax algorithm
 //Board value is always when in whites favor positive and blacks favor negative
-func (bs *BoardState) MinMax(depth int32, alpha float32, beta float32, table *TransposTable) float32 {
+func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) float32 {
 	Hits += 1
 
 	//Checks table to see if theres already an entry for this board

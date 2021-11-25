@@ -32,7 +32,7 @@ func (bs *BoardState) MaxTakeBoards() []BoardState {
 
 //Finds all possible takes from a king at a given position
 //Returns # of takes, final boards, and if at starting depth what moves lead to max take outcomes (used in ui code)
-func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]int) (int, []BoardState, []int) {
+func (bs *BoardState) FindKingTakes(x, y, currentTakes int, lastDir [2]int) (int, []BoardState, []int) {
 	newTakeBoards := []BoardState{}
 	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y)
@@ -109,7 +109,7 @@ func (bs *BoardState) FindKingTakes(x int, y int, currentTakes int, lastDir [2]i
 
 //Finds recursively all possible takes from a pawn at a given position
 //Returns # of takes, final boards, and if at starting depth what moves lead to max take outcomes (used in ui code) 
-func (bs *BoardState) FindPawnTakes(x int, y int, currentTakes int) (int, []BoardState, []int) {
+func (bs *BoardState) FindPawnTakes(x, y, currentTakes int) (int, []BoardState, []int) {
 	newTakeBoards := []BoardState{}
 	bestTake := currentTakes
 	attackingTile, _ := bs.GetBoardTile(x,y)

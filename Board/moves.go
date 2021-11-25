@@ -1,7 +1,7 @@
 package board
 
 //Takes a king at a certain position and finds all the possible resulting boards
-func (bs *BoardState) AllMovesKing(x int, y int) []BoardState {
+func (bs *BoardState) AllMovesKing(x, y int) []BoardState {
 	boards := []BoardState{}
 	checkingTile, _ := bs.GetBoardTile(x,y)
 
@@ -29,7 +29,7 @@ func (bs *BoardState) AllMovesKing(x int, y int) []BoardState {
 }
 
 //Takes a pawn at a certain position and finds all the possible resulting boards
-func (bs *BoardState) AllMovesPawn(x int, y int) []BoardState {
+func (bs *BoardState) AllMovesPawn(x, y int) []BoardState {
 	boards := []BoardState{}
 	checkingTile, _ := bs.GetBoardTile(x,y)
 
