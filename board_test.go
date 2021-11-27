@@ -378,34 +378,105 @@ func TestKingMoves(t *testing.T){
 //Test find king takes
 func TestKingTakes(t *testing.T){
 	//Test none, against wall, next to, spaced out
-	board1 := board.BoardFromStr("")
+	board1 := board.BoardFromStr("-------- -------- -------- -b------ bW---b-- -------- -------- -B------")
+
+	_, compare, _ := board1.FindKingTakes(1,4,0,[2]int{0,0})
+	
+	passed := equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("-------- -------- -W------ -------- b----b-- -------- -------- -B------"),                                                                                                                   
+		board.BoardFromStr("-------- -W------ -------- -------- b----b-- -------- -------- -B------"),                                                                                                                   
+		board.BoardFromStr("-W------ -------- -------- -------- b----b-- -------- -------- -B------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- -------- -b------ b-----W- -------- -------- -B------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- -------- -b------ b------W -------- -------- -B------"),
+	})
+
+	if !passed {
+		t.Log("Failed king take collision tests")
+		t.Fail()
+	}
 
 	//Test multi take in all directions even over previous removed pieces
-	board2 := board.BoardFromStr("")
+	board2 := board.BoardFromStr("-----b-- ------b- ---bb--- -------- ----W--- -------- -------- --------")
 
-	//Test multi possibility situation
-	board3 := board.BoardFromStr("")
+	_, compare, _ = board2.FindKingTakes(4,4,0,[2]int{0,0})
+
+	passed = equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("-------- -------- --W----- -------- -------- -------- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- -W------ -------- -------- -------- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- W------- -------- -------- -------- -------- --------"),  
+	})
+
+	if !passed {
+		t.Log("Failed piece king take removal test")
+		t.Fail()
+	}
 
 	//Test branching situation with 1 correct max
-	board4 := board.BoardFromStr("")
+	board3 := board.BoardFromStr("-------- b------b ----W--- -------- ----b--- b------- ----b--- --b---B-")
+
+	_, compare, _ = board3.FindKingTakes(4,2,0,[2]int{0,0})
+	passed = equalUnsorted(compare, []board.BoardState{
+		//TODO: remove duplicates
+		board.BoardFromStr("W------- -------b -------- -------- -------- -------- -------- ------B-"),                                                                                                                   
+		board.BoardFromStr("W------- -------b -------- -------- -------- -------- -------- ------B-"),                                                                                                                   
+		board.BoardFromStr("W------- -------b -------- -------- -------- -------- -------- ------B-"),
+	})
+
+	if !passed {
+		t.Log("Failed branch king take 1 max test")
+		t.Fail()
+	}
 
 	//Test branching situation with 2 correct max
-	board5 := board.BoardFromStr("")
+	board4 := board.BoardFromStr("-------- b------b ----W--- -------b ----b--- b------- ----b--- --b---B-")
+
+	_, compare, _ = board4.FindKingTakes(4,2,0,[2]int{0,0})
+	passed = equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("W------- -------b -------- -------b -------- -------- -------- ------B-"),                                                                                                                  
+		board.BoardFromStr("W------- -------b -------- -------b -------- -------- -------- ------B-"),                                                                                                                   
+		board.BoardFromStr("W------- -------b -------- -------b -------- -------- -------- ------B-"),                                                                                                                   
+		board.BoardFromStr("-------W b------- -------- -------- -------- b------- -------- --b-----"),
+	})
+
+	if !passed {
+		t.Log("Failed branch king take 2 max test")
+		t.Fail()
+	}
 
 	//Test taking backwards
-	board6 := board.BoardFromStr("")
+	board5 := board.BoardFromStr("-------- -------- -------- --b-Wb-- -------- -------- -------- --------")
+
+	_, compare, _ = board5.FindKingTakes(4,3,0,[2]int{0,0})
+	passed = equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("-------- -------- -------- -W---b-- -------- -------- -------- --------"),                                                                                                        
+		board.BoardFromStr("-------- -------- -------- W----b-- -------- -------- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- -------- --b---W- -------- -------- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- -------- --b----W -------- -------- -------- --------"),
+	})
+
+	if !passed {
+		t.Log("Failed backwards king take test")
+		t.Fail()
+	}
 
 	//Jump over multiple check
-	board7 := board.BoardFromStr("")
+	board6 := board.BoardFromStr("-------- ---b---- ---b---- -bbW-bb- -------- ---b---- ---b---- --------")
+
+	_, compare, _ = board6.FindKingTakes(3,3,0,[2]int{0,0})
+
+	if len(compare) != 1 {
+		t.Log("Failed king multi piece take")
+		t.Fail()
+	}
 }
 
 //Test find pawn takes
 func TestPawnTakes(t *testing.T){
 	//Test normal takes
 
-	//Test take against wall
+	//Test take against wall or multiple pieces
 
-	//Test taking backwards for both colors
+	//Test 
 
 	//Test branching situation with 1 correct max
 
