@@ -27,7 +27,25 @@ func (bs *BoardState) MaxTakeBoards() []BoardState {
 			possibleMaxTakeBoards = append(possibleMaxTakeBoards, possibleTakeBoards...)
 		}
 	}
-	return possibleMaxTakeBoards
+	return RemoveDuplicateValues(possibleMaxTakeBoards)
+}
+
+
+//https://www.geeksforgeeks.org/how-to-remove-duplicate-values-from-slice-in-golang/
+func RemoveDuplicateValues(intSlice []BoardState) []BoardState {
+    keys := make(map[BoardState]bool)
+    list := []BoardState{}
+ 
+    // If the key(values of the slice) is not equal
+    // to the already present value in new slice (list)
+    // then we append it. else we jump on another element.
+    for _, entry := range intSlice {
+        if _, value := keys[entry]; !value {
+            keys[entry] = true
+            list = append(list, entry)
+        }
+    }
+    return list
 }
 
 //Finds all possible takes from a king at a given position
@@ -102,9 +120,10 @@ func (bs *BoardState) FindKingTakes(x, y, currentTakes int, lastDir [2]int) (int
 
 	if len(newTakeBoards) == 0 { //If there weren't any new takes found return end node
 		return bestTake, []BoardState{ *bs }, validTakePos
+	} else {
+		//Otherwise return all the takes that resulted in the max amount of pieces taken searched and the amount
+		return bestTake, newTakeBoards, validTakePos 
 	}
-	//Otherwise return all the takes that resulted in the max amount of pieces taken searched and the amount
-	return bestTake, newTakeBoards, validTakePos 
 }
 
 //Finds recursively all possible takes from a pawn at a given position

@@ -257,7 +257,9 @@ func TestTable(t *testing.T){
 	}
 }
 
+//Tests if all of b are in a, does not care about duplicates in a
 func equalUnsorted(a []board.BoardState, b []board.BoardState) bool {
+	a = board.RemoveDuplicateValues(a)
 	if len(a) != len(b) { return false }
 	for _, c := range b {
 		included := false
@@ -416,9 +418,6 @@ func TestKingTakes(t *testing.T){
 
 	_, compare, _ = board3.FindKingTakes(4,2,0,[2]int{0,0})
 	passed = equalUnsorted(compare, []board.BoardState{
-		//TODO: remove duplicates
-		board.BoardFromStr("W------- -------b -------- -------- -------- -------- -------- ------B-"),                                                                                                                   
-		board.BoardFromStr("W------- -------b -------- -------- -------- -------- -------- ------B-"),                                                                                                                   
 		board.BoardFromStr("W------- -------b -------- -------- -------- -------- -------- ------B-"),
 	})
 
@@ -432,8 +431,6 @@ func TestKingTakes(t *testing.T){
 
 	_, compare, _ = board4.FindKingTakes(4,2,0,[2]int{0,0})
 	passed = equalUnsorted(compare, []board.BoardState{
-		board.BoardFromStr("W------- -------b -------- -------b -------- -------- -------- ------B-"),                                                                                                                  
-		board.BoardFromStr("W------- -------b -------- -------b -------- -------- -------- ------B-"),                                                                                                                   
 		board.BoardFromStr("W------- -------b -------- -------b -------- -------- -------- ------B-"),                                                                                                                   
 		board.BoardFromStr("-------W b------- -------- -------- -------- b------- -------- --b-----"),
 	})
