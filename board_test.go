@@ -465,24 +465,52 @@ func TestKingTakes(t *testing.T){
 		t.Log("Failed king multi piece take")
 		t.Fail()
 	}
+
+	//Friendly fire check
+	board7 := board.BoardFromStr("-------- ---w---- ---b---- --WW-bW- -------- ---w---- -------- --------")
+
+	_, compare, _ = board7.FindKingTakes(3,3,0,[2]int{0,0})
+
+	if len(compare) != 1 || board7 != compare[0] {
+		t.Log("Failed king take friendly fire test")
+		t.Fail()
+	}
 }
 
 //Test find pawn takes
 func TestPawnTakes(t *testing.T){
-	//Test normal takes
+	//Test normal takes excluding backwars both colors
+	board1 := board.BoardFromStr("-------- -------- ---b---- --bwb--- ---b---- -------- -------- --------")
+	_, compare, _ := board1.FindPawnTakes(3,3,0)
 
-	//Test take against wall or multiple pieces
+	board2 := board.BoardFromStr("-------- -------- ---w---- --wbw--- ---w---- -------- -------- --------")
+	_, compare, _ = board2.FindPawnTakes(3,3,0)
 
-	//Test 
+	//Test take against wall
+	board3 := board.BoardFromStr("-b------ bw------ -------- -------- -------- -------- -------- --------")
+	_, compare, _ = board3.FindPawnTakes(1,1,0)
+	if len(compare) != 1 || board3 != compare[0] {
+		t.Log("Failed pawn take wall test")
+		t.Fail()
+	}
+
 
 	//Test branching situation with 1 correct max
+	board4 := board.BoardFromStr("-------- -------- --b----- -------- --b---b- ---b-b-- ----b--- --wb----")
+	_, compare, _ = board4.FindPawnTakes(2,7,0)
 
 	//Test branching situation with 2 correct max
+	board5 := board.BoardFromStr("-------- -------- --b---b- -------- --b---b- ---b-b-- ----b--- --wb----")
+	_, compare, _ = board5.FindPawnTakes(2,7,0)
 
-	//Test taking backwards for both colors
+	//Test against friendly fire / multiple pieces
+	board6 := board.BoardFromStr("-------- ---w---- -wbwW--- -------- -------- -------- -------- --------")
+	_, compare, _ = board6.FindPawnTakes(3,2,0)
+	if len(compare) != 1 || board6 != compare[0] {
+		t.Log("Failed pawn take friendly fire test")
+		t.Fail()
+	}
 }
 
-
-//Maybe test random functions
 //Maybe test all moves board
 //Maybe test max take boards
