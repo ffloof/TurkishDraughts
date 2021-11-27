@@ -257,10 +257,6 @@ func TestTable(t *testing.T){
 	}
 }
 
-//Maybe test all moves board
-//Maybe test max take boards
-//Test AllMovesPawn
-
 func equalUnsorted(a []board.BoardState, b []board.BoardState) bool {
 	if len(a) != len(b) { return false }
 	for _, c := range b {
@@ -276,6 +272,7 @@ func equalUnsorted(a []board.BoardState, b []board.BoardState) bool {
 	return true
 }
 
+//Test AllMovesPawn
 func TestPawnMoves(t *testing.T){
 	//Free move both sides
 	board1 := board.BoardFromStr("-------- B------- -------- ---w---- -------- -------- -----b-- -bbb----")
@@ -379,5 +376,45 @@ func TestKingMoves(t *testing.T){
 }
 
 //Test find king takes
+func TestKingTakes(t *testing.T){
+	//Test none, against wall, next to, spaced out
+	board1 := board.BoardFromStr("")
+
+	//Test multi take in all directions even over previous removed pieces
+	board2 := board.BoardFromStr("")
+
+	//Test multi possibility situation
+	board3 := board.BoardFromStr("")
+
+	//Test branching situation with 1 correct max
+	board4 := board.BoardFromStr("")
+
+	//Test branching situation with 2 correct max
+	board5 := board.BoardFromStr("")
+
+	//Test taking backwards
+	board6 := board.BoardFromStr("")
+
+	//Jump over multiple check
+	board7 := board.BoardFromStr("")
+}
+
 //Test find pawn takes
+func TestPawnTakes(t *testing.T){
+	//Test normal takes
+
+	//Test take against wall
+
+	//Test taking backwards for both colors
+
+	//Test branching situation with 1 correct max
+
+	//Test branching situation with 2 correct max
+
+	//Test taking backwards for both colors
+}
+
+
 //Maybe test random functions
+//Maybe test all moves board
+//Maybe test max take boards

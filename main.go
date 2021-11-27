@@ -16,7 +16,7 @@ func main() {
 		if tile.Full == board.Filled && tile.Team == board.White { fmt.Println(i)}
 	}
 
-	for _, v := range b.AllMoveBoards() {
+	for _, v := range b.AllTakeBoards() {
 		v.PrintSingleLine()
 	}
 	//pixelgl.Run(ui.Init)
