@@ -15,17 +15,17 @@ var (
 	
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
 	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
-	AdvanceWeight float32 = 0.1 //default 0.1
+	AdvanceWeight float32 = 0.1 //default 0.0 or 0.1
 
 	//Set maximum depth for hashes to reduce memory by only saving computationally expensive hashes
 	//Lower values lead to less memory consumption but slower computer performance
-	MaximumHashDepth int32 = 7 //default 7
+	MaximumHashDepth int32 = 7 //default around 7
 
 	//When set to above 0 it will allow the transposition table to get values evaluated at lower depths
 	//i.e. at = 2, for a 6 ply evaluation it can use previous 4 ply evaluation 
 	//This introduces inaccuracy but has a massive performance gain
 	//To minimize inaccuracy use a low MaximumHashDepth and a low TableDepthAllowedInaccuracy
-	TableDepthAllowedInaccuracy int32 = 0 //default 0
+	TableDepthAllowedInaccuracy int32 = 0 //default 0 or 2
 )
 
 var ( //Values used for seeing benchmark performance
