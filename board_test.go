@@ -483,8 +483,30 @@ func TestPawnTakes(t *testing.T){
 	board1 := board.BoardFromStr("-------- -------- ---b---- --bwb--- ---b---- -------- -------- --------")
 	_, compare, _ := board1.FindPawnTakes(3,3,0)
 
+	passed := equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("-------- ---w---- -------- --b-b--- ---b---- -------- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- ---b---- -w--b--- ---b---- -------- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- ---b---- --b--w-- ---b---- -------- -------- --------"), 
+	})
+
+	if !passed {
+		t.Log("Failed white pawn take test")
+		t.Fail()
+	}
+
 	board2 := board.BoardFromStr("-------- -------- ---w---- --wbw--- ---w---- -------- -------- --------")
 	_, compare, _ = board2.FindPawnTakes(3,3,0)
+
+	passed = equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("-------- -------- ---w---- --w-w--- -------- ---b---- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- ---w---- -b--w--- ---w---- -------- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- -------- ---w---- --w--b-- ---w---- -------- -------- --------"), 
+	})
+
+	if !passed {
+		t.Log("Failed black pawn take test")
+		t.Fail()
+	}
 
 	//Test take against wall
 	board3 := board.BoardFromStr("-b------ bw------ -------- -------- -------- -------- -------- --------")
@@ -499,9 +521,28 @@ func TestPawnTakes(t *testing.T){
 	board4 := board.BoardFromStr("-------- -------- --b----- -------- --b---b- ---b-b-- ----b--- --wb----")
 	_, compare, _ = board4.FindPawnTakes(2,7,0)
 
+	passed = equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("-------- --w----- -------- -------- ------b- -----b-- -------- --------"),
+	})
+
+	if !passed {
+		t.Log("Failed branching pawn take test 1")
+		t.Fail()
+	}
+
 	//Test branching situation with 2 correct max
 	board5 := board.BoardFromStr("-------- -------- --b---b- -------- --b---b- ---b-b-- ----b--- --wb----")
 	_, compare, _ = board5.FindPawnTakes(2,7,0)
+
+	passed = equalUnsorted(compare, []board.BoardState{
+		board.BoardFromStr("-------- --w----- ------b- -------- ------b- -----b-- -------- --------"),                                                                                                                   
+		board.BoardFromStr("-------- ------w- --b----- -------- --b----- ---b---- -------- --------"),
+	})
+
+	if !passed {
+		t.Log("Failed branching pawn take test 2")
+		t.Fail()
+	}
 
 	//Test against friendly fire / multiple pieces
 	board6 := board.BoardFromStr("-------- ---w---- -wbwW--- -------- -------- -------- -------- --------")
