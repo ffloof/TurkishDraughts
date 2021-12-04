@@ -1,6 +1,6 @@
 # TurkishDraughts
 
-//TODO: either image of default board or some banner
+![](docs/preview.png)
 
 ## Table of Contents
 1. [Introduction](#introduction)
