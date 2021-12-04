@@ -11,13 +11,16 @@
 
 ## Introduction
 
-I wanted to write an ai for a board game but seeing that most like chess or checkers have been done before a million times over. I opted for a variant of checkers/draughts known as [Turkish Draughts](https://en.wikipedia.org/wiki/Turkish_draughts). The rules are fairly similar to traditional checkers/draughts with the main difference being pieces move along the axis as opposed to diagonally. This project includes the ai, and a frontend ui, to play the game against it or watch a match between the two ai.
+I wanted to write an ai for a board game but seeing that most like chess or checkers have been done before a million times over, I opted for a variant of checkers/draughts known as [Turkish Draughts](https://en.wikipedia.org/wiki/Turkish_draughts). The rules are fairly similar to traditional checkers/draughts with the main difference being pieces move along the axis as opposed to diagonally. This project includes the ai, and a frontend ui, to play the game against it or watch a match between the two ai.
 
 ## Game Rules
 
 //Like checkers but pieces move along axis
+
 //Kings move any distance 
+
 //Pieces have to take if afforded the opportunity
+
 //Win conditions
 
 ## Move Evaluation
@@ -27,6 +30,7 @@ I wanted to write an ai for a board game but seeing that most like chess or chec
 ## Current Optimizations
 
 //AB Pruning
+
 //Transposition Table
 
 ## Future Roadmap
