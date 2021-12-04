@@ -1,6 +1,6 @@
 # TurkishDraughts
 
-![](docs/preview.png)
+![](docs/preview.jpg)
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -15,17 +15,29 @@ I wanted to write an ai for a board game but seeing that most like chess or chec
 
 ## Game Rules
 
-//Like checkers but pieces move along axis
+The game is similar to checkers except the pieces move along the axis. Non kinged pieces are not allowed to move backwards.
 
-//Kings move any distance 
+![](docs/pawnmoves.jpg)
 
-//Pieces have to take if afforded the opportunity
+Kinged pieces are able to move in any amount of moves in any direction.
 
-//Win conditions
+//Show king move image
+
+If a piece has the opportunity to take another piece it has to take that piece, if there are multiple combinations of takes you must choose the one that leads to the maximum amount of pieces captured.
+
+//Show image of piece that has to take and post take side by side
+
+Players win when a player has no pieces remaining, no possible moves, or one kinged piece against a non kinged piece
+
+//Show winning boards side by side
 
 ## Move Evaluation
 
 //Minmax Explanation
+
+//Tree diagram
+
+//Gif of ai playing against itself
 
 ## Current Optimizations
 
