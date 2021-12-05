@@ -10,6 +10,7 @@
 	1. [Alpha Beta Pruning](#alpha-beta-pruning)
 	2. [Transposition Table](#transposition-table)
 5. [Future Roadmap](#future-roadmap)
+6. [How to Use](#how-to-use)
 
 ## Introduction
 
@@ -78,10 +79,18 @@ While the AI can see X moves ahead it can't see the broader ramifications of cer
 
 #### Various Optimizations And Fixes
 
-There are various major optimizations like (Iterative Deepening)[https://www.chessprogramming.org/Iterative_Deepening] or (Aspiration Windows)[https://www.chessprogramming.org/Aspiration_Windows] that I would like to implement at some point but require either substancial changes or some restructure of the current move search implementation.
+There are various major optimizations like [Iterative Deepening](https://www.chessprogramming.org/Iterative_Deepening) or [Aspiration Windows](https://www.chessprogramming.org/Aspiration_Windows) that I would like to implement at some point but require either substancial changes or some restructure of the current move search implementation.
 
 In terms of fixes I'm still not super familiar with the Pixel 2D library and the game uses a disproportionately large amount of my CPU and GPU to render a relatively simple board. Its never large enough where its something serious worth investigating (usually 5-15% cpu and gpu utilization) but maybe finding a way to only render frames when theres some sort of input from the player or engine, could eliminate this.
 
+There's also some weird behavior with go's memory allocation when Im using transposition tables, using the debug package to free the memory works but I'd still like to figure out why the table isn't disallocated automatically after the move search has ended.
+
 #### Multiplayer and Benchmarks
 
-//Add image of benchmarks
+![](docs/benchmark.jpg)
+
+While I do have a benchmarking system already implemented its still rather primitive but I think that given some care I could develop it a lot more and test a variety of cases. Maybe as a future project I'll create some sort of genetic algorithm to try to find the best wieghts and options for the ai, to obtain the theoretical best quality to speed ratio.
+
+I have tried using this a few times against [other real players](https://www.playok.com/en/turkishdama/) just to see if it would hold up to scrutiny. Unsuprisingly this game favors an ai that can look far ahead and set traps for its opponents, so it won every game except one that ended in a stalemate as the websites rules don't consider a king v non king a win for the first player despite that being listed in the rules they refrence on wikipedia's page. It might be nice to automate this just to see if it could beat the best players on the site and reach the highest rating but at the same time that is somewhat unethical, and would likely be considered cheating so I don't plan on going forward with it.
+
+## How To Use
