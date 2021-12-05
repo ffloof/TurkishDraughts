@@ -2,6 +2,8 @@
 
 ![](docs/preview.jpg)
 
+//TODO: add subsection for each optimization
+
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Game Rules](#game-rules)
@@ -27,23 +29,24 @@ Taking pieces is like checkers where pieces jump over each other and need an emp
 ![](docs/takevalid.jpg) | ![](docs/takeinvalid.jpg)
 :-: | :-:
 
-Players win when a player has no pieces remaining, no possible moves, or one kinged piece against a non kinged piece
-
-//Show winning boards side by side
+A player wins when their opponent either has no pieces remaining, no possible moves, or one kinged piece against a non kinged piece.
 
 ## Move Evaluation
 
-//Minmax Explanation
+Minimax is a recursive tree search that searches every possibility a player has in a given turn repeatedly until a certain depth where it performs a simple evaluation of the outcome. Usually this is done by roughly adding up pieces and their values, and maybe something about their relative positions. It assumes that at every depth in the tree the player playing will always choose the move thats the best for them, and from that works its way up to find the best branch possible.
 
-//Tree diagram
+![](docs/minimax.svg)
+*By Nuno Nogueira (Nmnogueira) - http://en.wikipedia.org/wiki/Image:Minimax.svg, created in Inkscape by author, CC BY-SA 2.5, https://commons.wikimedia.org/w/index.php?curid=2276653*
 
-//Gif of ai playing against itself
+While very thorough as its able to look many moves ahead the amount of boards that need to be evaluated increases exponentially with depth. This means that some optimizations and trade offs have to be made to reduce how many branches are searched in order to increase the amount of moves it can search ahead.
 
 ## Current Optimizations
 
-//AB Pruning
+There are many ways to optimize the move search each with their own trade offs. For a more complete view of what kind of optimizations are possible a lot of research has been done in regards to [chess engines](https://www.chessprogramming.org/Search). The two main optimizations I have implemented are Alpha Beta Pruning and a Transposition Table.
 
-//Transposition Table
+#### Alpha Beta Pruning
+
+#### Transposition Table
 
 ## Future Roadmap
 
