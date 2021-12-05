@@ -55,7 +55,7 @@ Alpha beta pruning works by not exploring moves of a board when a result has bee
 
 Transposition tables store all previously explored boards and their values. Since there are multiple ways to reach the same board by refrencing the transposition table instead of re-evaluating that board many branches of the tree don't need to be re-evaluated.
 
-![](docs/transpos2.jpg) | ![](docs/transpos4.jpg)
+![](docs/transpos1.jpg) | ![](docs/transpos2.jpg)
 :-: | :-:
 
 The downside with this approach is simply there are more than 2^64 possible board configurations which means there are more board configurations than the size of addressable memory. As a result if you try to store every explored board you eventually run out of memory, so you have to introduce a hashing function that is intentionally causing collisions, or only store computationally expensive moves ie those above a certain depth. Either way this approach trades memory for computation time, and even with its limitations still provides a substancial performance increase. 
