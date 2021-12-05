@@ -2,13 +2,13 @@
 
 ![](docs/preview.jpg)
 
-//TODO: add subsection for each optimization
-
 ## Table of Contents
 1. [Introduction](#introduction)
 2. [Game Rules](#game-rules)
 3. [Move Evaluation](#move-evaluation)
 4. [Current Optimizations](#current-optimizations)
+	1. [Alpha Beta Pruning](#alpha-beta-pruning)
+	2. [Transposition Table](#transposition-table)
 5. [Future Roadmap](#future-roadmap)
 
 ## Introduction
@@ -42,11 +42,25 @@ While very thorough as its able to look many moves ahead the amount of boards th
 
 ## Current Optimizations
 
-There are many ways to optimize the move search each with their own trade offs. For a more complete view of what kind of optimizations are possible a lot of research has been done in regards to [chess engines](https://www.chessprogramming.org/Search). The two main optimizations I have implemented are Alpha Beta Pruning and a Transposition Table.
+There are many ways to optimize the move search each with their own trade offs. For a more comprehensive view of what kind of optimizations are possible a lot of research has been done in regards to [chess engines](https://www.chessprogramming.org/Search). The two main optimizations I have implemented are Alpha Beta Pruning and a Transposition Table.
 
 #### Alpha Beta Pruning
 
+Alpha beta pruning works by not exploring moves of a board when a result has been found that shows the ai would no longer pick this branch in the minmax tree, and thus further exploration is not needed. The result is the same as minimax but it prunes many branches of the tree and their cost would scale exponentially with depth so this results in a substancial performance increase. This approach has almost no downsides, with the added computation time of the alpha beta values being trivially small compared to the actual move search.
+
+![](docs/abpruning.svg)
+*By Nuno Nogueira (Nmnogueira) - https://commons.wikimedia.org/wiki/File:AB_pruning.svg#/media/File:AB_pruning.svg, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=3708424*
+
 #### Transposition Table
+
+Transposition tables store all previously explored boards and their values. Since there are multiple ways to reach the same board by refrencing the transposition table instead of re-evaluating that board many branches of the tree don't need to be re-evaluated.
+
+Starting Moves | Identical Transposition
+:-: | :-:
+![](docs/transpos1.jpg) | ![](docs/transpos2.jpg)
+![](docs/transpos3.jpg) | ![](docs/transpos4.jpg)
+
+The downside with this approach is simply there are more than 2^64 possible board configurations which means there are more board configurations than the size of addressable memory. As a result if you try to store every explored board you eventually run out of memory, so you have to introduce a hashing function that is intentionally causing collisions, or only store computationally expensive moves ie those above a certain depth. Either way this approach trades memory for computation time, and even with its limitations still provides a substancial performance increase. 
 
 ## Future Roadmap
 
