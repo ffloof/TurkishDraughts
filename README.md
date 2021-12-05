@@ -20,9 +20,12 @@ The game is similar to checkers except the pieces move along the axis. Non kinge
 ![](docs/pawnmoves.jpg) | ![](docs/kingmoves.jpg)
 :-: | :-: 
 
-If a piece has the opportunity to take another piece it has to take that piece, if there are multiple combinations of takes you must choose the one that leads to the maximum amount of pieces captured.
+Taking pieces is like checkers where pieces jump over each other and need an empty square behind the piece they are attacking, and takes can be chained together. If a piece has the opportunity to take another piece it has to take that piece, if there are multiple combinations of takes you must choose the one that leads to the maximum amount of pieces captured.
 
-//Show image of piece that has to take and post take side by side
+*Cant move another piece because a take is possible example...*
+
+![](docs/takevalid.jpg) | ![](docs/takeinvalid.jpg)
+:-: | :-:
 
 Players win when a player has no pieces remaining, no possible moves, or one kinged piece against a non kinged piece
 
