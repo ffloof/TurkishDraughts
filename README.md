@@ -15,13 +15,10 @@ I wanted to write an ai for a board game but seeing that most like chess or chec
 
 ## Game Rules
 
-The game is similar to checkers except the pieces move along the axis. Non kinged pieces are not allowed to move backwards.
+The game is similar to checkers except the pieces move along the axis. Non kinged pieces are not allowed to move backwards. Kinged pieces are able to move in any amount of moves in any direction.
 
-![](docs/pawnmoves.jpg)
-
-Kinged pieces are able to move in any amount of moves in any direction.
-
-//Show king move image
+![](docs/pawnmoves.jpg) | ![](docs/kingmoves.jpg)
+:-: | :-: 
 
 If a piece has the opportunity to take another piece it has to take that piece, if there are multiple combinations of takes you must choose the one that leads to the maximum amount of pieces captured.
 
