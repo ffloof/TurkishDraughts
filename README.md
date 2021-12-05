@@ -62,6 +62,26 @@ The downside with this approach is simply there are more than 2^64 possible boar
 
 ## Future Roadmap
 
-//Reduce King Move Depth (#16)
-//Change Board Value Heuristic To Promote Certain Piece Structures Or Levels Of Agression (#12)
-//Various Minor Optimizations (#11)
+This was my November 2021 project ~~the readme writing was pushed back into December unfortunately~~ , and my first attempt at creating game AI. Really happy with the outcome and I'm sure I'll occasionally be revisiting this to see just how much I can optimize it. Next time I try something like this I'll probably try implementing [Monte Carlo Tree Search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) maybe even try applying it to a more complex game.
+
+This project certainly isn't perfect by any means and there are a few things that maybe I'll add if I revisit in future...
+
+#### Mid Game Performance
+
+Around the middle of the game when most pieces are still on the board but they are more spread out is when the ai has to explore the most moves. Though I could create a dynamic system where based on the possible amount of moves the ai scales the depth it searches at to keep move evaluation within a certain time, I'd much rather just introduce optimizations for the underlying issue rather than just hiding it away.
+
+One of the many ways is reducing how far king moves are searched (issue #16). Kings are great for controlling space and putting pressure on the opponent, and have immense power in the endgame. However due to how easy it is to trap a king by offering a take, they tend to be used very conservatively, all the while creating almost as many move possibilities as all the non kinged pieces combined. By limiting the depth king moves are searched at until towards the end of the game you would see a massive performance benefit during the middle of the game when promotions tend to occur.  
+
+#### Long Term Strategy And Aggression
+
+While the AI can see X moves ahead it can't see the broader ramifications of certain openings or piece layouts on its long term gameplay past those X moves. With the current measure of board value I try to remedy this by summing up the piece values but also seeing how close to promotion the non kinged pieces are across the board. This tries to incentivize the ai to gradually push its pieces forward and lead them to promotion and to play more aggressively by pushing each sides pieces together. While this does give it a nicer structure long term, I was mistakenly hoping it would also make it play more agressively by pushing its pieces closer together. Unfortunately it didn't because it valued the pieces furthest up the board and hence closest to the enemy and would avoid trading pieces and playing agressively unless it was sure it had a substancial advantage (issue #12).
+
+#### Various Optimizations And Fixes
+
+There are various major optimizations like (Iterative Deepening)[https://www.chessprogramming.org/Iterative_Deepening] or (Aspiration Windows)[https://www.chessprogramming.org/Aspiration_Windows] that I would like to implement at some point but require either substancial changes or some restructure of the current move search implementation.
+
+In terms of fixes I'm still not super familiar with the Pixel 2D library and the game uses a disproportionately large amount of my CPU and GPU to render a relatively simple board. Its never large enough where its something serious worth investigating (usually 5-15% cpu and gpu utilization) but maybe finding a way to only render frames when theres some sort of input from the player or engine, could eliminate this.
+
+#### Multiplayer and Benchmarks
+
+//Add image of benchmarks
