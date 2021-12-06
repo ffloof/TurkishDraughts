@@ -1,6 +1,6 @@
 # TurkishDraughts
 
-![](docs/preview.jpg)
+//TODO: add a preview gif of ai playing against itself
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -94,3 +94,7 @@ While I do have a benchmarking system already implemented its still rather primi
 I have tried using this a few times against [other real players](https://www.playok.com/en/turkishdama/) just to see if it would hold up to scrutiny. Unsuprisingly this game favors an ai that can look far ahead and set traps for its opponents, so it won every game except one that ended in a stalemate as the websites rules don't consider a king v non king a win for the first player despite that being listed in the rules they refrence on wikipedia's page. It might be nice to automate this just to see if it could beat the best players on the site and reach the highest rating but at the same time that is somewhat unethical, and would likely be considered cheating so I don't plan on going forward with it.
 
 ## How To Use
+
+Pretty straightfoward either `go build` or `go run main.go`, though because the graphics library uses a glfw backend you may need to install a C compiler. 
+
+![](docs/preview.jpg)
