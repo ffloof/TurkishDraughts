@@ -1,6 +1,6 @@
 # TurkishDraughts
 
-//TODO: add a preview gif of ai playing against itself
+![](docs/animated.gif)
 
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -10,6 +10,9 @@
 	1. [Alpha Beta Pruning](#alpha-beta-pruning)
 	2. [Transposition Table](#transposition-table)
 5. [Future Roadmap](#future-roadmap)
+	1. [Long Term Strategy And Aggression](#long-term-strategy-and-aggression)
+	2. [Various Optimizations And Fixes](#various-optimizations-and-fixes)
+	3. [Multiplayer and Benchmarks](#multiplayer-and-benchmarks)
 6. [How to Use](#how-to-use)
 
 ## Introduction
@@ -25,7 +28,7 @@ The game is similar to checkers except the pieces move along the axis. Non kinge
 
 Taking pieces is like checkers where pieces jump over each other and need an empty square behind the piece they are attacking, and takes can be chained together. If a piece has the opportunity to take another piece it has to take that piece, if there are multiple combinations of takes you must choose the one that leads to the maximum amount of pieces captured.
 
-*Cant move another piece because a take is possible example...*
+*Can't move another piece because a take is possible...*
 
 ![](docs/takevalid.jpg) | ![](docs/takeinvalid.jpg)
 :-: | :-:
