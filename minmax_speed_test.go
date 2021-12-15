@@ -28,7 +28,7 @@ func benchmarkDepthsMM(t *testing.T, b board.BoardState, testDepth int32) float6
 
 //Vanilla, default configuration
 func TestBenchMMVanilla(t *testing.T){
-	var i int32 = 5
+	var i int32 = 7
 	var lasttime float64
 	for {
 		//Config
@@ -46,7 +46,7 @@ func TestBenchMMVanilla(t *testing.T){
 
 //NoTable, doesn't use transposition table
 func TestBenchMMNoTable(t *testing.T){
-	var i int32 = 5
+	var i int32 = 7
 	var lasttime float64
 	for i<=12 {
 		//Config
@@ -65,7 +65,7 @@ func TestBenchMMNoTable(t *testing.T){
 
 //FastTable, uses a table with settings slightly optimized
 func TestBenchMMFastTable(t *testing.T){
-	var i int32 = 5
+	var i int32 = 7
 	var lasttime float64
 	for {
 		//Config
@@ -83,7 +83,7 @@ func TestBenchMMFastTable(t *testing.T){
 
 //Advanced, default configuration + advance heuristic for evaluation
 func TestBenchMMAdvanced(t *testing.T){
-	var i int32 = 5
+	var i int32 = 7
 	var lasttime float64
 	for {
 		//Config
@@ -101,7 +101,7 @@ func TestBenchMMAdvanced(t *testing.T){
 
 //CheatTable lets transposition table cheat slightly by looking at shallower depths
 func TestBenchMMCheatTable(t *testing.T){
-	var i int32 = 5
+	var i int32 = 7
 	var lasttime float64
 	for {
 		//Config

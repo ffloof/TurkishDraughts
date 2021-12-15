@@ -22,7 +22,7 @@ func benchmarkDepthsMCTS(t *testing.T, b board.BoardState, sims int) float64 {
 
 func TestBenchMCTSVanilla(t *testing.T){
 	//Config
-	var i int = 64
+	var i int = 128
 	var lasttime float64
 	for {
 		lasttime = benchmarkDepthsMCTS(t, board.CreateStartingBoard(), i)
