@@ -3,10 +3,10 @@ package board
 const (
 	//Weights for pieces/wins
 	//Win should always be greater than the theoretical max of value of a board where one side gets 16 kings
-	AlphaBetaMax float32 = 999.0
-	WinWeight float32 = 100.0
-	KingWeight float32 = 5.0
-	PawnWeight float32 = 1.0
+	alphaBetaMax float32 = 999.0
+	winWeight float32 = 100.0
+	kingWeight float32 = 5.0
+	pawnWeight float32 = 1.0
 )
 
 var (
@@ -41,9 +41,9 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 	
 	if playerWon {
 		if winWhite == White {
-			return WinWeight
+			return winWeight
 		} 
-		return -WinWeight 
+		return -winWeight 
 	} else if playerDrew {
 		return 0.0
 	}
@@ -55,9 +55,9 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 	options := bs.ValidPlays()
 	if len(options) == 0 { //If a payer has no legal moves they lose
 		if bs.Turn == White { 
-			return -WinWeight 
+			return -winWeight 
 		} else { 
-			return WinWeight 
+			return winWeight 
 		}
 	}
 	
@@ -65,7 +65,7 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 
 	//Search for the best possible value move
 	if bs.Turn == White {
-		bestValue = -AlphaBetaMax
+		bestValue = -alphaBetaMax
 		for _, branch := range options { //Search each possible move with minmax
 			branch.SwapTeam()
 			value := branch.MinMax(depth+1, alpha, beta, table)
@@ -79,7 +79,7 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 			if beta <= alpha { break }
 		}
 	} else { //Same just from black's perspective
-		bestValue = AlphaBetaMax
+		bestValue = alphaBetaMax
 		for _, branch := range options {
 			branch.SwapTeam()
 			value := branch.MinMax(depth+1, alpha, beta, table)
@@ -129,8 +129,8 @@ func (bs *BoardState) RawBoardValue() float32 {
 	//Some arithmetic to get the final board value
 	var value float32 = 0.0
 
-	value += PawnWeight * float32(wPawns - bPawns)
-	value += KingWeight * float32(wKings - bKings)
+	value += pawnWeight * float32(wPawns - bPawns)
+	value += kingWeight * float32(wKings - bKings)
 	value += AdvanceWeight * float32(netAdvance)
 
 	return value
