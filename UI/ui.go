@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	Width = 900
+	Width = 1600
 	Height = 900
 )
 

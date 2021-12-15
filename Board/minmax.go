@@ -61,13 +61,12 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 
 	Searches += 1
 
-	options := bs.MaxTakeBoards() //Gets all possible combinations of takes where it takes the maximum amount of pieces
-	if len(options) == 0 { 
-		options = bs.AllMoveBoards() //If there aren't any takes get all possible moves
-
-		if len(options) == 0 { //If a payer has no legal moves they lose
-			if bs.Turn == White { return -WinWeight 
-			} else { return WinWeight }
+	options := bs.ValidPlays()
+	if len(options) == 0 { //If a payer has no legal moves they lose
+		if bs.Turn == White { 
+			return -WinWeight 
+		} else { 
+			return WinWeight 
 		}
 	}
 	

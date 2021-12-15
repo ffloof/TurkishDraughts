@@ -243,3 +243,11 @@ func (board *BoardState) tryPromotion(){
 		}
 	}
 }
+
+func (bs *BoardState) ValidPlays() []BoardState {
+	options := bs.MaxTakeBoards() //Gets all possible combinations of takes where it takes the maximum amount of pieces
+	if len(options) == 0 { 
+		options = bs.AllMoveBoards() //If there aren't any takes get all possible moves
+	}
+	return options
+}
