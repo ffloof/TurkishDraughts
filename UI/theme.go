@@ -25,7 +25,7 @@ type DrawTheme interface {
 func drawControls(imd *imdraw.IMDraw, win *pixelgl.Window, black bool, white bool, simulations int){
 	basicTxt := text.New(pixel.V(Height+20, Height-30), basicAtlas)
 	basicTxt.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF}
-	fmt.Fprintln(basicTxt, "[+,-] AI Depth:", simulations)
+	fmt.Fprintln(basicTxt, "[+,-] AI Simulations:", simulations)
 	fmt.Fprintln(basicTxt, "[1] Black AI Moves:", black)
 	fmt.Fprintln(basicTxt, "[2] White AI Moves:", white)
 	fmt.Fprintln(basicTxt, "[Z] Undo Move")

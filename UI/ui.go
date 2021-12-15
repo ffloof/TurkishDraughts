@@ -19,7 +19,7 @@ const (
 )
 
 var basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII) //Font
-var themes = []DrawTheme{ theme.LichessTheme{}, theme.WikipediaTheme{}, theme.RainbowTheme{}} //Different themes to cycle through
+var themes = []DrawTheme{ theme.LichessTheme{}, theme.WikipediaTheme{}, theme.WikipediaTheme2{} ,theme.RainbowTheme{}} //Different themes to cycle through
 
 func Init() {
 	simulations := 2048 //Amount of simulation for monte carlo search tree

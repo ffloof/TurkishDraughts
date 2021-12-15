@@ -13,19 +13,13 @@ import (
 )
 
 
-type WikipediaTheme struct {} 
+type WikipediaTheme2 struct {} 
 
-var wikipediaDimensions = dimensions {
-	Height: 900.0,
-	Border: 3.0,
-	Gaps: 3.0,
-}
-
-func (t WikipediaTheme) GetMouseData(win *pixelgl.Window) (bool, bool, int) {
+func (t WikipediaTheme2) GetMouseData(win *pixelgl.Window) (bool, bool, int) {
 	return wikipediaDimensions.getMouseData(win)
 }
 
-func (t WikipediaTheme) DrawBoard(imd *imdraw.IMDraw){
+func (t WikipediaTheme2) DrawBoard(imd *imdraw.IMDraw){
 	imd.Color = color.RGBA{0x00, 0x00, 0x00, 0xFF} //Board background color
 	imd.Push(pixel.V(0.0,0.0), pixel.V(wikipediaDimensions.Height, wikipediaDimensions.Height))
 	imd.Rectangle(0.0)
@@ -39,7 +33,7 @@ func (t WikipediaTheme) DrawBoard(imd *imdraw.IMDraw){
 	}
 }
 
-func (t WikipediaTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
+func (t WikipediaTheme2) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 	size := wikipediaDimensions.getTileSpace()
 
 	outlineThickness := 2.0
@@ -59,9 +53,9 @@ func (t WikipediaTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 		tile, _ := b.GetBoardTile(i%8,i/8)
 		if tile.Full == board.Filled {
 			if tile.Team == board.White {
-				imd.Color = color.RGBA{0xFF, 0xF9, 0xF4, 0xFF} //White Team Color
+				imd.Color = color.RGBA{0x00, 0x00, 0xCC, 0xFF} //White Team Color
 			} else {
-				imd.Color = color.RGBA{0xC4, 0x00, 0x03, 0xFF} //Black/Red Team Color
+				imd.Color = color.RGBA{0xCC, 0x00, 0x00, 0xFF} //Black/Red Team Color
 			}
 			imd.Push(pixel.V(centerX, centerY))
 		}
@@ -89,14 +83,14 @@ func (t WikipediaTheme) DrawPieces(imd *imdraw.IMDraw, b *board.BoardState){
 	imd.Ellipse(pixel.V(size/9.0, size/12.0),0.0)
 }
 
-func (t WikipediaTheme) DrawSelected(imd *imdraw.IMDraw, index int) {
+func (t WikipediaTheme2) DrawSelected(imd *imdraw.IMDraw, index int) {
 	tileX, tileY := wikipediaDimensions.getTilePosBL(index)
 	imd.Color = color.RGBA{0x00, 0x3F, 0x00, 0x7F} //Selection Color
 	imd.Push(pixel.V(tileX, tileY), pixel.V(tileX + wikipediaDimensions.getTileSize(), tileY + wikipediaDimensions.getTileSize()))
 	imd.Rectangle(0.0)
 }
 
-func (t WikipediaTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
+func (t WikipediaTheme2) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int][]int){
 	moves, exist := moveMap[index]
 	if exist {
 		imd.Color = color.RGBA{0x00, 0x3F, 0x00, 0x7F} //Move Corner Color
@@ -106,7 +100,7 @@ func (t WikipediaTheme) DrawMoves(imd *imdraw.IMDraw, index int, moveMap map[int
 	}
 }
 
-func (t WikipediaTheme) DrawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
+func (t WikipediaTheme2) DrawChecks(imd *imdraw.IMDraw, moveMap map[int][]int) {
 	imd.Color = color.RGBA{0xFF, 0x00, 0x00, 0x7F} //Take Corner Color
 	for a := range moveMap {
 		corners(imd, a, 20.0, wikipediaDimensions)
