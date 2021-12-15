@@ -10,6 +10,8 @@ import (
 //0 = pawn, 1 = king
 //0 = empty, 1 = piece
 
+var Searches int = 0 //Value used in performance benchmark
+
 type TileTeam uint8
 type TileKing uint8
 type TileFull uint8
@@ -250,7 +252,6 @@ func (bs *BoardState) ValidPlays() []BoardState {
 		options = bs.AllMoveBoards() //If there aren't any takes get all possible moves
 	}
 
-	Hits += len(options)
 	Searches++
 
 	return options
