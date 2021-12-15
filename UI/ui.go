@@ -165,7 +165,7 @@ func Init() {
 				}
 			} else {
 				searching = true
-				Search(b, simulations, output)
+				go Search(b, simulations, output)
 				//Start searching board states
 			}
 		}
