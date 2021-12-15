@@ -9,8 +9,6 @@ var ( //Values used for seeing benchmark performance
 	Searches = 0
 )
 
-//TODO: swap teams lol
-
 type BoardAction BoardState
 
 func (ba BoardAction) ApplyTo (gameState gomcts.GameState) gomcts.GameState {
@@ -37,8 +35,6 @@ func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
 		return gomcts.GameResult(1), true
 	}
 
-
-	//TODO: Maybe add a panic here who knows
 	return gomcts.GameResult(0), false
 }
 
