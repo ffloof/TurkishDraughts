@@ -22,7 +22,7 @@ var basicAtlas = text.NewAtlas(basicfont.Face7x13, text.ASCII) //Font
 var themes = []DrawTheme{ theme.LichessTheme{}, theme.WikipediaTheme{}, theme.RainbowTheme{}} //Different themes to cycle through
 
 func Init() {
-	board.MaxDepth = 8 //Depth to search to for AI
+	simulations := 2048 //Amount of simulation for monte carlo search tree
 	
 	//Create game window and starting board
 	b := board.CreateStartingBoard()
@@ -35,14 +35,11 @@ func Init() {
 	if err != nil {
 		panic(err)
 	}
-
 	
 	//AI move search variables
 	searching := false
-	totalMoves := 0
-	possibleMoves := []PossibleMove{} //When the amount of total moves = the amount of possibleMoves, the search has completed
 
-	output := make(chan PossibleMove) //Used to pass evaluations back to this rendering thread
+	output := make(chan board.BoardState) //Used to pass evaluations back to this rendering thread
 	
 	//Human player interacting variables
 	selectedTileIndex := -1 //Tile player is currently clicked on
@@ -55,7 +52,6 @@ func Init() {
 	themeIndex := 1 //Current theme selected
 	previousBoards := []board.BoardState{} //Previous boards for undo feature
 	var nextPrevBoard board.BoardState
-	var lastEval *PossibleMove
 
 	//Draw loop
 	for !win.Closed() {
@@ -86,25 +82,24 @@ func Init() {
 		if selectedTileIndex != -1 { currentTheme.DrawMoves(imd, selectedTileIndex, moveMap) }
 		clicked, released, tileIndex := currentTheme.GetMouseData(win) 
 		currentTheme.DrawPieces(imd, &b)
-		drawControls(imd, win, autoMoveBlack, autoMoveWhite, lastEval)
+		drawControls(imd, win, autoMoveBlack, autoMoveWhite, simulations)
 
 		//Control logic
 		if win.JustPressed(pixelgl.Key1) { autoMoveBlack = !autoMoveBlack } //Toggle ai white
 		if win.JustPressed(pixelgl.Key2) { autoMoveWhite = !autoMoveWhite } //Toggle ai black
 		if win.JustPressed(pixelgl.KeyMinus) { //Decrement search depth
-			board.MaxDepth -= 1
-			if board.MaxDepth < 0 {
-				board.MaxDepth = 0
+			simulations /= 2
+			if simulations < 1 {
+				simulations = 1
 			}
 		}
-		if win.JustPressed(pixelgl.KeyEqual) { board.MaxDepth += 1 } //Increment search depth
+		if win.JustPressed(pixelgl.KeyEqual) { simulations *= 2 } //Increment search depth
 		if win.JustPressed(pixelgl.KeyZ) { //Undo move
 			if len(previousBoards) > 0 {
 				b = previousBoards[len(previousBoards)-1]
 				previousBoards = previousBoards[0:len(previousBoards)-1]
 				selectedTileIndex = -1
 				moveMap = nil
-				lastEval = nil
 			}
 		}
 
@@ -142,7 +137,6 @@ func Init() {
 					if swapTeams || len(moveMap) == 0 {
 						selectedTileIndex = -1
 						moveMap = nil
-						lastEval = nil
 						b.SwapTeam()
 						previousBoards = append(previousBoards, nextPrevBoard)
 					} else {
@@ -157,39 +151,22 @@ func Init() {
 		} else { //In the event that the ai is playing
 			//Engine logic
 
-			//If we are still expecting more moves to be evaluated do nothing
-			if totalMoves != len(possibleMoves) {
+			//If we are expecting results
+			if searching {
 				//Check if theres a new result
 				select {
-				case pMove := <-output:
-					//Add it to the list of known results
-					possibleMoves = append(possibleMoves, pMove)
+				case bestMove := <-output:
+					//Update to new board, and reset some variables
+					searching = false
+					b = bestMove
+					selectedTileIndex = -1
+					moveMap = nil
+					previousBoards = append(previousBoards, nextPrevBoard)
 				}
-			} else if !searching { //Otherwise if we haven't started searching, start
+			} else {
 				searching = true
-				possibleMoves = []PossibleMove{}
-				totalMoves = Search(b, output)
+				Search(b, simulations, output)
 				//Start searching board states
-			} 
-
-			//Once all moves are on pick best move for the given side
-			if totalMoves == len(possibleMoves) {
-				searching = false
-
-				var bestMove PossibleMove 
-
-				for i, checkMove := range possibleMoves {
-					if i == 0 || (b.Turn == board.White && checkMove.value > bestMove.value) || (b.Turn == board.Black && checkMove.value < bestMove.value) {
-						bestMove = checkMove
-					}
-				}
-
-				//Update to new board, and reset some variables
-				b = bestMove.board
-				selectedTileIndex = -1
-				moveMap = nil
-				lastEval = &bestMove
-				previousBoards = append(previousBoards, nextPrevBoard)
 			}
 		}
 	}
