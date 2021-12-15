@@ -26,7 +26,7 @@ func TestBenchMCTSVanilla(t *testing.T){
 	var lasttime float64
 	for {
 		lasttime = benchmarkDepthsMCTS(t, board.CreateStartingBoard(), i)
-		if lasttime > 15.0 { break }
+		if lasttime > 5.0 { break }
 		i*=2
 	}
 	t.Log("===", i)

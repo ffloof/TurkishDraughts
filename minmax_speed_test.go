@@ -38,7 +38,7 @@ func TestBenchMMVanilla(t *testing.T){
 		board.MaximumHashDepth = i
 
 		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
-		if lasttime > 15.0 { break }
+		if lasttime > 5.0 { break }
 		i++
 	}
 	t.Log("===", i)
@@ -56,7 +56,7 @@ func TestBenchMMNoTable(t *testing.T){
 		board.MaximumHashDepth = 0
 
 		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
-		if lasttime > 15.0 { break }
+		if lasttime > 5.0 { break }
 		i++
 	}
 	t.Log("===", i)
@@ -75,7 +75,7 @@ func TestBenchMMFastTable(t *testing.T){
 		board.MaximumHashDepth = i-2
 
 		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
-		if lasttime > 15.0 { break }
+		if lasttime > 5.0 { break }
 		i++
 	}
 	t.Log("===", i)
@@ -93,7 +93,7 @@ func TestBenchMMAdvanced(t *testing.T){
 		board.MaximumHashDepth = i
 
 		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
-		if lasttime > 15.0 { break }
+		if lasttime > 5.0 { break }
 		i++
 	}
 	t.Log("===", i)
@@ -111,7 +111,7 @@ func TestBenchMMCheatTable(t *testing.T){
 		board.MaximumHashDepth = i - 2
 
 		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
-		if lasttime > 15.0 { break }
+		if lasttime > 5.0 { break }
 		i++
 	}
 	t.Log("===", i)
