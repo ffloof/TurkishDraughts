@@ -12,6 +12,8 @@ github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2
 github.com/go-gl/mathgl v0.0.0-20190416160123-c4601bc793c7 h1:THttjeRn1iiz69E875U6gAik8KTWk/JYAHoSVpUxBBI=
 github.com/go-gl/mathgl v0.0.0-20190416160123-c4601bc793c7/go.mod h1:yhpkQzEiH9yPyxDUGzkmgScbaBVlhC06qodikEM0ZwQ=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
+github.com/int8/gomcts v0.0.0-20180422125032-35cc976c660e h1:PpRWhVlVjcHJhTkWFDwQgAMIjBHb30msyRjV8Liy3sk=
+github.com/int8/gomcts v0.0.0-20180422125032-35cc976c660e/go.mod h1:PwZF2v0aM9Ig2EvSvR8eD7lkVO1IB7UqJyB4uHJ2p3A=
 github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=

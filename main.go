@@ -1,13 +1,16 @@
 package main
 
 import (
-	"TurkishDraughts/UI"
-	"github.com/faiface/pixel/pixelgl"
+	"TurkishDraughts/Board"
+	//"TurkishDraughts/UI"
+	//"github.com/faiface/pixel/pixelgl"
 )
 
 
 func main() {
-	pixelgl.Run(ui.Init)
+	b := board.CreateStartingBoard()
+	board.MCTS(b, 10000)
+	//pixelgl.Run(ui.Init)
 }
 
 
