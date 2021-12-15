@@ -4,6 +4,11 @@ import (
 	"github.com/int8/gomcts"
 )
 
+var ( //Values used for seeing benchmark performance
+	Hits = 0
+	Searches = 0
+)
+
 
 type BoardAction BoardState
 

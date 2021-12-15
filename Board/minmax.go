@@ -28,10 +28,7 @@ var (
 	TableDepthAllowedInaccuracy int32 = 0 //default 0 or 2
 )
 
-var ( //Values used for seeing benchmark performance
-	Hits = 0
-	Searches = 0
-)
+
 
 //Evaluates recursively the value of a board using the minmax algorithm
 //Board value is always when in whites favor positive and blacks favor negative

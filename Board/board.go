@@ -249,5 +249,9 @@ func (bs *BoardState) ValidPlays() []BoardState {
 	if len(options) == 0 { 
 		options = bs.AllMoveBoards() //If there aren't any takes get all possible moves
 	}
+
+	Hits += len(options)
+	Searches++
+
 	return options
 }
