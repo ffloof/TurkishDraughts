@@ -30,7 +30,7 @@ var (
 
 //Evaluates recursively the value of a board using the minmax algorithm
 //Board value is always when in whites favor positive and blacks favor negative
-func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) (float32, *BoardState) {
+func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) (float32, []BoardState) {
 	//Checks table to see if theres already an entry for this board
 	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
 		return prevValue, nil //If there is one no need to research this branch of the tree
@@ -62,7 +62,7 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 	}
 	
 	var bestValue float32
-	var bestBoardPtr *BoardState = nil
+	var bestBoards []BoardState = nil
 
 	//Search for the best possible value move
 	if bs.Turn == White {
@@ -76,11 +76,14 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 			
 			//AB pruning to speed up tree search
 			if value >= bestValue { 
-				bestValue = value 
 				if depth == 0 { 
-					storeBest := branch
-					bestBoardPtr = &storeBest 
+					if bestBoards == nil || value > bestValue {
+						bestBoards = []BoardState{ branch }
+					} else {
+						bestBoards = append(bestBoards, branch)
+					}
 				}
+				bestValue = value 
 			}
 			if value > alpha { alpha = value }
 			if beta <= alpha { break }
@@ -94,11 +97,14 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 
 			if value <= bestValue { 
-				bestValue = value 
 				if depth == 0 { 
-					storeBest := branch
-					bestBoardPtr = &storeBest  
+					if bestBoards == nil || value < bestValue {
+						bestBoards = []BoardState{ branch }
+					} else {
+						bestBoards = append(bestBoards, branch)
+					}
 				}
+				bestValue = value 
 			}
 			if value < beta { beta = value }
 			if beta <= alpha { break }
@@ -106,7 +112,7 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 	}
 	
 	//Return final best value of a move found from this board
-	return bestValue, bestBoardPtr
+	return bestValue, bestBoards
 }
 
 //Gets the value of the board by summing piece weights and how far advanced a sides pieces are

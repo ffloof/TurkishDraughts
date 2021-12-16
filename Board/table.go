@@ -27,7 +27,9 @@ func (table *TransposTable) Request(board *BoardState, depth int32) (bool, float
 		if entry.board == *board {
 			//Checks if the board was evaluated at a depth greater than or within a certain range
 			//Prevents using too shallowly evaluated moves
-			if entry.depth - TableDepthAllowedInaccuracy <= depth { return true, entry.value }
+			if entry.depth - TableDepthAllowedInaccuracy <= depth { 
+				return true, entry.value 
+			}
 		}
 	}
 	return false, 0.0 //Otherwise returns that it didn't find anything
@@ -44,6 +46,18 @@ func (table *TransposTable) Set(board *BoardState, value float32, depth int32){
 	if !exists || depth <= entry.depth {
 		//By saving deeper explored branches not only do we save the most time saving possiblity, we also perform far fewer writes increasing efficiency. 
 		table.internal[hash] = storedState{*board, value, depth}
+	}
+}
+
+//TODO: write unit test(s) for this
+func (table *TransposTable) Turn(){
+	for a,b := range table.internal {
+		b.depth += 1
+		if b.depth > MaximumHashDepth {
+			delete(table.internal, a)
+		} else {
+			table.internal[a] = b
+		}
 	}
 }
 
