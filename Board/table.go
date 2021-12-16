@@ -18,13 +18,13 @@ func NewTable() *TransposTable {
 }
 
 //Returns if the board has been previously evaluated, and its value
-func (table *TransposTable) Request(board *BoardState, depth int32) (bool, float32) {
+func (table *TransposTable) Request(board BoardState, depth int32) (bool, float32) {
 	//Hash board state and load entry
 	hash := board.hashBoard()
 	entry, exists := table.internal[hash]
 
 	if exists { //Check if it exists and if its the exact same board not just a collision 
-		if entry.board == *board {
+		if entry.board == board {
 			//Checks if the board was evaluated at a depth greater than or within a certain range
 			//Prevents using too shallowly evaluated moves
 			if entry.depth - TableDepthAllowedInaccuracy <= depth { 
@@ -37,7 +37,7 @@ func (table *TransposTable) Request(board *BoardState, depth int32) (bool, float
 }
 
 //Sets the board
-func (table *TransposTable) Set(board *BoardState, value float32, depth int32){
+func (table *TransposTable) Set(board BoardState, value float32, depth int32){
 	//Hash board state and write to table
 	hash := board.hashBoard()
 
@@ -45,7 +45,7 @@ func (table *TransposTable) Set(board *BoardState, value float32, depth int32){
 	entry, exists := table.internal[hash]
 	if !exists || depth <= entry.depth {
 		//By saving deeper explored branches not only do we save the most time saving possiblity, we also perform far fewer writes increasing efficiency. 
-		table.internal[hash] = storedState{*board, value, depth}
+		table.internal[hash] = storedState{board, value, depth}
 	}
 }
 
@@ -67,3 +67,5 @@ func (table *TransposTable) Turn(){
 func (board *BoardState) hashBoard() uint64 {
 	return (board.Full << 1) | uint64(board.Turn)
 }
+
+

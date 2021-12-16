@@ -4,6 +4,7 @@ import (
 	"TurkishDraughts/Board"
 	"fmt"
 	//"time"
+	"strings"
 )
 
 type AI interface {
@@ -20,7 +21,8 @@ func Run(){
 }
 
 func OneVOne(whiteAI, blackAI AI){
-	b := board.CreateStartingBoard()
+	b := board.BoardFromStr("-------- bbbbbbbb -bbbbbbb b------- -ww----- w--wwwww wwwwwwww --------")// board.CreateStartingBoard()
+	
 	for {
 		//Just tells the ai, a move has happened, useful for several optimizations
 		//I just use it to recycle the hash table by adjusting depth of entries
@@ -46,7 +48,12 @@ func OneVOne(whiteAI, blackAI AI){
 				fmt.Println(blackAI.GetName(), "(BLACK)")
 			}
 		}
-		//b.Print() //TODO: uncomment this
+		//b.Print() TODO: revert
+		if strings.Index(b.ToStr(), "W") > -1 || strings.Index(b.ToStr(), "B") > -1 { 
+			b.Print()
+			break
+		}
 		fmt.Println()
+		break
 	}
 }

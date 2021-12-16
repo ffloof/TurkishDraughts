@@ -1,7 +1,5 @@
 package board
 
-import "fmt"
-
 const (
 	//Weights for pieces/wins
 	//Win should always be greater than the theoretical max of value of a board where one side gets 16 kings
@@ -32,7 +30,7 @@ var (
 
 //Evaluates recursively the value of a board using the minmax algorithm
 //Board value is always when in whites favor positive and blacks favor negative
-func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) (float32, []BoardState) {
+func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) (float32, []BoardState) {
 	//Checks table to see if theres already an entry for this board
 	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
 		return prevValue, nil //If there is one no need to research this branch of the tree
@@ -73,54 +71,38 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 		for _, branch := range options { //Search each possible move with minmax
 			value, _ := branch.MinMax(depth+1, alpha, beta, table)
 			
-			//Cache move in the table to speed up later searches of identical situations
-			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
-			
 			//AB pruning to speed up tree search
-			if value >= bestValue { 
-				if depth == 0 { 
-					if bestBoards == nil || value > bestValue {
-						store := branch
-						bestBoards = []BoardState{ store }
-					} else {
-						store := branch
-						bestBoards = append(bestBoards, store)
-					}
-				}
-				bestValue = value 
+			if value == bestValue {
+				/* if depth == 0 */ { bestBoards = append(bestBoards, branch) }
+			} else if value > bestValue {
+				/* if depth == 0 */ { bestBoards = []BoardState{branch} }
+				bestValue = value
 			}
+
 			if value > alpha { alpha = value }
 			if beta <= alpha { break }
 		}
 	} else { //Same just from black's perspective
-
 		bestValue = alphaBetaMax
 		for _, branch := range options {
 			value, _ := branch.MinMax(depth+1, alpha, beta, table)
 
-			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 
-			if depth == 0 {
-				fmt.Println(value, branch.ToStr())
+			if value == bestValue {
+				/* if depth == 0 */{ bestBoards = append(bestBoards, branch) }
+			} else if value < bestValue {
+				/* if depth == 0 */ { bestBoards = []BoardState{branch} }
+				bestValue = value
 			}
 
-			if value <= bestValue { 
-				if depth == 0 { 
-					if bestBoards == nil || value < bestValue {
-						store := branch
-						bestBoards = []BoardState{ store }
-					} else {
-						store := branch
-						bestBoards = append(bestBoards, store)
-					}
-				}
-				bestValue = value 
-			}
 			if value < beta { beta = value }
 			if beta <= alpha { break }
 		}
 	}
 	
+	//Cache move in the table to speed up later searches of identical situations
+	if depth-1 <= MaximumHashDepth { table.Set(bs, bestValue, depth) } //TODO: move check to inside table.Set
+
 	//Return final best value of a move found from this board
 	return bestValue, bestBoards
 }

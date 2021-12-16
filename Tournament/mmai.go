@@ -26,7 +26,7 @@ func (mmai minmaxAI) Play(currentBoard board.BoardState) board.BoardState {
 	board.AdvanceWeight = mmai.advanced
 
 	_, next := currentBoard.MinMax(0, -999.0, 999.0, mmai.table)
-	return next[rand.Intn(len(next))/2] //TODO: remove this /2 thats just for testing
+	return next[rand.Intn(len(next))]
 	return next[0]
 }
 
