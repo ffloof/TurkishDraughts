@@ -49,8 +49,8 @@ func (mmai minmaxAI) GetName() string {
 }
 
 func Run(){
-	var AI1 AI = minmaxAI { "MinMax10", *(board.NewTable()), 10, 0.1, 8, 0} // montecarloAI { "MonteCarlo2048" , 8192 }
-	var AI2 AI = minmaxAI { "MinMax10", *(board.NewTable()), 10, 0.1, 8, 0}
+	var AI1 AI = minmaxAI { "MinMax10", *(board.NewTable()), 10, 0.0, 0, 0}
+	var AI2 AI = minmaxAI { "MinMax10", *(board.NewTable()), 10, 0.0, 0, 0}
 
 	b := board.CreateStartingBoard()
 	for {

@@ -66,6 +66,7 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 
 	//Search for the best possible value move
 	if bs.Turn == White {
+
 		bestValue = -alphaBetaMax
 		for _, branch := range options { //Search each possible move with minmax
 			value, _ := branch.MinMax(depth+1, alpha, beta, table)
@@ -74,22 +75,30 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 			
 			//AB pruning to speed up tree search
-			if value > bestValue { 
+			if value >= bestValue { 
 				bestValue = value 
-				if depth == 0 { bestBoardPtr = &branch }
+				if depth == 0 { 
+					storeBest := branch
+					bestBoardPtr = &storeBest 
+				}
 			}
 			if value > alpha { alpha = value }
 			if beta <= alpha { break }
 		}
 	} else { //Same just from black's perspective
+
 		bestValue = alphaBetaMax
 		for _, branch := range options {
 			value, _ := branch.MinMax(depth+1, alpha, beta, table)
+
 			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 
-			if value < bestValue { 
+			if value <= bestValue { 
 				bestValue = value 
-				if depth == 0 { bestBoardPtr = &branch }
+				if depth == 0 { 
+					storeBest := branch
+					bestBoardPtr = &storeBest  
+				}
 			}
 			if value < beta { beta = value }
 			if beta <= alpha { break }
