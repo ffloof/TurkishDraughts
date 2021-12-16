@@ -30,10 +30,10 @@ var (
 
 //Evaluates recursively the value of a board using the minmax algorithm
 //Board value is always when in whites favor positive and blacks favor negative
-func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) float32 {
+func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) (float32, *BoardState) {
 	//Checks table to see if theres already an entry for this board
 	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
-		return prevValue //If there is one no need to research this branch of the tree
+		return prevValue, nil //If there is one no need to research this branch of the tree
 	}
 
 	//Checks if the board is won or if players have drawed and returns accordingly
@@ -41,58 +41,63 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 	
 	if playerWon {
 		if winWhite == White {
-			return winWeight
+			return winWeight, nil
 		} 
-		return -winWeight 
+		return -winWeight, nil
 	} else if playerDrew {
-		return 0.0
+		return 0.0, nil
 	}
 
 	if depth == MaxDepth {
-		return bs.RawBoardValue()
+		return bs.RawBoardValue(), nil
 	}	
 
 	options := bs.ValidPlays()
 	if len(options) == 0 { //If a payer has no legal moves they lose
 		if bs.Turn == White { 
-			return -winWeight 
+			return -winWeight, nil
 		} else { 
-			return winWeight 
+			return winWeight, nil
 		}
 	}
 	
 	var bestValue float32
+	var bestBoardPtr *BoardState = nil
 
 	//Search for the best possible value move
 	if bs.Turn == White {
 		bestValue = -alphaBetaMax
 		for _, branch := range options { //Search each possible move with minmax
-			branch.SwapTeam()
-			value := branch.MinMax(depth+1, alpha, beta, table)
+			value, _ := branch.MinMax(depth+1, alpha, beta, table)
 			
 			//Cache move in the table to speed up later searches of identical situations
 			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 			
 			//AB pruning to speed up tree search
-			if value > bestValue { bestValue = value }
+			if value > bestValue { 
+				bestValue = value 
+				if depth == 0 { bestBoardPtr = &branch }
+			}
 			if value > alpha { alpha = value }
 			if beta <= alpha { break }
 		}
 	} else { //Same just from black's perspective
 		bestValue = alphaBetaMax
 		for _, branch := range options {
-			branch.SwapTeam()
-			value := branch.MinMax(depth+1, alpha, beta, table)
+			value, _ := branch.MinMax(depth+1, alpha, beta, table)
 			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 
-			if value < bestValue { bestValue = value }
+			if value < bestValue { 
+				bestValue = value 
+				if depth == 0 { bestBoardPtr = &branch }
+			}
 			if value < beta { beta = value }
 			if beta <= alpha { break }
 		}
 	}
 	
 	//Return final best value of a move found from this board
-	return bestValue
+	return bestValue, bestBoardPtr
 }
 
 //Gets the value of the board by summing piece weights and how far advanced a sides pieces are

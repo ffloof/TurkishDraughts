@@ -36,7 +36,6 @@ func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
 func (bs BoardState) GetLegalActions() []gomcts.Action {
 	scuffedWorkaround := []gomcts.Action{}
 	for _, v := range bs.ValidPlays() {
-		v.SwapTeam()
 		scuffedWorkaround = append(scuffedWorkaround, BoardAction(v)) 
 	}
 	return scuffedWorkaround
@@ -69,8 +68,5 @@ func (bs BoardState) NextToMove() int8 {
 
 func MCTS(b BoardState, nodes int) BoardState {
 	choice := gomcts.MonteCarloTreeSearch(b, gomcts.DefaultRolloutPolicy, nodes)
-	x := choice.(BoardAction)
-	y := BoardState(x)
-	//y.Print()
-	return y
+	return BoardState(choice.(BoardAction))
 }

@@ -11,7 +11,7 @@ func benchmarkDepthsMM(t *testing.T, b board.BoardState, testDepth int32) float6
 	startTime := time.Now()
 	board.Searches = 0
 
-	value := b.MinMax(0, -999.0, 999.0, board.NewTable())
+	value, _ := b.MinMax(0, -999.0, 999.0, board.NewTable())
 
 	duration := time.Since(startTime).Seconds()
 	t.Log("---", testDepth)

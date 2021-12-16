@@ -252,6 +252,10 @@ func (bs *BoardState) ValidPlays() []BoardState {
 		options = bs.AllMoveBoards() //If there aren't any takes get all possible moves
 	}
 
+	for i, _ := range options {
+		options[i].SwapTeam()
+	}
+
 	Searches++
 
 	return options
