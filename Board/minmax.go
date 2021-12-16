@@ -1,5 +1,7 @@
 package board
 
+import "fmt"
+
 const (
 	//Weights for pieces/wins
 	//Win should always be greater than the theoretical max of value of a board where one side gets 16 kings
@@ -78,9 +80,11 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 			if value >= bestValue { 
 				if depth == 0 { 
 					if bestBoards == nil || value > bestValue {
-						bestBoards = []BoardState{ branch }
+						store := branch
+						bestBoards = []BoardState{ store }
 					} else {
-						bestBoards = append(bestBoards, branch)
+						store := branch
+						bestBoards = append(bestBoards, store)
 					}
 				}
 				bestValue = value 
@@ -96,12 +100,18 @@ func (bs *BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTa
 
 			if depth <= MaximumHashDepth { table.Set(&branch, value, depth+1) }
 
+			if depth == 0 {
+				fmt.Println(value, branch.ToStr())
+			}
+
 			if value <= bestValue { 
 				if depth == 0 { 
 					if bestBoards == nil || value < bestValue {
-						bestBoards = []BoardState{ branch }
+						store := branch
+						bestBoards = []BoardState{ store }
 					} else {
-						bestBoards = append(bestBoards, branch)
+						store := branch
+						bestBoards = append(bestBoards, store)
 					}
 				}
 				bestValue = value 
