@@ -1,5 +1,7 @@
 package board
 
+import "fmt"
+
 const (
 	//Weights for pieces/wins
 	//Win should always be greater than the theoretical max of value of a board where one side gets 16 kings
@@ -69,6 +71,7 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 
 		bestValue = -alphaBetaMax
 		for _, branch := range options { //Search each possible move with minmax
+
 			value, _ := branch.MinMax(depth+1, alpha, beta, table)
 			
 			//AB pruning to speed up tree search
@@ -85,8 +88,12 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 	} else { //Same just from black's perspective
 		bestValue = alphaBetaMax
 		for _, branch := range options {
-			value, _ := branch.MinMax(depth+1, alpha, beta, table)
 
+			value, _ := branch.MinMax(depth+1, alpha, beta, table)
+			if depth == 0 {
+				fmt.Println(depth+1, alpha, beta)
+				fmt.Println(value)
+			}
 
 			if value == bestValue {
 				/* if depth == 0 */{ bestBoards = append(bestBoards, branch) }
