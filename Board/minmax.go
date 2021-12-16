@@ -63,55 +63,54 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 		}
 	}
 	
-	var bestValue float32
+	var value float32
 	var bestBoards []BoardState = nil
 
 	//Search for the best possible value move
 	if bs.Turn == White {
-
-		bestValue = -alphaBetaMax
+		value = -alphaBetaMax
 		for _, branch := range options { //Search each possible move with minmax
 
-			value, _ := branch.MinMax(depth+1, alpha, beta, table)
+			v, _ := branch.MinMax(depth+1, alpha, beta, table)
 			
 			//AB pruning to speed up tree search
-			if value == bestValue {
+			if v == value {
 				/* if depth == 0 */ { bestBoards = append(bestBoards, branch) }
-			} else if value > bestValue {
+			} else if v > value {
 				/* if depth == 0 */ { bestBoards = []BoardState{branch} }
-				bestValue = value
+				value = v
 			}
 
+			if value >= beta { break }
 			if value > alpha { alpha = value }
-			if beta <= alpha { break }
 		}
 	} else { //Same just from black's perspective
-		bestValue = alphaBetaMax
+		value = alphaBetaMax
 		for _, branch := range options {
 
-			value, _ := branch.MinMax(depth+1, alpha, beta, table)
+			v, _ := branch.MinMax(depth+1, alpha, beta, table)
 			if depth == 0 {
 				fmt.Println(depth+1, alpha, beta)
-				fmt.Println(value)
+				fmt.Println(v)
 			}
 
-			if value == bestValue {
+			if v == value {
 				/* if depth == 0 */{ bestBoards = append(bestBoards, branch) }
-			} else if value < bestValue {
+			} else if v < value {
 				/* if depth == 0 */ { bestBoards = []BoardState{branch} }
-				bestValue = value
+				value = v
 			}
 
+			if value <= alpha { break }
 			if value < beta { beta = value }
-			if beta <= alpha { break }
 		}
 	}
 	
 	//Cache move in the table to speed up later searches of identical situations
-	if depth-1 <= MaximumHashDepth { table.Set(bs, bestValue, depth) } //TODO: move check to inside table.Set
+	if depth-1 <= MaximumHashDepth { table.Set(bs, value, depth) } //TODO: move check to inside table.Set
 
 	//Return final best value of a move found from this board
-	return bestValue, bestBoards
+	return value, bestBoards
 }
 
 //Gets the value of the board by summing piece weights and how far advanced a sides pieces are

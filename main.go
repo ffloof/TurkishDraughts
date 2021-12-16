@@ -19,7 +19,7 @@ func main() {
 	b2 := board.BoardFromStr("-------- bbbbbbbb --bbbbbb bb------ -ww----- w--wwwww wwwwwwww --------")
 	b2.SwapTeam()
 	v1, _ := b1.MinMax(0,-999.0,999.0,board.NewTable())
-	v2, _ := b2.MinMax(1,-999.0,0.0,board.NewTable())
+	v2, _ := b2.MinMax(1,-999.0,999.0,board.NewTable())
 
 	fmt.Println(v1)
 	//bs1[1].Print()
