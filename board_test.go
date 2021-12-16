@@ -207,40 +207,40 @@ func TestTable(t *testing.T){
 	board.TableDepthAllowedInaccuracy = 3
 	board.MaximumHashDepth = 100
 
-	testTable.Set(&defaultBoard, 1.0, 6)
-	exists, value := testTable.Request(&defaultBoard, 10)
+	testTable.Set(defaultBoard, 1.0, 6)
+	exists, value := testTable.Request(defaultBoard, 10)
 	if !exists || value != 1.0 {
 		t.Log("Table write/read failed")
 		t.Fail()
 	}
 
-	testTable.Set(&defaultBoard, 2.0, 7)
-	exists, value = testTable.Request(&defaultBoard, 10)
+	testTable.Set(defaultBoard, 2.0, 7)
+	exists, value = testTable.Request(defaultBoard, 10)
 	if !exists || value != 1.0 {
 		t.Log("Table lower depth write")
 		t.Fail()
 	}
 
-	testTable.Set(&defaultBoard, 3.0, 5)
-	exists, value = testTable.Request(&defaultBoard, 10)
+	testTable.Set(defaultBoard, 3.0, 5)
+	exists, value = testTable.Request(defaultBoard, 10)
 	if !exists || value != 3.0 {
 		t.Log("Table higher depth write failed")
 		t.Fail()
 	}
 
-	exists, value = testTable.Request(&defaultBoard, 1)
+	exists, value = testTable.Request(defaultBoard, 1)
 	if exists {
 		t.Log("Read out of bounds of allowed inaccuracy")
 		t.Fail()
 	}
 
-	exists, value = testTable.Request(&defaultBoard, 2)
+	exists, value = testTable.Request(defaultBoard, 2)
 	if !exists {
 		t.Log("Failed to read on edge of bounds of allowed inaccuracy")
 		t.Fail()
 	}
 
-	exists, value = testTable.Request(&defaultBoard, 3)
+	exists, value = testTable.Request(defaultBoard, 3)
 	if !exists {
 		t.Log("Failed to read within bounds of allowed inaccuracy")
 		t.Fail()
@@ -248,8 +248,8 @@ func TestTable(t *testing.T){
 
 	for i:=100;i>0;i-- {
 		randomBoard := genRandomBoard()
-		testTable.Set(&randomBoard, 8.0, int32(i))
-		exists, value = testTable.Request(&randomBoard, int32(i))
+		testTable.Set(randomBoard, 8.0, int32(i))
+		exists, value = testTable.Request(randomBoard, int32(i))
 		if !exists || value != 8.0 {
 			t.Log("Failed random read write test")
 			t.Fail()
