@@ -15,14 +15,31 @@ type AI interface {
 
 func Run(){
 	OneVOne(
-		minmaxAI { "MinMax10", board.NewTable(7, 0), 10, 0.0},
-		montecarloAI { "MonteCarlo8k", 8192 })
+		minmaxAI { "MinMax2", board.NewTable(7, 0), 2, 0.0},
+		montecarloAI { "MonteCarlo4k", 1024 })
 }
 
 func OneVOne(whiteAI, blackAI AI){
 	b := board.CreateStartingBoard()
 	
+	//Play loop
 	for {
+		//Check if theres a winner and if we should stop the game loop before mcts ai violently crashes itself
+		isWon, teamWon, isDraw := b.PlayerHasWon()
+		if isWon || isDraw {
+			if isDraw {
+				//Draw
+				fmt.Println("(DRAW)")
+			} else if teamWon == board.White {
+				//White wins
+				fmt.Println(whiteAI.GetName(), "(WHITE WIN)")
+			} else {
+				//Black wins
+				fmt.Println(blackAI.GetName(), "(BLACK WIN)")
+			}
+			break
+		}
+
 		//Just tells the ai, a move has happened, useful for several optimizations
 		//I just use it to recycle the hash table by adjusting depth of entries
 		whiteAI.Update()
