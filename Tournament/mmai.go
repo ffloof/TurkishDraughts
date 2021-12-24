@@ -30,7 +30,7 @@ func (mmai minmaxAI) Play(currentBoard board.BoardState) board.BoardState {
 
 	for i, consideredBoard := range currentBoard.ValidPlays() {
 		eval := consideredBoard.MinMax(0, -999.0, 999.0, mmai.table)
-		if i == 0 || eval > bestEval {
+		if i == 0 || (currentBoard.Turn == board.White && eval > bestEval) || (currentBoard.Turn == board.Black && eval < bestEval) {
 			bestEval = eval
 			bestOutcome = consideredBoard
 		}
