@@ -1,7 +1,5 @@
 package board
 
-import "fmt"
-
 const (
 	//Weights for pieces/wins
 	//Win should always be greater than the theoretical max of value of a board where one side gets 16 kings
@@ -32,10 +30,10 @@ var (
 
 //Evaluates recursively the value of a board using the minmax algorithm
 //Board value is always when in whites favor positive and blacks favor negative
-func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) (float32, []BoardState) {
+func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) float32 {
 	//Checks table to see if theres already an entry for this board
 	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
-		return prevValue, nil //If there is one no need to research this branch of the tree
+		return prevValue //If there is one no need to research this branch of the tree
 	}
 
 	//Checks if the board is won or if players have drawed and returns accordingly
@@ -43,41 +41,37 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 	
 	if playerWon {
 		if winWhite == White {
-			return winWeight, nil
+			return winWeight
 		} 
-		return -winWeight, nil
+		return -winWeight
 	} else if playerDrew {
-		return 0.0, nil
+		return 0.0
 	}
 
 	if depth == MaxDepth {
-		return bs.RawBoardValue(), nil
+		return bs.RawBoardValue()
 	}	
 
 	options := bs.ValidPlays()
 	if len(options) == 0 { //If a payer has no legal moves they lose
 		if bs.Turn == White { 
-			return -winWeight, nil
+			return -winWeight
 		} else { 
-			return winWeight, nil
+			return winWeight
 		}
 	}
 	
 	var value float32
-	var bestBoards []BoardState = nil
 
 	//Search for the best possible value move
 	if bs.Turn == White {
 		value = -alphaBetaMax
 		for _, branch := range options { //Search each possible move with minmax
 
-			v, _ := branch.MinMax(depth+1, alpha, beta, table)
+			v := branch.MinMax(depth+1, alpha, beta, table)
 			
 			//AB pruning to speed up tree search
-			if v == value {
-				/* if depth == 0 */ { bestBoards = append(bestBoards, branch) }
-			} else if v > value {
-				/* if depth == 0 */ { bestBoards = []BoardState{branch} }
+			if v > value {
 				value = v
 			}
 
@@ -88,16 +82,9 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 		value = alphaBetaMax
 		for _, branch := range options {
 
-			v, _ := branch.MinMax(depth+1, alpha, beta, table)
-			if depth == 0 {
-				fmt.Println(depth+1, alpha, beta)
-				fmt.Println(v)
-			}
+			v := branch.MinMax(depth+1, alpha, beta, table)
 
-			if v == value {
-				/* if depth == 0 */{ bestBoards = append(bestBoards, branch) }
-			} else if v < value {
-				/* if depth == 0 */ { bestBoards = []BoardState{branch} }
+			if v < value {
 				value = v
 			}
 
@@ -110,7 +97,7 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 	if depth-1 <= MaximumHashDepth { table.Set(bs, value, depth) } //TODO: move check to inside table.Set
 
 	//Return final best value of a move found from this board
-	return value, bestBoards
+	return value
 }
 
 //Gets the value of the board by summing piece weights and how far advanced a sides pieces are

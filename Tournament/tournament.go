@@ -4,7 +4,6 @@ import (
 	"TurkishDraughts/Board"
 	"fmt"
 	//"time"
-	"strings"
 )
 
 type AI interface {
@@ -48,12 +47,7 @@ func OneVOne(whiteAI, blackAI AI){
 				fmt.Println(blackAI.GetName(), "(BLACK)")
 			}
 		}
-		//b.Print() TODO: revert
-		if strings.Index(b.ToStr(), "W") > -1 || strings.Index(b.ToStr(), "B") > -1 { 
-			b.Print()
-			break
-		}
+		b.Print()
 		fmt.Println()
-		break
 	}
 }

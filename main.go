@@ -1,18 +1,16 @@
 package main
 
 import (
-	//"TurkishDraughts/Tournament"
-	"TurkishDraughts/UI"
-	"github.com/faiface/pixel/pixelgl"
-
-	"TurkishDraughts/Board"
-	"fmt"
+	"TurkishDraughts/Tournament"
+	//"TurkishDraughts/UI"
+	//"github.com/faiface/pixel/pixelgl"
+	//"TurkishDraughts/Board"
 )
 
 
 func main() {
-	pixelgl.Run(ui.Init)
-	//tournament.Run()
+	//pixelgl.Run(ui.Init)
+	tournament.Run()
 }
 
 
