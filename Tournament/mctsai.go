@@ -9,12 +9,10 @@ type montecarloAI struct {
 	sims int
 }
 
-func (mctsai montecarloAI) Play(currentBoard board.BoardState) board.BoardState {
+func (mctsai montecarloAI) Play(currentBoard board.BoardState, _ []board.BoardState) board.BoardState {
 	return board.MCTS(currentBoard, mctsai.sims)
 }
 
 func (mctsai montecarloAI) GetName() string {
 	return mctsai.name
 }
-
-func (mctsai montecarloAI) Update(b board.BoardState){}
