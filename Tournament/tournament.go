@@ -15,12 +15,12 @@ type AI interface {
 
 func Run(){
 	OneVOne(
-		minmaxAI { "MinMax10NT", board.NewTable(0, 0), 10, 0.0},
-		minmaxAI { "MinMax9NT", board.NewTable(0, 0), 9, 0.0})
+		minmaxAI { "MinMax10", board.NewTable(7, 0), 10, 0.0},
+		montecarloAI { "MonteCarlo8k", 8192 })
 }
 
 func OneVOne(whiteAI, blackAI AI){
-	b := board.BoardFromStr("-------- bbbbbbbb -bbbbbbb b------- -ww----- w--wwwww wwwwwwww --------")// board.CreateStartingBoard()
+	b := board.CreateStartingBoard()
 	
 	for {
 		//Just tells the ai, a move has happened, useful for several optimizations
