@@ -17,4 +17,4 @@ func (mctsai montecarloAI) GetName() string {
 	return mctsai.name
 }
 
-func (mctsai montecarloAI) Update(){}
+func (mctsai montecarloAI) Update(b board.BoardState){}

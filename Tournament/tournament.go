@@ -9,14 +9,14 @@ import (
 type AI interface {
 	Play(board.BoardState) board.BoardState
 	GetName() string
-	Update()
+	Update(board.BoardState)
 }
 
 
 func Run(){
 	OneVOne(
-		minmaxAI { "MinMax2", board.NewTable(7, 0), 2, 0.0},
-		montecarloAI { "MonteCarlo4k", 1024 })
+		minmaxAI { "MinMax2", board.NewTable(7, 0), 2, 0.0, []board.BoardState{}},
+		montecarloAI { "MonteCarlo1k", 1024 })
 }
 
 func OneVOne(whiteAI, blackAI AI){
@@ -42,8 +42,8 @@ func OneVOne(whiteAI, blackAI AI){
 
 		//Just tells the ai, a move has happened, useful for several optimizations
 		//I just use it to recycle the hash table by adjusting depth of entries
-		whiteAI.Update()
-		blackAI.Update()
+		whiteAI.Update(b)
+		blackAI.Update(b)
 
 		options := b.ValidPlays()
 		if len(options) == 1 {

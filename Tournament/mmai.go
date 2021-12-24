@@ -12,6 +12,7 @@ type minmaxAI struct {
 	//4 main settings in minmax.go
 	ply int32
 	advanced float32
+	prevIllegalBoards []board.BoardState
 }
 
 func (mmai minmaxAI) Play(currentBoard board.BoardState) board.BoardState {
@@ -21,7 +22,8 @@ func (mmai minmaxAI) Play(currentBoard board.BoardState) board.BoardState {
 	var bestEval float32
 	var bestOutcome board.BoardState
 
-	for i, consideredBoard := range currentBoard.ValidPlays() {
+
+	for i, consideredBoard := range mmai.filteredPossibleMoves(currentBoard)  {
 		eval := consideredBoard.MinMax(0, -999.0, 999.0, mmai.table)
 		if i == 0 || (currentBoard.Turn == board.White && eval > bestEval) || (currentBoard.Turn == board.Black && eval < bestEval) {
 			bestEval = eval
@@ -36,7 +38,26 @@ func (mmai minmaxAI) GetName() string {
 	return mmai.name
 }
 
-func (mmai minmaxAI) Update(){
+func (mmai minmaxAI) Update(b board.BoardState){
+	mmai.prevIllegalBoards = append(mmai.prevIllegalBoards, b)
 	mmai.table.Turn()
 	debug.FreeOSMemory()
+}
+
+func (mmai minmaxAI) filteredPossibleMoves(currentBoard board.BoardState) []board.BoardState {
+	plays := currentBoard.ValidPlays()
+	for _, prevB := range mmai.prevIllegalBoards {
+		for i := range plays {
+			if plays[i] == prevB {
+				plays = remove(plays, i)
+				break
+			}
+		}
+	}
+	return plays
+}
+
+func remove(s []board.BoardState, i int) []board.BoardState {
+    s[i] = s[len(s)-1]
+    return s[:len(s)-1]
 }
