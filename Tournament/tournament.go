@@ -15,8 +15,8 @@ type AI interface {
 
 func Run(){
 	OneVOne(
-		minmaxAI { "MinMax10", board.NewTable(), 10, 0.0, 0, 0},
-		minmaxAI { "MinMax9", board.NewTable(), 9, 0.0, 0, 0})
+		minmaxAI { "MinMax10NT", board.NewTable(0, 0), 10, 0.0},
+		minmaxAI { "MinMax9NT", board.NewTable(0, 0), 9, 0.0})
 }
 
 func OneVOne(whiteAI, blackAI AI){

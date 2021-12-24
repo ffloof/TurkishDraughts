@@ -202,10 +202,7 @@ func TestPlayerWin(t *testing.T){
 
 func TestTable(t *testing.T){
 	defaultBoard := board.CreateStartingBoard()
-	testTable := board.NewTable()
-
-	board.TableDepthAllowedInaccuracy = 3
-	board.MaximumHashDepth = 100
+	testTable := board.NewTable(100, 3)
 
 	testTable.Set(defaultBoard, 1.0, 6)
 	exists, value := testTable.Request(defaultBoard, 10)

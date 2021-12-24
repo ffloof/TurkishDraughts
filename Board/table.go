@@ -8,12 +8,23 @@ type storedState struct {
 
 type TransposTable struct {
 	internal map[uint64]storedState
+	//Set maximum depth for hashes to reduce memory by only saving computationally expensive hashes
+	//Lower values lead to less memory consumption but slower computer performance
+	maxHashDepth int32 //default a few layers short of full depth
+
+	//When set to above 0 it will allow the transposition table to get values evaluated at lower depths
+	//i.e. at = 2, for a 6 ply evaluation it can use previous 4 ply evaluation 
+	//This introduces inaccuracy but has a massive performance gain
+	//To minimize inaccuracy use a low MaximumHashDepth and a low TableDepthAllowedInaccuracy
+	depthInaccuracy int32 //default 0 or 2
 }
 
 //Creates a new table and returns a pointer
-func NewTable() *TransposTable {
+func NewTable(maxhash, inaccuracy int32) *TransposTable {
 	return &TransposTable{
 		internal: make(map[uint64]storedState),
+		maxHashDepth: maxhash,
+		depthInaccuracy: inaccuracy,
 	}
 }
 
@@ -27,8 +38,8 @@ func (table *TransposTable) Request(board BoardState, depth int32) (bool, float3
 		if entry.board == board {
 			//Checks if the board was evaluated at a depth greater than or within a certain range
 			//Prevents using too shallowly evaluated moves
-			if entry.depth - TableDepthAllowedInaccuracy <= depth { 
-				return true, entry.value 
+			if entry.depth - table.depthInaccuracy <= depth { 
+				return true, entry.value
 			}
 		}
 	}
@@ -38,6 +49,8 @@ func (table *TransposTable) Request(board BoardState, depth int32) (bool, float3
 
 //Sets the board
 func (table *TransposTable) Set(board BoardState, value float32, depth int32){
+	if depth >= table.maxHashDepth { return } 
+
 	//Hash board state and write to table
 	hash := board.hashBoard()
 
@@ -53,7 +66,7 @@ func (table *TransposTable) Set(board BoardState, value float32, depth int32){
 func (table *TransposTable) Turn(){
 	for a,b := range table.internal {
 		b.depth += 1
-		if b.depth > MaximumHashDepth {
+		if b.depth > table.maxHashDepth {
 			delete(table.internal, a)
 		} else {
 			table.internal[a] = b

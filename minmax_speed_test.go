@@ -7,11 +7,11 @@ import (
 	"TurkishDraughts/Board"
 )
 
-func benchmarkDepthsMM(t *testing.T, b board.BoardState, testDepth int32) float64 {
+func benchmarkDepthsMM(t *testing.T, b board.BoardState, testDepth int32, usingTable *board.TransposTable) float64 {
 	startTime := time.Now()
 	board.Searches = 0
 
-	value, _ := b.MinMax(0, -999.0, 999.0, board.NewTable())
+	value := b.MinMax(0, -999.0, 999.0, usingTable)
 
 	duration := time.Since(startTime).Seconds()
 	t.Log("---", testDepth)
@@ -33,11 +33,9 @@ func TestBenchMMVanilla(t *testing.T){
 	for {
 		//Config
 		board.AdvanceWeight = 0.0
-		board.TableDepthAllowedInaccuracy = 0
 		board.MaxDepth = i
-		board.MaximumHashDepth = i
 
-		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
+		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i, board.NewTable(i,0))
 		if lasttime > 5.0 { break }
 		i++
 	}
@@ -51,11 +49,9 @@ func TestBenchMMNoTable(t *testing.T){
 	for i<=12 {
 		//Config
 		board.AdvanceWeight = 0.0
-		board.TableDepthAllowedInaccuracy = 0
 		board.MaxDepth = i
-		board.MaximumHashDepth = 0
 
-		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
+		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i, board.NewTable(0,0))
 		if lasttime > 5.0 { break }
 		i++
 	}
@@ -70,11 +66,9 @@ func TestBenchMMFastTable(t *testing.T){
 	for {
 		//Config
 		board.AdvanceWeight = 0.0
-		board.TableDepthAllowedInaccuracy = 0
 		board.MaxDepth = i
-		board.MaximumHashDepth = i-2
 
-		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
+		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i, board.NewTable(i-2,0))
 		if lasttime > 5.0 { break }
 		i++
 	}
@@ -88,11 +82,9 @@ func TestBenchMMAdvanced(t *testing.T){
 	for {
 		//Config
 		board.AdvanceWeight = 0.1
-		board.TableDepthAllowedInaccuracy = 0
 		board.MaxDepth = i
-		board.MaximumHashDepth = i
 
-		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
+		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i, board.NewTable(i,0))
 		if lasttime > 5.0 { break }
 		i++
 	}
@@ -106,11 +98,9 @@ func TestBenchMMCheatTable(t *testing.T){
 	for {
 		//Config
 		board.AdvanceWeight = 0.0
-		board.TableDepthAllowedInaccuracy = 2
 		board.MaxDepth = i
-		board.MaximumHashDepth = i - 2
 
-		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i)
+		lasttime = benchmarkDepthsMM(t, board.CreateStartingBoard(), i, board.NewTable(i-2,2))
 		if lasttime > 5.0 { break }
 		i++
 	}

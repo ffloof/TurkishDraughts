@@ -16,25 +16,17 @@ var (
 	//Heuristic weight of how far advanced a sides pawn pieces are from promotion //TODO: make it increase as piece count decreases?
 	//When its not 0.0 it makes ab pruning much slower put pushes the engine to play better in the long term
 	AdvanceWeight float32 = 0.0 //default 0.0 or 0.1
-
-	//Set maximum depth for hashes to reduce memory by only saving computationally expensive hashes
-	//Lower values lead to less memory consumption but slower computer performance
-	MaximumHashDepth int32 = 7 //default a few layers short of full depth
-
-	//When set to above 0 it will allow the transposition table to get values evaluated at lower depths
-	//i.e. at = 2, for a 6 ply evaluation it can use previous 4 ply evaluation 
-	//This introduces inaccuracy but has a massive performance gain
-	//To minimize inaccuracy use a low MaximumHashDepth and a low TableDepthAllowedInaccuracy
-	TableDepthAllowedInaccuracy int32 = 0 //default 0 or 2
 )
 
 //Evaluates recursively the value of a board using the minmax algorithm
 //Board value is always when in whites favor positive and blacks favor negative
 func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTable) float32 {
 	//Checks table to see if theres already an entry for this board
+	
 	if alreadyChecked, prevValue := table.Request(bs, depth); alreadyChecked {
 		return prevValue //If there is one no need to research this branch of the tree
 	}
+	
 
 	//Checks if the board is won or if players have drawed and returns accordingly
 	playerWon, winWhite, playerDrew := bs.PlayerHasWon()
@@ -94,7 +86,7 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 	}
 	
 	//Cache move in the table to speed up later searches of identical situations
-	if depth-1 <= MaximumHashDepth { table.Set(bs, value, depth) } //TODO: move check to inside table.Set
+	table.Set(bs, value, depth)
 
 	//Return final best value of a move found from this board
 	return value

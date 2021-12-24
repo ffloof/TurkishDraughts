@@ -3,8 +3,7 @@ package tournament
 import (
 	"TurkishDraughts/Board"
 	"runtime/debug"
-	"math/rand"
-	"time"
+	//"time"
 )
 
 type minmaxAI struct {
@@ -13,16 +12,10 @@ type minmaxAI struct {
 	//4 main settings in minmax.go
 	ply int32
 	advanced float32
-	maxhash int32
-	inaccuracy int32
-
 }
 
 func (mmai minmaxAI) Play(currentBoard board.BoardState) board.BoardState {
-	rand.Seed(time.Now().UnixNano())
 	board.MaxDepth = mmai.ply - 1 //-1 Because we are searching one ply in by looping through all possibilities
-	board.MaximumHashDepth =  mmai.maxhash
-	board.TableDepthAllowedInaccuracy = mmai.inaccuracy
 	board.AdvanceWeight = mmai.advanced
 
 	var bestEval float32
