@@ -35,9 +35,17 @@ func (mmai minmaxAI) Play(currentBoard board.BoardState, prevIllegalBoards []boa
 
 	for i, consideredBoard := range plays {
 		eval := consideredBoard.MinMax(0, -999.0, 999.0, mmai.table)
-		if i == 0 || (currentBoard.Turn == board.White && eval > bestEval) || (currentBoard.Turn == board.Black && eval < bestEval) {
-			bestEval = eval
-			bestOutcome = consideredBoard
+		if i == 0 || (currentBoard.Turn == board.White && eval >= bestEval) || (currentBoard.Turn == board.Black && eval <= bestEval) {
+			if bestEval == eval {
+				tempAW := -board.AdvanceWeight + 0.1
+				//Tie breaker function
+				if (currentBoard.Turn == board.White && consideredBoard.RawBoardValue(tempAW) >= bestOutcome.RawBoardValue(tempAW)) || (currentBoard.Turn == board.Black && consideredBoard.RawBoardValue(tempAW) <= bestOutcome.RawBoardValue(tempAW)){
+					bestOutcome = consideredBoard
+				}
+			} else {
+				bestEval = eval
+				bestOutcome = consideredBoard
+			}
 		}
 	}
 

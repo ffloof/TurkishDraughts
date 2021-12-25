@@ -41,7 +41,7 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 	}
 
 	if depth == MaxDepth {
-		return bs.RawBoardValue()
+		return bs.RawBoardValue(AdvanceWeight)
 	}	
 
 	options := bs.ValidPlays()
@@ -93,7 +93,7 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 }
 
 //Gets the value of the board by summing piece weights and how far advanced a sides pieces are
-func (bs *BoardState) RawBoardValue() float32 { 
+func (bs *BoardState) RawBoardValue(advanceWeight float32) float32 { 
 	wPawns := 0
 	wKings := 0
 	bPawns := 0
@@ -128,7 +128,7 @@ func (bs *BoardState) RawBoardValue() float32 {
 
 	value += pawnWeight * float32(wPawns - bPawns)
 	value += kingWeight * float32(wKings - bKings)
-	value += AdvanceWeight * float32(netAdvance)
+	value += advanceWeight * float32(netAdvance)
 
 	return value
 }
