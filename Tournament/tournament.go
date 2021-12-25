@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"math/rand"
 )
 
 type AI interface {
@@ -15,11 +16,12 @@ type AI interface {
 
 func Run(){
 	OneVOne(
-		minmaxAI { "MinMax9", board.NewTable(7, 0), 9, 0.0},
-		minmaxAI { "MinMax10", board.NewTable(7, 0), 10, 0.0})
+		minmaxAI { "MM9", board.NewTable(7, 0), 9, 0.0},
+		montecarloAI { "MCTS16k", 16384 })
 }
 
 func OneVOne(whiteAI, blackAI AI){
+	rand.Seed(time.Now().UnixNano())
 	//Setup logging
 	f, err := os.Create(whiteAI.GetName()+"_vs_"+blackAI.GetName()+".csv")
 	if err != nil { fmt.Println(err) }
@@ -62,17 +64,26 @@ func OneVOne(whiteAI, blackAI AI){
 			b = options[0]
 			f.WriteString("true,0.0," + b.ToStr() + "\n")
 		} else {
-			startTime := time.Now()
+			var nextBoard board.BoardState
+			var duration float64
+
 			if b.Turn == board.White {
 				//Ai 1 plays
 				fmt.Println(whiteAI.GetName(), "(WHITE)")
-				b = whiteAI.Play(b, history)
+				startTime := time.Now()
+				nextBoard = whiteAI.Play(b, history)
+				duration = time.Since(startTime).Seconds()
 			} else {
 				//Ai 2 plays
 				fmt.Println(blackAI.GetName(), "(BLACK)")
-				b = blackAI.Play(b, history)
+				startTime := time.Now()
+				nextBoard = blackAI.Play(b, history)
+				duration = time.Since(startTime).Seconds()
 			}
-			duration := time.Since(startTime).Seconds()
+			if nextBoard.Full == 0 { //Incase for whatever reason an invalid board gets returned by the ai, choose a random board instead
+				nextBoard = options[rand.Intn(len(options)-1)]
+			}
+			b = nextBoard
 			f.WriteString("false," + fmt.Sprintf("%.2f", duration) + "," + b.ToStr() + "\n")
 		}
 		b.Print()
