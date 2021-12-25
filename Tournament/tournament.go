@@ -15,6 +15,7 @@ type AI interface {
 
 
 func Run(){
+	totalTime := time.Now()
 	//Round 1, mainly testing scaling performance
 	bots := []AI{
 		minmaxAI { "MM9", board.NewTable(6,0) , 9, 0.0},
@@ -38,27 +39,20 @@ func Run(){
 	/*
 	bots := []AI{
 		minmaxAI { "MM10", board.NewTable(7,0), 10, 0.0},
-		minmaxAI { "MM9", board.NewTable(6,0), 9, 0.0},
-		minmaxAI { "MM8", board.NewTable(5,0), 8, 0.0},
 		minmaxAI { "ADV9", board.NewTable(6,0), 9, 0.1},
-		minmaxAI { "ADV8", board.NewTable(5,0), 8, 0.1},
-		minmaxAI { "ADV7", board.NewTable(4,0), 7, 0.1},
 		montecarloAI {"MCTS16k", 16384},
-		montecarloAI {"MCTS32k", 32768},
 		montecarloAI {"MCTS64k", 65536},
 		dynamicAI { "DYN11", board.NewTable(8,0), 10, 0.0 },
-		dynamicAI { "DYN10", board.NewTable(7,0), 9, 0.0 },
-		dynamicAI { "DYN9", board.NewTable(6,0), 8, 0.0 },
 		dynamicAI { "COPE10", board.NewTable(7,0), 9, 0.1 },
-		dynamicAI { "COPE9", board.NewTable(6,0), 8, 0.1 },
-		dynamicAI { "COPE8", board.NewTable(5,0), 7, 0.1 },
 	}
 
 	*/
 
 	for a := range bots {
 		for b := range bots {
+			roundTime := time.Now()
 			OneVOne(bots[a], bots[b])
+			fmt.Println("ROUND:", time.Since(roundTime).Seconds(), "TOTAL:", time.Since(totalTime).Seconds())
 		}
 	}
 }
