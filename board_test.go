@@ -120,7 +120,7 @@ func TestBoardStr(t *testing.T){
 		t.Fail()
 	}
 
-	if board2.ToStr() != "wwwwWWWW\nbbbbBBBB\n--------\n--------\n--------\n--------\n--------\n--------" {
+	if board2.ToStr() != "wwwwWWWW bbbbBBBB -------- -------- -------- -------- -------- --------" {
 		t.Log("Failed to make correct string from board")
 		t.Log(board1.ToStr())
 		t.Fail()

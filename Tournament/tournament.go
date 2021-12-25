@@ -3,7 +3,8 @@ package tournament
 import (
 	"TurkishDraughts/Board"
 	"fmt"
-	//"time"
+	"os"
+	"time"
 )
 
 type AI interface {
@@ -19,9 +20,18 @@ func Run(){
 }
 
 func OneVOne(whiteAI, blackAI AI){
+	//Setup logging
+	f, err := os.Create(whiteAI.GetName()+"_vs_"+blackAI.GetName()+".csv")
+	if err != nil { fmt.Println(err) }
+	defer f.Close()
+
+	//Header bool, float64, string
+	f.WriteString("AUTO,TIME,BOARD\n")
+
+	//Setup board
 	history := []board.BoardState{}
 	b := board.CreateStartingBoard()
-	
+
 	//Play loop
 	for {
 		history = append(history, b)
@@ -50,7 +60,9 @@ func OneVOne(whiteAI, blackAI AI){
 				fmt.Println(blackAI.GetName(), "(AUTO BLACK)")
 			}
 			b = options[0]
+			f.WriteString("true,0.0," + b.ToStr() + "\n")
 		} else {
+			startTime := time.Now()
 			if b.Turn == board.White {
 				//Ai 1 plays
 				fmt.Println(whiteAI.GetName(), "(WHITE)")
@@ -60,6 +72,8 @@ func OneVOne(whiteAI, blackAI AI){
 				fmt.Println(blackAI.GetName(), "(BLACK)")
 				b = blackAI.Play(b, history)
 			}
+			duration := time.Since(startTime).Seconds()
+			f.WriteString("false," + fmt.Sprintf("%.2f", duration) + "," + b.ToStr() + "\n")
 		}
 		b.Print()
 		fmt.Println()

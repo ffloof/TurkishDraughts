@@ -9,7 +9,6 @@ import (
 type minmaxAI struct {
 	name string
 	table *board.TransposTable
-	//4 main settings in minmax.go
 	ply int32
 	advanced float32
 }

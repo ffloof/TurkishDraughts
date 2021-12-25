@@ -118,7 +118,7 @@ func (bs *BoardState) ToStr() string {
 				}
 			}
 		}
-		fullStr += lineStr + "\n"
+		fullStr += lineStr + " "
 	}
 	fullStr = strings.TrimSpace(fullStr)
 	return fullStr
@@ -129,15 +129,6 @@ func (bs *BoardState) Print(){
 	for _, line := range strings.Fields(bs.ToStr()) {
 		fmt.Println(line)
 	} 
-}
-
-//Prints the board for debugging
-func (bs *BoardState) PrintSingleLine(){
-	output := ""
-	for _, line := range strings.Fields(bs.ToStr()) {
-		output += line + " "
-	}
-	fmt.Println(output)
 }
 
 //Returns starting board
