@@ -18,13 +18,13 @@ func Run(){
 	totalTime := time.Now()
 	//Round 1, mainly testing scaling performance
 	bots := []AI{
-		minmaxAI { "MM9", board.NewTable(6,0) , 9, 0.0},
-		minmaxAI { "MM8", board.NewTable(5,0) , 8, 0.0},
-		minmaxAI { "MM7", board.NewTable(4,0) , 7, 0.0},
-		minmaxAI { "MM6", board.NewTable(3,0) , 6, 0.0},
-		minmaxAI { "MM5", board.NewTable(2,0) , 5, 0.0},
-		minmaxAI { "MM4", board.NewTable(1,0) , 4, 0.0},
-		minmaxAI { "MM3", board.NewTable(0,0) , 3, 0.0},
+		minmaxAI { "MM9", board.NewTable(6,0), 9, 0.0},
+		minmaxAI { "MM8", board.NewTable(5,0), 8, 0.0},
+		minmaxAI { "MM7", board.NewTable(4,0), 7, 0.0},
+		minmaxAI { "MM6", board.NewTable(3,0), 6, 0.0},
+		minmaxAI { "MM5", board.NewTable(2,0), 5, 0.0},
+		minmaxAI { "MM4", board.NewTable(1,0), 4, 0.0},
+		minmaxAI { "MM3", board.NewTable(0,0), 3, 0.0},
 		montecarloAI {"MCTS2", 256},
 		montecarloAI {"MCTS5", 512},
 		montecarloAI {"MCTS1k", 1024},
