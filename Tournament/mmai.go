@@ -3,7 +3,6 @@ package tournament
 import (
 	"TurkishDraughts/Board"
 	"runtime/debug"
-	//"time"
 )
 
 type minmaxAI struct {

@@ -15,9 +15,12 @@ type AI interface {
 
 
 func Run(){
-	OneVOne(
+	/*OneVOne(
 		minmaxAI { "MM9", board.NewTable(7, 0), 9, 0.0},
-		montecarloAI { "MCTS16k", 16384 })
+		montecarloAI { "MCTS16k", 16384 })*/
+	OneVOne(
+		montecarloAI {"MCTS4", 4000},
+		randomAI {"RANDOM"})
 }
 
 func OneVOne(whiteAI, blackAI AI){
