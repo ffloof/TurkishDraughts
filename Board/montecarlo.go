@@ -10,6 +10,8 @@ func (ba BoardAction) ApplyTo (gameState gomcts.GameState) gomcts.GameState {
 	return BoardState(ba)
 }
 
+var MonteIllegalBoards := []BoardState{}
+
 //Implement game state interface
 func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
 	playerWon, winWhite, playerDrew := bs.PlayerHasWon()
@@ -23,7 +25,17 @@ func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
 		return gomcts.GameResult(0), true
 	}
 
-	if len(bs.ValidPlays()) == 0 {
+	plays := currentBoard.ValidPlays()
+	for _, prevB := range MonteIllegalBoards {
+		for i := range plays {
+			if plays[i] == prevB {
+				plays = remove(plays, i)
+				break
+			}
+		}
+	}
+
+	if len(plays) == 0 {
 		if bs.Turn == White {
 			return gomcts.GameResult(-1), true
 		}
@@ -35,7 +47,18 @@ func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
 
 func (bs BoardState) GetLegalActions() []gomcts.Action {
 	scuffedWorkaround := []gomcts.Action{}
-	for _, v := range bs.ValidPlays() {
+
+	plays := currentBoard.ValidPlays()
+	for _, prevB := range MonteIllegalBoards {
+		for i := range plays {
+			if plays[i] == prevB {
+				plays = remove(plays, i)
+				break
+			}
+		}
+	}
+
+	for _, v := range plays {
 		scuffedWorkaround = append(scuffedWorkaround, BoardAction(v)) 
 	}
 	return scuffedWorkaround

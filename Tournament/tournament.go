@@ -27,12 +27,17 @@ func Run(){
 		dynamicAI { "COPE10", board.NewTable(7,0), 9, 0.1 },
 	}
 
-	for a := range bots {
-		for b := range bots {
+	a := 3
+	b := 3
+	for a < len(bots) {
+		for b < len(bots) {
 			roundTime := time.Now()
 			OneVOne(bots[a], bots[b])
 			fmt.Println("ROUND:", time.Since(roundTime).Seconds(), "TOTAL:", time.Since(totalTime).Seconds())
+			b++
 		}
+		b = 0
+		a++
 	}
 }
 
