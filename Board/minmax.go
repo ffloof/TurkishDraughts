@@ -45,6 +45,15 @@ func (bs BoardState) MinMax(depth int32, alpha, beta float32, table *TransposTab
 	}	
 
 	options := bs.ValidPlays()
+	for _, prevB := range IllegalBoards {
+		for i := range options {
+			if options[i] == prevB {
+				options = remove(options, i)
+				break
+			}
+		}
+
+	}
 	if len(options) == 0 { //If a payer has no legal moves they lose
 		if bs.Turn == White { 
 			return -winWeight

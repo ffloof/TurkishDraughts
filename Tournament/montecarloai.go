@@ -9,8 +9,7 @@ type montecarloAI struct {
 	sims int
 }
 
-func (mctsai montecarloAI) Play(currentBoard board.BoardState, prevIllegalBoards []board.BoardState) board.BoardState {
-	board.MonteIllegalBoards = prevIllegalBoards
+func (mctsai montecarloAI) Play(currentBoard board.BoardState) board.BoardState {
 	return board.MCTS(currentBoard, mctsai.sims)
 }
 

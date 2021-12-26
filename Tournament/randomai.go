@@ -8,7 +8,7 @@ type randomAI struct {
 	name string
 }
 
-func (rai randomAI) Play(currentBoard board.BoardState, _ []board.BoardState) board.BoardState {
+func (rai randomAI) Play(currentBoard board.BoardState) board.BoardState {
 	return board.BoardState{}
 }
 

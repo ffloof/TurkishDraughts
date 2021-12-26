@@ -12,7 +12,7 @@ type minmaxAI struct {
 	advanced float32
 }
 
-func (mmai minmaxAI) Play(currentBoard board.BoardState, prevIllegalBoards []board.BoardState) board.BoardState {
+func (mmai minmaxAI) Play(currentBoard board.BoardState) board.BoardState {
 	mmai.table.Turn()
 
 	board.MaxDepth = mmai.ply - 1 //-1 Because we are searching one ply in by looping through all possibilities
@@ -22,7 +22,7 @@ func (mmai minmaxAI) Play(currentBoard board.BoardState, prevIllegalBoards []boa
 	var bestOutcome board.BoardState
 
 	plays := currentBoard.ValidPlays()
-	for _, prevB := range prevIllegalBoards {
+	for _, prevB := range board.IllegalBoards {
 		for i := range plays {
 			if plays[i] == prevB {
 				plays = remove(plays, i)

@@ -9,7 +9,7 @@ import (
 )
 
 type AI interface {
-	Play(board.BoardState, []board.BoardState) board.BoardState
+	Play(board.BoardState) board.BoardState
 	GetName() string
 }
 
@@ -60,6 +60,7 @@ func OneVOne(whiteAI, blackAI AI){
 	//Play loop
 	for {
 		history = append(history, b)
+		board.IllegalBoards = history
 
 		//Check if theres a winner and if we should stop the game loop before mcts ai violently crashes itself
 		isWon, teamWon, isDraw := b.PlayerHasWon()
@@ -94,13 +95,13 @@ func OneVOne(whiteAI, blackAI AI){
 				//Ai 1 plays
 				//fmt.Println(whiteAI.GetName(), "(WHITE)")
 				startTime := time.Now()
-				nextBoard = whiteAI.Play(b, history)
+				nextBoard = whiteAI.Play(b)
 				duration = time.Since(startTime).Seconds()
 			} else {
 				//Ai 2 plays
 				//fmt.Println(blackAI.GetName(), "(BLACK)")
 				startTime := time.Now()
-				nextBoard = blackAI.Play(b, history)
+				nextBoard = blackAI.Play(b)
 				duration = time.Since(startTime).Seconds()
 			}
 			if nextBoard.Full == 0 { //Incase for whatever reason an invalid board gets returned by the ai, choose a random board instead

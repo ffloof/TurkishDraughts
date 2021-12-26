@@ -12,7 +12,7 @@ type dynamicAI struct {
 	advanced float32
 }
 
-func (dmmai dynamicAI) Play(currentBoard board.BoardState, prevIllegalBoards []board.BoardState) board.BoardState {
+func (dmmai dynamicAI) Play(currentBoard board.BoardState) board.BoardState {
 	dmmai.table.Turn()
 	board.AdvanceWeight = dmmai.advanced
 
@@ -20,7 +20,7 @@ func (dmmai dynamicAI) Play(currentBoard board.BoardState, prevIllegalBoards []b
 	var bestOutcome board.BoardState
 
 	plays := currentBoard.ValidPlays()
-	for _, prevB := range prevIllegalBoards {
+	for _, prevB := range board.IllegalBoards {
 		for i := range plays {
 			if plays[i] == prevB {
 				plays = remove(plays, i)

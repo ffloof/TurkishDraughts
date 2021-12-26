@@ -10,7 +10,7 @@ func (ba BoardAction) ApplyTo (gameState gomcts.GameState) gomcts.GameState {
 	return BoardState(ba)
 }
 
-var MonteIllegalBoards := []BoardState{}
+var IllegalBoards []BoardState = []BoardState{}
 
 //Implement game state interface
 func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
@@ -25,8 +25,8 @@ func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
 		return gomcts.GameResult(0), true
 	}
 
-	plays := currentBoard.ValidPlays()
-	for _, prevB := range MonteIllegalBoards {
+	plays := bs.ValidPlays()
+	for _, prevB := range IllegalBoards {
 		for i := range plays {
 			if plays[i] == prevB {
 				plays = remove(plays, i)
@@ -48,8 +48,8 @@ func (bs BoardState) EvaluateGame() (gomcts.GameResult, bool) {
 func (bs BoardState) GetLegalActions() []gomcts.Action {
 	scuffedWorkaround := []gomcts.Action{}
 
-	plays := currentBoard.ValidPlays()
-	for _, prevB := range MonteIllegalBoards {
+	plays := bs.ValidPlays()
+	for _, prevB := range IllegalBoards {
 		for i := range plays {
 			if plays[i] == prevB {
 				plays = remove(plays, i)
@@ -92,4 +92,9 @@ func (bs BoardState) NextToMove() int8 {
 func MCTS(b BoardState, nodes int) BoardState {
 	choice := gomcts.MonteCarloTreeSearch(b, gomcts.DefaultRolloutPolicy, nodes)
 	return BoardState(choice.(BoardAction))
+}
+
+func remove(s []BoardState, i int) []BoardState {
+    s[i] = s[len(s)-1]
+    return s[:len(s)-1]
 }
