@@ -98,6 +98,6 @@ I have tried using this a few times against [other real players](https://www.pla
 
 ## How To Use
 
-Pretty straightfoward either `go build` or `go run main.go`, though because the graphics library uses a glfw backend you may need to install a C compiler. 
+Pretty straightfoward either `go build -ldflags -H=windowsgui` or `go run main.go`, though because the graphics library uses a glfw backend you may need to install a C compiler. 
 
 ![](docs/preview.jpg)
