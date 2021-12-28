@@ -16,28 +16,20 @@ type AI interface {
 
 func Run(){
 	totalTime := time.Now()
-	//Round 2, testing strong variants
 
+	//Example round robin tournament
 	bots := []AI{
 		minmaxAI { "MM10", board.NewTable(7,0), 10, 0.0},
-		minmaxAI { "ADV9", board.NewTable(6,0), 9, 0.1},
+		montecarloAI {"MCTS4k", 4096},
 		montecarloAI {"MCTS16k", 16384},
-		montecarloAI {"MCTS64k", 65536},
-		dynamicAI { "DYN11", board.NewTable(8,0), 10, 0.0 },
-		dynamicAI { "COPE10", board.NewTable(7,0), 9, 0.1 },
 	}
 
-	a := 3
-	b := 3
-	for a < len(bots) {
-		for b < len(bots) {
+	for a := range bots {
+		for b := range bots {
 			roundTime := time.Now()
 			OneVOne(bots[a], bots[b])
 			fmt.Println("ROUND:", time.Since(roundTime).Seconds(), "TOTAL:", time.Since(totalTime).Seconds())
-			b++
 		}
-		b = 0
-		a++
 	}
 }
 
