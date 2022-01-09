@@ -1,0 +1,26 @@
+AUTO,TIME,BOARD
+false,0.11,-------- bbbbbbbb bbbbbbbb -------- ---w---- www-wwww wwwwwwww --------
+false,0.00,-------- bbbbbbbb bbbb-bbb ----b--- ---w---- www-wwww wwwwwwww --------
+false,0.12,-------- bbbbbbbb bbbb-bbb ----b--- w--w---- -ww-wwww wwwwwwww --------
+false,0.00,-------- bbbbbbbb bb-b-bbb --b-b--- w--w---- -ww-wwww wwwwwwww --------
+false,0.09,-------- bbbbbbbb bb-b-bbb --b-b--- w-w----- -ww-wwww wwwwwwww --------
+false,0.00,-------- bbbbbbbb bb-b-bb- --b-b--b w-w----- -ww-wwww wwwwwwww --------
+true,0.0,----W--- bbbb-bbb bb---bb- ----b--b w------- -ww-wwww wwwwwwww --------
+false,0.00,----W--- bbb--bbb bb-b-bb- ----b--b w------- -ww-wwww wwwwwwww --------
+true,0.0,-------- bbb--bbb bb-b-bb- -------b w---W--- -ww-wwww wwwwwwww --------
+false,0.00,-------- bbb--bbb -b-b-bb- b------b w---W--- -ww-wwww wwwwwwww --------
+false,0.06,--W----- bb---bbb ---b-bb- -------b ----W--- -ww-wwww wwwwwwww --------
+false,0.00,--W----- b----bbb -b-b-bb- -------b ----W--- -ww-wwww wwwwwwww --------
+false,0.05,-------- b----bbb -b-b-bb- -------b --W-W--- -ww-wwww wwwwwwww --------
+false,0.00,-------- b----bbb -b-b-bb- -------- --W-W--b -ww-wwww wwwwwwww --------
+true,0.0,-------- b----bbb -b-b-bb- -------w --W-W--- -ww-www- wwwwwwww --------
+false,0.00,-------- b----bbb -b---bb- ---b---w --W-W--- -ww-www- wwwwwwww --------
+false,0.05,-------- b----bbb -b---bb- ---b--w- --W-W--- -ww-www- wwwwwwww --------
+true,0.0,-------- b----bbb -b---b-- ---b---- --W-W-b- -ww-www- wwwwwwww --------
+true,0.0,-------W b----bb- -b---b-- ---b---- --W----- -ww-www- wwwwwwww --------
+false,0.00,-------W -b---bb- -b---b-- ---b---- --W----- -ww-www- wwwwwwww --------
+false,0.04,-------- -b---bbW -b---b-- ---b---- --W----- -ww-www- wwwwwwww --------
+false,0.00,-------- -b---bbW -b---b-- --b----- --W----- -ww-www- wwwwwwww --------
+true,0.0,------W- -b---b-W -b------ -------- -------- -ww-www- wwwwwwww --------
+false,0.00,------W- b----b-W -b------ -------- -------- -ww-www- wwwwwwww --------
+false,0.00,------W- b------- -------- -W------ -------- -ww-www- wwwwwwww --------

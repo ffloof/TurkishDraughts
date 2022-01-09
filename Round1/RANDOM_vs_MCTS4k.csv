@@ -1,0 +1,23 @@
+AUTO,TIME,BOARD
+false,0.00,-------- bbbbbbbb bbbbbbbb -------- -w------ w-wwwwww wwwwwwww --------
+false,1.61,-------- bbbbbbbb bbbbbbb- -------b -w------ w-wwwwww wwwwwwww --------
+false,0.00,-------- bbbbbbbb bbbbbbb- -------b -w---w-- w-www-ww wwwwwwww --------
+false,1.54,-------- bbbbbbbb bbb-bbb- ---b---b -w---w-- w-www-ww wwwwwwww --------
+false,0.00,-------- bbbbbbbb bbb-bbb- -w-b---b -----w-- w-www-ww wwwwwwww --------
+true,0.0,-------- bbbbbbbb b-b-bbb- ---b---b -b---w-- w-www-ww wwwwwwww --------
+false,0.00,-------- bbbbbbbb b-b-bbb- ---b---b -b---w-- wwwww-ww w-wwwwww --------
+true,0.0,-------- bbbbbbbb b-b-bbb- ---b---b -----w-- w-www-ww wbwwwwww --------
+false,0.00,-------- bbbbbbbb b-b-bbb- ---b---b -----w-w w-www-w- wbwwwwww --------
+true,0.0,-------- bbbbbbbb b-b-bbb- ---b---- -----w-- w-www--- wbwww-ww -----B--
+false,0.00,-------- bbbbbbbb b-b-bbb- ---b---- ------w- w-www--- wbwww-ww -----B--
+false,1.03,-------- bbbbbbbb b-b--bb- ---bb--- ------w- w-www--- wbwww-ww -----B--
+false,0.00,-------- bbbbbbbb b-b--bb- ---bb--- ----w-w- w-ww---- wbwww-ww -----B--
+true,0.0,-------- bbbbbbbb b-b--bb- ---b---- ------w- w-ww---- wbww--ww ----BB--
+false,0.00,-------- bbbbbbbb b-b--bb- ---b---- ---w--w- w-w----- wbww--ww ----BB--
+false,0.56,-------- bbbbbbbb b-b--bb- -------- ------w- wb------ wbww--ww ----BB--
+true,0.0,-------- bbbbbbbb b-b--bb- -------- ------w- --w----- wbww--ww ----BB--
+false,0.46,-------- bbbbbbbb b-b--bb- -------- ------w- --w----- wbww--ww ----B--B
+false,0.00,-------- bbbbbbbb b-b--bb- ------w- -------- --w----- wbww--ww ----B--B
+false,0.18,-------- bbbbbbbb b-b--bb- -------- -------- --w----- -bww--w- B---B---
+true,0.0,-------- bbbbbbbb b-b--bb- -------- -------- --w----- w--w--w- B---B---
+false,0.02,-------- bbbbbbbb b-b--bb- -------- -------- -------- ------w- ---BB---
